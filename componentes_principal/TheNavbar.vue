@@ -71,9 +71,3 @@ const isActive = (link) => {
   return route.path.startsWith(link.href)
 }
 </script>
-
-<style>
-@theme {
-  --font-rayforce: "Amsterdam Signature Four";
-}
-</style>
