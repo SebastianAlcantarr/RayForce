@@ -84,47 +84,69 @@
       </aside>
 
       <div class="flex-1">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          <div v-for="product in products" :key="product.name" class="group">
+        <div v-if="pending" class="text-on-surface-variant">Cargando productos...</div>
+        <div v-else-if="error" class="text-red-600">No se pudieron cargar productos.</div>
+        <div v-else-if="products.length === 0" class="text-on-surface-variant">No hay productos disponibles.</div>
+
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+          <NuxtLink
+            v-for="product in products"
+            :key="product.id"
+            :to="`/tienda/${product.slug}`"
+            class="group block"
+          >
             <div class="aspect-[4/5] bg-surface-container-highest overflow-hidden relative mb-6">
               <img
-                :alt="product.name"
-                class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"
-                :src="product.image"
+                  :alt="product.name"
+                  class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"
+                  :src="product.images?.[0]?.src || '/placeholder.jpg'"
               />
-              <NuxtLink
-                :to="product.href"
-                class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
-                aria-label="Agregar al carrito"
+              <div
+                  class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
+                  aria-hidden="true"
               >
                 <span class="material-symbols-outlined">add_shopping_cart</span>
-              </NuxtLink>
+              </div>
             </div>
             <div class="space-y-2">
               <div class="flex justify-between items-start">
                 <div>
-                  <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block">{{ product.sku }}</span>
+                  <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block">{{ product.sku || 'SIN SKU' }}</span>
                   <h4 class="text-lg font-bold tracking-tight">{{ product.name }}</h4>
                 </div>
-                <span class="text-lg font-light text-primary">{{ product.price }}</span>
+                <span class="text-lg font-light text-primary">${{ product.price }}</span>
               </div>
               <div class="flex gap-2">
-                <span v-for="tag in product.tags" :key="tag" class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant">
-                  {{ tag }}
+                <span
+                  v-for="category in product.categories || []"
+                  :key="category.id"
+                  class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant"
+                >
+                  {{ category.name }}
                 </span>
               </div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
 
-        <div class="mt-20 flex items-center justify-center gap-4">
-          <button class="w-10 h-10 flex items-center justify-center border border-outline-variant/20 hover:border-primary text-outline transition-all rounded-sm" type="button">
+        <div class="mt-20 flex items-center justify-center gap-4" v-if="totalPages > 1">
+          <button
+            class="w-10 h-10 flex items-center justify-center border border-outline-variant/20 hover:border-primary text-outline transition-all rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            type="button"
+            :disabled="currentPage <= 1"
+            @click="goToPage(currentPage - 1)"
+          >
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
           <span class="font-inter text-[11px] font-bold tracking-[0.2em] text-on-surface">
-            01 <span class="text-outline-variant mx-2">-</span> 04
+            {{ String(currentPage).padStart(2, '0') }} <span class="text-outline-variant mx-2">-</span> {{ String(totalPages).padStart(2, '0') }}
           </span>
-          <button class="w-10 h-10 flex items-center justify-center border border-outline-variant/20 hover:border-primary text-on-surface transition-all rounded-sm" type="button">
+          <button
+            class="w-10 h-10 flex items-center justify-center border border-outline-variant/20 hover:border-primary text-on-surface transition-all rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            type="button"
+            :disabled="currentPage >= totalPages"
+            @click="goToPage(currentPage + 1)"
+          >
             <span class="material-symbols-outlined">chevron_right</span>
           </button>
         </div>
@@ -133,61 +155,37 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
+
 useSeoMeta({
   title: 'Rayforce | Tienda',
-  description: 'Catalogo de herramientas industriales y equipo electrico.',
+  description: 'Catalogo de producto industrial Rayforce.',
 })
 
-const products = [
-  {
-    sku: 'RF-DRL-900',
-    name: 'Vortex Precision SDS Drill',
-    price: '$429.00',
-    tags: ['18V LI-ION', 'IP54'],
-    href: '/tienda/vortex-precision-sds-drill',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCI9lwNmI4SblXPCSGltw67utdVQ4GJYs8l3FWU2r53teT-a4Zjl2WdHKLE6LemsVYDzHpwjp9CtdF8inP2XlKKAczCRYMJaT3Jms--hHQNbZlv12xWSMqI0PcOCR5X7hp4PEGNYtNW6oLxb7nQTDX0XqP-9_Q-J8RPEp0xHMaI9L_v5bLgUd84T79XkF1PImQrGKg0iFSvRE3Vf9ewN7B7FmeVzv-GxSTGZmAka9WCqOHlTEn7IKAzaBpE4sZZ4wBssRC4WKCKIMIb',
-  },
-  {
-    sku: 'RF-MET-X1',
-    name: 'Sigma-X Digital Multimeter',
-    price: '$285.00',
-    tags: ['CAT IV', 'BT SYNC'],
-    href: '/tienda/sigma-x-digital-multimeter',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCZw-mZFPfUgRXYxTr0btjNCn17x0abTJzob_uDPQDQcyfbvVejD3m2sfX_2sBh6SRwAtY7pPmM3HIjtDaS4Dqm3Ak1EiIm5HO0rbx0rw6zSrzztwWIgUJvJSRVkhtQrA8W9fChuv9PzmNMCd716GMRf9qC-FwoYKLWSdZggZbN1R-7mR0PkKUW8rw5YKYxLyAiasxculWvT7_9Ytf5JhU-mGOz0pjxI5e-gTjN6yetsTKQXjmVvHMrvZLRDkLuh_cmEbmL99-faE9B',
-  },
-  {
-    sku: 'RF-LUM-90K',
-    name: 'BeamForce 90K Lumen Array',
-    price: '$650.00',
-    tags: ['IP67', '90,000 LM'],
-    href: '/tienda/beamforce-90k-lumen-array',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDX4LdT-11QhIaWcxcsdi7XhJGPBY9QpoMnHeRZlTnN8lJ3aL5cKCZooup_R_FCq_Y_SZV_BghcTYCB5FG9XxNJSpoVfpywm6BwuucL_Mo4L4Cag__yD9OmxltiCwgn5AEARmQtwf1g12Z2PFZ5NDfBDtCcQYV1hCCpquQn0M1eWpJMwp9pFzMAYhXasXsZrNHlH8T1M2NHKumy99Lr4zWPeZ3NskHglCExiZIM0jT8avwpejFQrJJ3KQk5K_Vbx6qt4mzqBuT486iC',
-  },
-  {
-    sku: 'RF-CBL-6MM',
-    name: 'Armored Core 6mm2 Cable',
-    price: '$12.50/m',
-    tags: ['SWA', 'FR'],
-    href: '/tienda/armored-core-6mm-cable',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBtFK_IUbUtc6KzuIGA0or1iEOwPeBR_RSKOuV2soT_yY36nkoN-tD8xoSnNjiRnnh_BrTb2OctuFCaZ33hIk5uECuWlZCbatiFzyMhVxj7X8m6_MOd2gHCFJckn8OJZzG0EfPTCYz3JrXXSX1MEmBHjI45ECOrEGYk-AQ5RjEvcqg8MuBjxNKF-J4_vLgvzMcUbKj7MffK0lDMAwIpfq1L_QFO2xbUMEGSJ6jBiqQ7tpFIT9ZdoHIqsqRNjLkLZQHtcCIJZozdPBb6',
-  },
-  {
-    sku: 'RF-SAF-H1',
-    name: 'Nexus Site Safety Helmet',
-    price: '$89.00',
-    tags: ['EN397', 'ABS'],
-    href: '/tienda/nexus-site-safety-helmet',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAjBlf4GLY_GJVzfzUgJJgX2GjXvh_7QEAYtIX6z9hntlgZPqlwVy-QTD6beDCXJN0m6nSmP852V_DFm2A_ub2F6mS1lesq7dGJ7cv3I9uCktgwb_xTwqvy6zDhNjYAozMmJeVCjCEFyIMySGTg04qGZ8BpL8K-6bGXhH8Ww1IY-LF65Pj60dzeXQwsjq3fOVkmP3DHiuIT9AzZMQlLs56QlOEM-OLB4Q2ocHTz5IKZyBIct1utPFQWzyUkttqoI2DWAPsBjmF9BhZA',
-  },
-  {
-    sku: 'RF-PWR-2KW',
-    name: 'Linear 2kW Power Module',
-    price: '$1,150.00',
-    tags: ['24V DC', 'DIN RAIL'],
-    href: '/tienda/linear-2kw-power-module',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAwef5DQ63f7hNsp2Jtt4kguynjfbyyCp4eengHYiiS9AHx9iGAgqemutg69qeA28z0Bcmoouuajl58ZWCwhudCjcdLtKPRu_T7YwjynmtnxYM7fbjGriKjf8wXKQ1Z3czYKBbn03PIt043sOO1tXFlFjASHr7XSUsCxZ_HavYQtCDoWhgtFcAUTm7G7QBssxY7nAPLvNxgYTtKjTGrGn3obqAJHkR7bn4Bh-bPjOcRl18qE29StsWoZiBp5hiaLbuJyXMDMkouDRy4',
-  },
-]
-</script>
+const route = useRoute()
+const currentPage = computed(() => {
+  const value = Number(route.query.page || 1)
+  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1
+})
 
+const perPage = 20
+
+const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
+  () => `/api/products?page=${currentPage.value}&perPage=${perPage}`,
+)
+
+const products = computed(() => data.value?.items || [])
+const totalPages = computed(() => data.value?.totalPages || 1)
+
+async function goToPage(page: number) {
+  if (page < 1 || page > totalPages.value || page === currentPage.value) {
+    return
+  }
+
+  await navigateTo({
+    path: '/tienda',
+    query: page > 1 ? { page: String(page) } : {},
+  })
+}
+</script>

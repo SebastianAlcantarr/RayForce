@@ -177,19 +177,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
 
 useSeoMeta({
   title: 'Rayforce',
-  description: 'Prodductos electricos para su venta ' +
+  description: 'Productos electricos para su venta ' +
       '\n Proyectos etc ' +
       '' +
       '',
 })
 
-const { data: productsData, pending: productsPending, error: productsError } = await useFetch('/api/products?limit=8')
+const { data: productsData, pending: productsPending, error: productsError } = await useFetch<WooPaginatedResult<WooProduct>>('/api/products?perPage=8')
 
-const homeProducts = computed(() => productsData.value || [])
+const homeProducts = computed(() => productsData.value?.items || [])
 
 const categories = [
   {

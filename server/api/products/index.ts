@@ -2,10 +2,12 @@ import { getProductsList } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const limit = Math.min(Number(query.limit) || 8, 20)
+  const page = Math.max(Number(query.page) || 1, 1)
+  const perPageRaw = Number(query.perPage ?? query.limit) || 20
+  const perPage = Math.min(Math.max(perPageRaw, 1), 20)
 
   try {
-    return await getProductsList(limit)
+    return await getProductsList(page, perPage)
   }
   catch (error) {
     console.error('Error loading products list:', error)

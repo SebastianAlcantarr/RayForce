@@ -33,6 +33,14 @@ interface WooRequestOptions {
   body?: unknown
 }
 
+export interface WooPaginatedResult<T> {
+  items: T[]
+  total: number
+  totalPages: number
+  page: number
+  perPage: number
+}
+
 export interface WooProductImage {
   id?: number
   src: string
@@ -94,7 +102,7 @@ function normalizeProduct(product: WooProduct): WooProduct {
   }
 }
 
-export async function wooFetch<T>(endpoint: string, options: WooRequestOptions = {}): Promise<T> {
+async function wooFetchResponse(endpoint: string, options: WooRequestOptions = {}): Promise<Response> {
   const { baseUrl, key, secret } = getConfig()
   const url = new URL(`${baseUrl}${endpoint}`)
 
@@ -126,6 +134,12 @@ export async function wooFetch<T>(endpoint: string, options: WooRequestOptions =
     })
   }
 
+  return response
+}
+
+export async function wooFetch<T>(endpoint: string, options: WooRequestOptions = {}): Promise<T> {
+  const response = await wooFetchResponse(endpoint, options)
+
   return response.json()
 }
 
@@ -140,6 +154,31 @@ export async function getProducts(params: Record<string, string | number> = {}) 
   return products.map(normalizeProduct)
 }
 
+export async function getProductsPaginated(
+  params: Record<string, string | number> = {},
+  page = 1,
+  perPage = 20,
+): Promise<Omit<WooPaginatedResult<WooProduct>, 'page' | 'perPage'>> {
+  const response = await wooFetchResponse('/products', {
+    params: {
+      status: 'publish',
+      page,
+      per_page: perPage,
+      ...params,
+    },
+  })
+
+  const products = await response.json() as WooProduct[]
+  const total = Number(response.headers.get('x-wp-total') || products.length)
+  const totalPages = Number(response.headers.get('x-wp-totalpages') || 1)
+
+  return {
+    items: products.map(normalizeProduct),
+    total,
+    totalPages,
+  }
+}
+
 export async function getProductBySlug(slug: string) {
   const products = await getProducts({
     slug,
@@ -149,12 +188,17 @@ export async function getProductBySlug(slug: string) {
   return products[0] || null
 }
 
-export async function getProductsList(limit = 8) {
-  return getProducts({
-    per_page: limit,
+export async function getProductsList(page = 1, perPage = 20): Promise<WooPaginatedResult<WooProduct>> {
+  const paginated = await getProductsPaginated({
     orderby: 'date',
     order: 'desc',
-  })
+  }, page, perPage)
+
+  return {
+    ...paginated,
+    page,
+    perPage,
+  }
 }
 
 export async function searchProducts(query: string, page = 1) {
