@@ -36,6 +36,54 @@
         </div>
     </section>
 
+    <section class="py-24 bg-surface">
+      <div class="max-w-7xl mx-auto px-8">
+        <div class="flex justify-between items-end mb-12 gap-6">
+          <div class="space-y-2">
+            <span class="font-inter text-xs uppercase tracking-[0.2em] text-primary font-bold">Tienda</span>
+            <h2 class="text-4xl font-bold tracking-tight">Productos recientes</h2>
+          </div>
+          <NuxtLink
+            to="/tienda"
+            class="text-primary font-bold border-b-2 border-primary/20 hover:border-primary transition-all pb-1 font-inter text-sm"
+          >
+            Ver catalogo completo
+          </NuxtLink>
+        </div>
+
+        <div v-if="productsPending" class="text-on-surface-variant">Cargando productos...</div>
+        <div v-else-if="productsError" class="text-red-600">No se pudieron cargar productos de WooCommerce.</div>
+
+        <div v-else-if="homeProducts.length === 0" class="text-on-surface-variant">
+          No hay productos publicados en WooCommerce por ahora.
+        </div>
+
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <NuxtLink
+            v-for="product in homeProducts"
+            :key="product.id"
+            :to="`/tienda/${product.slug}`"
+            class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/20 hover:border-primary/50 transition-colors"
+          >
+            <div class="aspect-square bg-surface-container-lowest flex items-center justify-center p-6">
+              <img
+                :src="product.images?.[0]?.src || '/placeholder.jpg'"
+                :alt="product.name"
+                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div class="p-4 space-y-2">
+              <p class="font-inter text-[10px] uppercase tracking-[0.12em] text-outline-variant">
+                {{ product.sku || 'SIN SKU' }}
+              </p>
+              <h3 class="font-bold text-on-surface leading-tight min-h-[44px]">{{ product.name }}</h3>
+              <p class="text-primary font-bold text-lg">${{ product.price }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <section class="py-24 bg-surface-container-low">
       <div class="max-w-7xl mx-auto px-8">
         <div class="flex justify-between items-end mb-16">
@@ -138,6 +186,10 @@ useSeoMeta({
       '' +
       '',
 })
+
+const { data: productsData, pending: productsPending, error: productsError } = await useFetch('/api/products?limit=8')
+
+const homeProducts = computed(() => productsData.value || [])
 
 const categories = [
   {
