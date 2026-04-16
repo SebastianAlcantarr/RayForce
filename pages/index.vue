@@ -1,11 +1,11 @@
 <template>
   <div><!-- Franja superior con teléfonos -->
     <div class="w-full bg-primary text-white text-xs md:text-sm flex flex-col md:flex-row justify-center items-center gap-2 py-2 font-semibold">
-      <span class="mx-2">(662) 215 7145</span>
+      <span class="mx-2">numero telefono</span>
       <span class="hidden md:inline">|</span>
-      <span class="mx-2">(662) 214 6425</span>
+      <span class="mx-2">numero telefono</span>
       <span class="hidden md:inline">|</span>
-      <span class="mx-2">(662) 214 0395</span>
+      <span class="mx-2">numero telefono</span>
     </div>
 
     <!-- Hero principal -->
@@ -13,11 +13,10 @@
       <div class="max-w-5xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-12 py-12">
         <div class="flex-1 flex flex-col gap-4 md:gap-6">
           <h1 class="text-3xl md:text-5xl lg:text-6xl font-black leading-tight text-on-surface">
-            Soluciones eléctricas integrales para la industria moderna
+            Soluciones eléctricas integrales
           </h1>
           <p class="text-base md:text-lg text-on-surface-variant font-light max-w-xl">
             Venta de productos eléctricos, asesoría técnica y cotización de proyectos arquitectónicos y eléctricos.<br>
-            <span class="block mt-2 text-primary font-semibold">¡Más de 50 años de experiencia!</span>
           </p>
           <div class="flex flex-wrap gap-4 mt-2">
             <NuxtLink

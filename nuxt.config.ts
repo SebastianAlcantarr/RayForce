@@ -1,8 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   modules: ['@nuxtjs/tailwindcss'],
+
   css: ['~/assets/css/main.css'],
+
   app: {
     head: {
       title: 'Rayforce | Technical Support & Help Center',
@@ -18,5 +21,14 @@ export default defineNuxtConfig({
       ],
     },
   },
+
+  runtimeConfig: {
+    wooUrl: process.env.WOO_URL,
+    wooKey: process.env.WOO_KEY,
+    wooSecret: process.env.WOO_SECRET,
+
+    public: {}
+  },
+
   compatibilityDate: '2024-11-01',
 })

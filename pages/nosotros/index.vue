@@ -54,48 +54,6 @@
       </div>
     </section>
 
-    <section class="py-32 bg-surface overflow-hidden">
-      <div class="max-w-screen-2xl mx-auto px-8">
-        <div class="mb-20 flex justify-between items-baseline">
-          <h2 class="text-5xl font-bold tracking-tight">Evolucion</h2>
-          <span class="font-inter text-sm text-outline">2010 - 2024</span>
-        </div>
-        <div class="relative">
-          <div class="absolute top-1/2 left-0 w-full h-px bg-outline-variant/30 hidden md:block" />
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
-            <div v-for="event in timeline" :key="event.year" class="flex flex-col gap-6" :class="event.offset ? 'md:mt-24' : ''">
-              <div class="w-4 h-4 rounded-full bg-primary mx-auto md:mx-0" />
-              <span class="text-4xl font-black text-primary/20">{{ event.year }}</span>
-              <h4 class="text-xl font-bold">{{ event.title }}</h4>
-              <p class="text-on-surface-variant leading-relaxed">{{ event.description }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-32 bg-surface-container">
-      <div class="max-w-screen-2xl mx-auto px-8">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-12 mb-20">
-          <div class="md:col-span-6">
-            <h2 class="text-5xl font-bold tracking-tight">Liderazgo</h2>
-          </div>
-          <div class="md:col-span-6">
-            <p class="text-lg text-on-surface-variant">Un equipo de ingenieros y visionarios dedicados a elevar el estandar de la industria electrica global.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div v-for="leader in leaders" :key="leader.name" class="group cursor-pointer">
-            <div class="aspect-[4/5] overflow-hidden bg-surface-container-highest mb-6">
-              <img :alt="leader.name" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" :src="leader.image" />
-            </div>
-            <h4 class="text-xl font-bold">{{ leader.name }}</h4>
-            <span class="font-inter text-xs uppercase tracking-widest text-primary">{{ leader.role }}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="py-32 bg-surface">
       <div class="max-w-screen-2xl mx-auto px-8">
         <div class="bg-primary p-16 md:p-32 relative overflow-hidden flex flex-col items-center text-center">
@@ -175,24 +133,6 @@ const timeline = [
     title: 'Digital Atelier',
     description: 'Integracion total de IA en el diseno predictivo de hardware.',
     offset: true,
-  },
-]
-
-const leaders = [
-  {
-    name: 'Marcus Thorne',
-    role: 'Chief Executive Officer',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcJQMwcUNK3sgttoWQ4pU1qd4oK6smaPWV1BgbqjzzWeox26Hlv0yM3UlGm69TjrTMnfYgdB0zNIZtDpoa85wAQxJzvLwSiepqlUAdva6BZY0ufURVS7ZV-k8KD4ZaJc0D_jC92mpv9VLTaG4KeUMiouuFb1x-OLhdNsE5LBFdgMDVZemm3I6e2f0UGVmgGkpGujmgFxof2T93fIPWy9_gy0phfeguMM_oPQpd8q-DUyJMnsut4IPCtRWnGSB43B9M48Quciz14fw_',
-  },
-  {
-    name: 'Elena Rodriguez',
-    role: 'Chief Technology Officer',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDY3dJxrYZt9-SDvzX7d6Cbt9b1odbXdgDI5tR3LjZIq677Po5j7_cNRAFPsj7SztgQbVkjxzDcEx6MSF-hZc-p6VgHIeqicf8HmH8F8QcWTE0xFfjX395_63DhleBPnrNWcV1EzQxqW3B0EsRWhyzQrXbRj_MvKZb3V6SAro-GvkHSueYcxSpWuF5otvdgu4xVMCGGEnr0CHZifl9ZTCCu2EONbxIknCla7XI8bToHN4EMMXrd6ztd81auQ_KnFMtGp0UVfmCC8wAR',
-  },
-  {
-    name: 'Julian Vance',
-    role: 'Director of Design',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_6ThufRZBKObDcOOHnbvIhVKJYpH5L0uVmO0OB3AwYl33pTebZiMxE9bYPRusiHmtNhNDU0vSwyj-Y3Apn6kUXeRHaAq1HFyGUF6hQBHOx7zNiU_0ailT5ykS7txgjEXynBLrZBhQ0td5fUxAdPwZeMac53u1qiIQtZrecvzcmm9JKz7ldKKeCqOMlyL2O20XbrmAT3VHVuXsRZWomeaHhLJORqwYyeUV_-uBpPgzgLpLw-7G3gEQQ6hL5mKlFBGJLvJ_pByrZoH1',
   },
 ]
 </script>
