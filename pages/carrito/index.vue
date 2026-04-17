@@ -20,7 +20,7 @@
           <div class="text-right">Total</div>
         </div>
 
-        <div v-for="item in cartItems" :key="item.name" class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center">
+        <div v-for="item in cartItems" :key="item.id" class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center">
           <div class="col-span-3 flex items-center gap-8 w-full">
             <div class="w-32 h-32 bg-surface-container-highest flex-shrink-0 relative overflow-hidden group">
               <img
@@ -32,80 +32,74 @@
             <div class="space-y-1">
               <h3 class="text-xl font-bold tracking-tight text-on-surface">{{ item.name }}</h3>
               <p class="text-xs font-inter text-outline uppercase tracking-wider">SKU: {{ item.sku }}</p>
-              <button class="text-[10px] font-inter text-error uppercase tracking-widest mt-2 flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
+              <button @click="removeFromCart(item.id)" class="text-[10px] font-inter text-error  tracking-widest mt-2 flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
                 <span class="material-symbols-outlined text-sm">delete</span>
-                Remove
+                Remover
               </button>
             </div>
           </div>
-          <div class="text-center font-manrope font-semibold text-on-surface-variant">{{ item.price }}</div>
+          <div class="text-center font-manrope font-semibold text-on-surface-variant">${{ item.price.toFixed(2) }}</div>
           <div class="flex justify-center">
             <div class="flex items-center border border-outline-variant/30 rounded-full overflow-hidden h-10 bg-surface-container-low">
-              <button class="px-3 hover:bg-surface-container-high transition-colors" type="button">
+              <button @click="decrementQuantity(item.id)" class="px-3 hover:bg-surface-container-high transition-colors" type="button">
                 <span class="material-symbols-outlined text-sm">remove</span>
               </button>
-              <span class="px-4 text-sm font-bold w-12 text-center">{{ item.quantity }}</span>
-              <button class="px-3 hover:bg-surface-container-high transition-colors" type="button">
+              <span class="px-4 text-sm font-bold w-12 text-center">{{ String(item.quantity).padStart(2, '0') }}</span>
+              <button @click="incrementQuantity(item.id)" class="px-3 hover:bg-surface-container-high transition-colors" type="button">
                 <span class="material-symbols-outlined text-sm">add</span>
               </button>
             </div>
           </div>
-          <div class="text-right font-manrope font-bold text-lg text-on-surface">{{ item.total }}</div>
+          <div class="text-right font-manrope font-bold text-lg text-on-surface">${{ (item.price * item.quantity).toFixed(2) }}</div>
         </div>
       </div>
 
-      <aside class="lg:col-span-4 lg:sticky lg:top-24">
-        <div class="bg-surface-container-lowest border border-outline-variant/15 p-10 space-y-8">
-          <h2 class="text-2xl font-bold tracking-tight text-on-surface">Order Summary</h2>
-          <div class="space-y-4">
-            <div class="flex justify-between items-center py-2">
-              <span class="text-xs font-inter uppercase tracking-widest text-outline">Subtotal</span>
-              <span class="font-bold text-on-surface">$1,069.00</span>
-            </div>
-            <div class="flex justify-between items-center py-2">
-              <span class="text-xs font-inter uppercase tracking-widest text-outline">Shipping Estimation</span>
-              <span class="font-bold text-on-surface">$45.00</span>
-            </div>
-            <div class="flex justify-between items-center py-2">
-              <span class="text-xs font-inter uppercase tracking-widest text-outline">Tax (GST)</span>
-              <span class="font-bold text-on-surface">$85.52</span>
-            </div>
-            <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
-              <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span>
-              <span class="text-3xl font-extrabold text-primary tracking-tighter">$1,199.52</span>
-            </div>
-          </div>
-          <div class="space-y-4 pt-4">
-            <NuxtLink
-              to="/checkout"
-              class="w-full bg-[#13069f] text-white py-5 rounded-md text-sm font-bold uppercase tracking-[0.2em] hover:bg-[#1a0eb0] transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
-            >
-              Proceder a checkout
-              <span class="material-symbols-outlined text-lg">arrow_forward</span>
-            </NuxtLink>
-            <p class="text-[10px] text-center text-outline uppercase tracking-wider">Secured by Precision Payments Infrastructure</p>
-          </div>
-          <div class="pt-8 mt-8 border-t border-outline-variant/10">
-            <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Promotional Code</label>
-            <div class="flex gap-2">
-              <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="ENTER CODE" type="text" />
-              <button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button">
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
+       <aside class="lg:col-span-4 lg:sticky lg:top-24">
+         <div class="bg-surface-container-lowest border border-outline-variant/15 p-10 space-y-8">
+           <h2 class="text-2xl font-bold tracking-tight text-on-surface">Total de la Orden</h2>
+           <div v-if="cartItems.length === 0" class="text-center py-8 text-outline-variant">
+             <p class="text-sm">Tu carrito está vacío</p>
+           </div>
+           <div v-else class="space-y-4">
+             <div class="flex justify-between items-center py-2">
+               <span class="text-xs font-inter uppercase tracking-widest text-outline">Subtotal</span>
+               <span class="font-bold text-on-surface">${{ subtotal.toFixed(2) }}</span>
+             </div>
+             <div class="flex justify-between items-center py-2">
+               <span class="text-xs font-inter uppercase tracking-widest text-outline">Costo de envio</span>
+               <span class="font-bold text-on-surface">$45.00</span>
+             </div>
+             <div class="flex justify-between items-center py-2">
+               <span class="text-xs font-inter uppercase tracking-widest text-outline">Impuestos</span>
+               <span class="font-bold text-on-surface">${{ ((subtotal + 45) * 0.08).toFixed(2) }}</span>
+             </div>
+             <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
+               <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span>
+               <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ (subtotal + 45 + ((subtotal + 45) * 0.08)).toFixed(2) }}</span>
+             </div>
+           </div>
+           <div v-if="cartItems.length > 0" class="space-y-4 pt-4">
+             <NuxtLink
+               to="/checkout"
+               class="w-full bg-[#13069f] text-white py-5 rounded-md text-sm font-bold uppercase tracking-[0.2em] hover:bg-[#1a0eb0] transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
+             >
+               Proceder a checkout
+               <span class="material-symbols-outlined text-lg">arrow_forward</span>
+             </NuxtLink>
+             <p class="text-[10px] text-center text-outline uppercase tracking-wider">Envio Seguro </p>
+           </div>
+           <div v-if="cartItems.length > 0" class="pt-8 mt-8 border-t border-outline-variant/10">
+             <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Promotional Code</label>
+             <div class="flex gap-2">
+               <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="ENTER CODE" type="text" />
+               <button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button">
+                 Apply
+               </button>
+             </div>
+           </div>
+         </div>
 
-        <div class="mt-8 p-6 bg-primary-container/30 border border-primary-container flex items-start gap-4">
-          <span class="material-symbols-outlined text-primary">verified_user</span>
-          <div>
-            <h4 class="text-sm font-bold text-on-primary-container mb-1">Lifetime Support Included</h4>
-            <p class="text-xs text-on-primary-container/70 leading-relaxed">
-              Every atelier artifact includes dedicated engineering consultation for integration.
-            </p>
-          </div>
-        </div>
-      </aside>
+       </aside>
     </div>
   </div>
 </template>
@@ -116,23 +110,14 @@ useSeoMeta({
   description: 'Resumen de tu carrito y checkout de Rayforce.',
 })
 
-const cartItems = [
-  {
-    name: 'Industrial Drill XR-500',
-    sku: 'TA-8821-X',
-    price: '$499.00',
-    quantity: '01',
-    total: '$499.00',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5RlWP4Hprh9A4O4X74rb7IYQ7yrQHk5hyzLfL9MJPMHgq0r3Wi61XtfdEjn-Toy68wvqhHDNynttqJpEpIxlCsoraFvgQLA3BN4zJLLLhx2cVQS6mf90vYUOgJwU9AINwW0r3K6bZCbhPfyhg6yYBMVfTkkTph5Q2SFZyg6ZRJBjm_d2dWVVJcz8u-YtZp9-LcKnjHWlTb2o5N0v0ZtvS4z04uaZgqRvF_3sbVJzlvnP6DxqrrztlWNQQ6MMKb6qoaQBQCgKCCrwU',
-  },
-  {
-    name: 'LED Loft Tech Light',
-    sku: 'TA-3312-L',
-    price: '$285.00',
-    quantity: '02',
-    total: '$570.00',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDfUKgO4J_WjggzIQc8FgAXBnWWacJ4iJ1hnY7_2chdhASlf1DuQiigWlCjqXqS1cwYiX84qfCTa-nR1P5K30nnNkWvoLNBCCLVM5ksCtGtpRVKlfQTh-J2EZxcx42-ULajcxee0ymME8v3P-hJM8896SkFGBVF_gvCJkuAqNEANeSmZ1VFQvqPC5AdjrTqaNH_RwawFgxbE8Mmfhd2xnqHIHF6MLxXEeXCvi66yNqFz4059G5Gl-8xdEnWv1OkNA47gJOWeNEouJCh',
-  },
-]
+const {
+  cartItems,
+  subtotal,
+  removeFromCart,
+  incrementQuantity,
+  decrementQuantity,
+} = useCart()
 </script>
+
+
 

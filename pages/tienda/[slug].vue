@@ -12,11 +12,15 @@
     <div v-else-if="error" class="text-red-600">No se pudo cargar este producto.</div>
 
     <div v-else-if="product" class="space-y-16">
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        <div class="space-y-4">
-          <div class="bg-surface-container-low rounded-xl p-6">
-            <img :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" />
-          </div>
+       <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+         <div class="space-y-4">
+           <div class="bg-surface-container-low rounded-xl p-6">
+             <img :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" />
+           </div>
+           <button @click="handleAddToCart" class="w-full bg-primary text-on-primary py-4 rounded-md font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center justify-center gap-3">
+             <span class="material-symbols-outlined">add_shopping_cart</span>
+             Agregar al carrito
+           </button>
           <div v-if="galleryImages.length > 1" class="flex gap-3 overflow-x-auto">
             <button
               v-for="(image, index) in galleryImages"
@@ -75,6 +79,7 @@ useSeoMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const slug = computed(() => String(route.params.slug || ''))
 
 const { data: product, pending, error } = await useFetch<WooProduct>(
@@ -112,4 +117,22 @@ const specGroups = computed(() => {
     },
   ]
 })
+
+const { addToCart } = useCart()
+
+const handleAddToCart = async () => {
+  if (!product.value) return
+
+  addToCart({
+    id: product.value.id.toString(),
+    name: product.value.name,
+    sku: product.value.sku || 'SIN SKU',
+    price: parseFloat(product.value.price || '0'),
+    image: product.value.images?.[0]?.src || '/placeholder.jpg',
+    slug: route.params.slug as string,
+  })
+
+  // Navegar al carrito
+  await router.push('/carrito')
+}
 </script>

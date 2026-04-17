@@ -89,32 +89,38 @@
         <div v-else-if="products.length === 0" class="text-on-surface-variant">No hay productos disponibles.</div>
 
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          <NuxtLink
+          <div
             v-for="product in products"
             :key="product.id"
-            :to="`/tienda/${product.slug}`"
             class="group block"
           >
-            <div class="aspect-[4/5] bg-surface-container-highest overflow-hidden relative mb-6">
-              <img
-                  :alt="product.name"
-                  class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"
-                  :src="product.images?.[0]?.src || '/placeholder.jpg'"
-              />
-              <div
-                  class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
-                  aria-hidden="true"
-              >
-                <span class="material-symbols-outlined">add_shopping_cart</span>
+            <NuxtLink
+              :to="`/tienda/${product.slug}`"
+              class="block"
+            >
+              <div class="aspect-square bg-surface-container-highest overflow-hidden relative mb-6">
+                <img
+                    :alt="product.name"
+                    class="w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"
+                    :src="product.images?.[0]?.src || '/placeholder.jpg'"
+                />
+                <button
+                    @click.prevent="handleAddToCart(product)"
+                    class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110"
+                    type="button"
+                    :aria-label="`Agregar ${product.name} al carrito`"
+                >
+                  <span class="material-symbols-outlined">add_shopping_cart</span>
+                </button>
               </div>
-            </div>
+            </NuxtLink>
             <div class="space-y-2">
               <div class="flex justify-between items-start">
                 <div>
                   <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block">{{ product.sku || 'SIN SKU' }}</span>
-                  <h4 class="text-lg font-bold tracking-tight">{{ product.name }}</h4>
+                  <NuxtLink :to="`/tienda/${product.slug}`" class="text-lg font-bold tracking-tight hover:text-primary transition-colors">{{ product.name }}</NuxtLink>
                 </div>
-                <span class="text-lg font-light text-primary">${{ product.price }}</span>
+                <span class="text-lg font-light text-primary">${{ parseFloat(product.price || '0').toFixed(2) }}</span>
               </div>
               <div class="flex gap-2">
                 <span
@@ -126,7 +132,7 @@
                 </span>
               </div>
             </div>
-          </NuxtLink>
+          </div>
         </div>
 
         <div class="mt-20 flex items-center justify-center gap-4" v-if="totalPages > 1">
@@ -164,6 +170,7 @@ useSeoMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const currentPage = computed(() => {
   const value = Number(route.query.page || 1)
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1
@@ -177,6 +184,22 @@ const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
 
 const products = computed(() => data.value?.items || [])
 const totalPages = computed(() => data.value?.totalPages || 1)
+
+const { addToCart } = useCart()
+
+const handleAddToCart = async (product: WooProduct) => {
+  addToCart({
+    id: product.id.toString(),
+    name: product.name,
+    sku: product.sku || 'SIN SKU',
+    price: parseFloat(product.price || '0'),
+    image: product.images?.[0]?.src || '/placeholder.jpg',
+    slug: product.slug,
+  })
+
+  // Navegar al carrito
+  await router.push('/carrito')
+}
 
 async function goToPage(page: number) {
   if (page < 1 || page > totalPages.value || page === currentPage.value) {
