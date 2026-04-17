@@ -23,11 +23,32 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    wooUrl: process.env.WOO_URL,
-    wooKey: process.env.WOO_KEY,
-    wooSecret: process.env.WOO_SECRET,
+    wooUrl: process.env.WOO_URL || '',
+    wooKey: process.env.WOO_KEY || '',
+    wooSecret: process.env.WOO_SECRET || '',
+    adminPassword: process.env.NUXT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '',
 
     public: {}
+  },
+
+  // Fix Node 24 Windows ESM: xlsx usa require() interno con rutas C:\ absolutas
+  // que no son válidas para el loader ESM. Lo excluimos del bundle del servidor
+  // y solo lo usamos via import() dinámico en el cliente.
+  nitro: {
+    externals: {
+      external: ['xlsx'],
+    },
+    rollupConfig: {
+      external: ['xlsx'],
+    },
+  },
+
+  vite: {
+    // En el servidor SSR, xlsx no debe bundlearse
+    ssr: {
+      external: ['xlsx'],
+      noExternal: [],
+    },
   },
 
   compatibilityDate: '2024-11-01',

@@ -6,11 +6,34 @@ interface WooConfig {
   baseUrl: string
 }
 
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
 function getConfig(): WooConfig {
   const config = useRuntimeConfig()
-  const wooUrl = String(config.wooUrl || '').replace(/\/+$/, '')
-  const key = String(config.wooKey || '')
-  const secret = String(config.wooSecret || '')
+  let wooUrl = String(config.wooUrl || process.env.NUXT_WOO_URL || process.env.WOO_URL || '')
+  let key = String(config.wooKey || process.env.NUXT_WOO_KEY || process.env.WOO_KEY || '')
+  let secret = String(config.wooSecret || process.env.NUXT_WOO_SECRET || process.env.WOO_SECRET || '')
+
+  // Fallback definitivo: Lectura manual de .env.local (muy confiable en dev mode en Windows/Node 24)
+  if (!wooUrl || !key || !secret) {
+    try {
+      const envPath = resolve(process.cwd(), '.env.local')
+      const content = readFileSync(envPath, 'utf-8')
+      for (const line of content.split('\n')) {
+        const trimmed = line.trim()
+        if (trimmed.startsWith('#') || !trimmed.includes('=')) continue
+        const [k, ...rest] = trimmed.split('=')
+        const val = rest.join('=').trim()
+        
+        if (k.trim() === 'WOO_URL' || k.trim() === 'NUXT_WOO_URL') wooUrl = wooUrl || val
+        if (k.trim() === 'WOO_KEY' || k.trim() === 'NUXT_WOO_KEY') key = key || val
+        if (k.trim() === 'WOO_SECRET' || k.trim() === 'NUXT_WOO_SECRET') secret = secret || val
+      }
+    } catch {}
+  }
+
+  wooUrl = wooUrl.replace(/\/+$/, '') // remover trailing slash
 
   if (!wooUrl || !key || !secret) {
     throw createError({
@@ -26,11 +49,23 @@ function getConfig(): WooConfig {
   }
 }
 
-interface WooRequestOptions {
+
+export interface WooRequestOptions {
   params?: Record<string, string | number>
   cache?: RequestCache
-  method?: 'GET' | 'POST'
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   body?: unknown
+}
+
+/**
+ * Obtiene la configuración base y el header de auth ya procesado.
+ * Útil para peticiones que no usan wooFetch (como subida de imágenes).
+ */
+export function getWooAuth() {
+  const { baseUrl, key, secret } = getConfig()
+  const rootUrl = baseUrl.replace('/wp-json/wc/v3', '')
+  const auth = Buffer.from(`${key}:${secret}`).toString('base64')
+  return { baseUrl, rootUrl, auth }
 }
 
 export interface WooPaginatedResult<T> {
