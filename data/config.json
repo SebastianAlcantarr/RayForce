@@ -1,0 +1,16 @@
+{
+  "topBanner": {
+    "enabled": true,
+    "text": "🔥 Envío GRATIS en pedidos mayores a $5,000 MXN en equipo seleccionado. ¡Cotiza Hoy!",
+    "link": "/cotizar",
+    "color": "primary"
+  },
+  "midBanner": {
+    "enabled": true,
+    "title": "Gran Venta de Iluminación Industrial",
+    "subtitle": "Hasta 30% de descuento en campanas LED y reflectores IP65",
+    "buttonText": "Ver Ofertas",
+    "link": "/tienda?q=Iluminacion",
+    "imageUrl": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1994&auto=format&fit=crop"
+  }
+}

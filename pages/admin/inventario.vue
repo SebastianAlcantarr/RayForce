@@ -373,6 +373,88 @@
           ✅ Descargado: <strong>{{ exportResult.filename }}</strong> — {{ exportResult.totalRows }} líneas de {{ exportResult.totalOrders }} pedidos.
         </div>
       </div>
+    <!-- ═══════════════════════════════════════ -->
+    <!-- MÓDULO 5: Administración de Publicidad  -->
+    <!-- ═══════════════════════════════════════ -->
+    <div v-show="activeTab === 'publicidad'" class="module-card">
+      <div class="module-header flex justify-between items-center">
+        <div>
+          <div class="module-title">📢 Banners de Inicio (Publicidad)</div>
+          <div class="module-sub">Configura promociones temporales que se mostrarán en la página principal.</div>
+        </div>
+        <button class="btn-primary" @click="saveAdsConfig" :disabled="adsSaving">
+          <span v-if="adsSaving" class="spinner-sm" />
+          <span v-else>💾 Guardar Banners</span>
+        </button>
+      </div>
+
+      <div class="space-y-12" v-if="adsConfig">
+        <!-- Top Banner -->
+        <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold text-on-surface">Cintillo Superior (Top Banner)</h3>
+            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm">
+              <input type="checkbox" v-model="adsConfig.topBanner.enabled" class="hidden peer" />
+              <div class="w-10 h-5 bg-slate-600 rounded-full peer-checked:bg-green-600 relative transition-colors before:content-[''] before:absolute before:bg-white before:w-4 before:h-4 before:rounded-full before:top-0.5 before:left-0.5 peer-checked:before:translate-x-5 before:transition-transform"></div>
+              Habilitado
+            </label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field form-field--full">
+              <label class="f-label">Mensaje</label>
+              <input type="text" v-model="adsConfig.topBanner.text" class="f-input" placeholder="🔥 Envío gratis en abril..." />
+            </div>
+            <div class="form-field">
+              <label class="f-label">URL del Enlace (Opcional)</label>
+              <input type="text" v-model="adsConfig.topBanner.link" class="f-input" placeholder="/tienda o /cotizar" />
+            </div>
+            <div class="form-field">
+              <label class="f-label">Color del Fondo</label>
+              <select v-model="adsConfig.topBanner.color" class="f-input" style="height: 42px;">
+                <option value="primary">Azul Corporativo</option>
+                <option value="red-600">Rojo Promoción</option>
+                <option value="green-600">Verde Oferta</option>
+                <option value="slate-800">Negro Elegante</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Mid Banner -->
+        <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold text-on-surface">Banner Intermedio (Promoción Visual)</h3>
+            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm">
+              <input type="checkbox" v-model="adsConfig.midBanner.enabled" class="hidden peer" />
+              <div class="w-10 h-5 bg-slate-600 rounded-full peer-checked:bg-green-600 relative transition-colors before:content-[''] before:absolute before:bg-white before:w-4 before:h-4 before:rounded-full before:top-0.5 before:left-0.5 peer-checked:before:translate-x-5 before:transition-transform"></div>
+              Habilitado
+            </label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div class="form-field form-field--full">
+              <label class="f-label">Título de Promoción</label>
+              <input type="text" v-model="adsConfig.midBanner.title" class="f-input" placeholder="Gran Venta..." />
+            </div>
+            <div class="form-field form-field--full">
+              <label class="f-label">Subtítulo Descriptivo</label>
+              <input type="text" v-model="adsConfig.midBanner.subtitle" class="f-input" placeholder="Descuentos en toda la línea..." />
+            </div>
+            <div class="form-field">
+              <label class="f-label">Texto del Botón</label>
+              <input type="text" v-model="adsConfig.midBanner.buttonText" class="f-input" placeholder="Comprar Ahora" />
+            </div>
+            <div class="form-field">
+              <label class="f-label">Link del Botón</label>
+              <input type="text" v-model="adsConfig.midBanner.link" class="f-input" placeholder="/tienda?q=Ferreteria" />
+            </div>
+            <div class="form-field form-field--full">
+              <label class="f-label">URL de la Imagen de Fondo</label>
+              <input type="text" v-model="adsConfig.midBanner.imageUrl" class="f-input" placeholder="https://unsplash.com/..." />
+            </div>
+          </div>
+        </section>
+      </div>
+      <div v-else class="text-center py-10 opacity-50">Cargando configuración de Ads...</div>
     </div>
   </div>
 </template>
@@ -392,6 +474,7 @@ const tabs = [
   { id: 'mostrador', icon: '🔍', label: 'Modo Mostrador' },
   { id: 'creador',   icon: '✨', label: 'Creador de Productos' },
   { id: 'exportador',icon: '📊', label: 'Exportador CONTPAQi' },
+  { id: 'publicidad',icon: '📢', label: 'Publicidad (Banners)' },
 ]
 const activeTab = ref<string>('buzon')
 
@@ -667,8 +750,40 @@ async function runExport() {
   }
 }
 
+// ════════════════════════════════════════════════
+// MÓDULO 5: Publicidad
+// ════════════════════════════════════════════════
+const adsConfig = ref<any>(null)
+const adsSaving = ref(false)
+
+async function loadAdsConfig() {
+  try {
+    adsConfig.value = await $fetch('/api/config')
+  } catch {
+    notifyError('No se pudieron cargar las configuraciones de Banners.')
+  }
+}
+
+async function saveAdsConfig() {
+  adsSaving.value = true
+  try {
+    await $fetch('/api/admin/config', {
+      method: 'POST',
+      body: adsConfig.value
+    })
+    success('Configuración de banners guardada exitosamente.')
+  } catch {
+    notifyError('Error guardando la configuración de la publicidad.')
+  } finally {
+    adsSaving.value = false
+  }
+}
+
 // ── Inicialización ────────────────────────────
-onMounted(() => { loadCategories() })
+onMounted(() => { 
+  loadCategories() 
+  loadAdsConfig()
+})
 </script>
 
 <style scoped>

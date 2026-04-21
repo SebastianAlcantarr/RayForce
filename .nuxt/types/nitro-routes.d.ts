@@ -9,6 +9,9 @@ declare module "nitropack/types" {
     '/api/admin/categories': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/categories.get').default>>>>
     }
+    '/api/admin/config': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/config.post').default>>>>
+    }
     '/api/admin/create-product': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/create-product.post').default>>>>
     }
@@ -26,6 +29,9 @@ declare module "nitropack/types" {
     }
     '/api/admin/verify-password': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/verify-password.post').default>>>>
+    }
+    '/api/config': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/config.get').default>>>>
     }
     '/api/product/:slug': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/product/[slug]').default>>>>

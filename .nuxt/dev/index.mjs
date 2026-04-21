@@ -4,8 +4,8 @@ import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, appendResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, readBody, getQuery as getQuery$1, readMultipartFormData, getResponseStatusText } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/h3/dist/index.mjs';
+import { promises, readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { Buffer as Buffer$1 } from 'node:buffer';
-import { promises, readFileSync } from 'node:fs';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/vue-bundle-renderer/dist/runtime.mjs';
 import destr from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/destr/dist/index.mjs';
 import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/ufo/dist/index.mjs';
@@ -1110,7 +1110,22 @@ const plugins = [
 _zd7PVxQ_3Tt4s2kCEUMR8hk0U4FfBUazIrX87YJQiHw
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"16d28-739IHz+GOQNE/5GgszbUDsJi/EE\"",
+    "mtime": "2026-04-21T22:46:10.741Z",
+    "size": 93480,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"53717-A8fqKty3/DahDowPows71DM0eEg\"",
+    "mtime": "2026-04-21T22:46:10.741Z",
+    "size": 341783,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -1201,12 +1216,14 @@ const _5j8ysm = eventHandler((event) => {
 
 const _lazy_vOeTR1 = () => Promise.resolve().then(function () { return bulkUpdate_post$1; });
 const _lazy_RIzTbE = () => Promise.resolve().then(function () { return categories_get$1; });
+const _lazy_xUHLHW = () => Promise.resolve().then(function () { return config_post$1; });
 const _lazy__e6EmH = () => Promise.resolve().then(function () { return createProduct_post$1; });
 const _lazy_H6qPxk = () => Promise.resolve().then(function () { return exportOrders_get$1; });
 const _lazy_D3q7Wk = () => Promise.resolve().then(function () { return searchProduct_get$1; });
 const _lazy_sWE4iI = () => Promise.resolve().then(function () { return updateProduct_put$1; });
 const _lazy_f2pDbt = () => Promise.resolve().then(function () { return uploadImage_post$1; });
 const _lazy__73cLi = () => Promise.resolve().then(function () { return verifyPassword_post$1; });
+const _lazy_KmmL14 = () => Promise.resolve().then(function () { return config_get$1; });
 const _lazy_6OMOAd = () => Promise.resolve().then(function () { return _slug_$1; });
 const _lazy_GB2hZA = () => Promise.resolve().then(function () { return index$1; });
 const _lazy_GoHXxm = () => Promise.resolve().then(function () { return renderer$1; });
@@ -1215,12 +1232,14 @@ const handlers = [
   { route: '', handler: _5j8ysm, lazy: false, middleware: true, method: undefined },
   { route: '/api/admin/bulk-update', handler: _lazy_vOeTR1, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/categories', handler: _lazy_RIzTbE, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/config', handler: _lazy_xUHLHW, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/create-product', handler: _lazy__e6EmH, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/export-orders', handler: _lazy_H6qPxk, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/search-product', handler: _lazy_D3q7Wk, lazy: true, middleware: false, method: "get" },
   { route: '/api/admin/update-product', handler: _lazy_sWE4iI, lazy: true, middleware: false, method: "put" },
   { route: '/api/admin/upload-image', handler: _lazy_f2pDbt, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/verify-password', handler: _lazy__73cLi, lazy: true, middleware: false, method: "post" },
+  { route: '/api/config', handler: _lazy_KmmL14, lazy: true, middleware: false, method: "get" },
   { route: '/api/product/:slug', handler: _lazy_6OMOAd, lazy: true, middleware: false, method: undefined },
   { route: '/api/products', handler: _lazy_GB2hZA, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_error', handler: _lazy_GoHXxm, lazy: true, middleware: false, method: undefined },
@@ -1735,6 +1754,30 @@ const categories_get$1 = /*#__PURE__*/Object.freeze({
   default: categories_get
 });
 
+const config_post = defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const filePath = resolve(process.cwd(), "data/config.json");
+  try {
+    const dir = dirname(filePath);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    writeFileSync(filePath, JSON.stringify(body, null, 2), "utf-8");
+    return { success: true };
+  } catch (e) {
+    console.error("Error writing config.json", e);
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Failed to save configuration."
+    });
+  }
+});
+
+const config_post$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: config_post
+});
+
 const createProduct_post = defineEventHandler(async (event) => {
   const body = await readBody(event);
   const { name, sku, regular_price, categories, image_id, description } = body || {};
@@ -1991,6 +2034,31 @@ const verifyPassword_post = defineEventHandler(async (event) => {
 const verifyPassword_post$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
   default: verifyPassword_post
+});
+
+const config_get = defineEventHandler((event) => {
+  const filePath = resolve(process.cwd(), "data/config.json");
+  if (!existsSync(filePath)) {
+    return {
+      topBanner: { enabled: false, text: "", link: "", color: "primary" },
+      midBanner: { enabled: false, title: "", subtitle: "", buttonText: "", link: "", imageUrl: "" }
+    };
+  }
+  try {
+    const raw = readFileSync(filePath, "utf-8");
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Error reading config.json", e);
+    return {
+      topBanner: { enabled: false },
+      midBanner: { enabled: false }
+    };
+  }
+});
+
+const config_get$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: config_get
 });
 
 const _slug_ = defineEventHandler(async (event) => {
