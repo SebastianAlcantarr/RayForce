@@ -2,19 +2,19 @@
   <div class="flex-grow w-full max-w-screen-2xl mx-auto px-8 py-12 md:py-20">
     <div class="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
       <div class="max-w-2xl">
-        <span class="font-inter text-[10px] uppercase tracking-widest text-primary font-semibold mb-4 block">Seleccion actual</span>
+        <span class="font-inter text-[10px] uppercase tracking-widest text-primary font-semibold mb-4 block">SELECCIÓN ACTUAL</span>
         <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-background leading-[0.9]">Tu Carrito</h1>
       </div>
       <NuxtLink class="font-inter text-xs uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors inline-flex items-center gap-2 group" to="/tienda">
         <span class="material-symbols-outlined text-sm group-hover:-translate-x-1 transition-transform">arrow_back</span>
-        Continuar comprando
+        Continuar Comprando
       </NuxtLink>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
       <div class="lg:col-span-8 space-y-12">
         <div class="hidden md:grid grid-cols-6 pb-6 border-b border-outline-variant/15 text-[10px] font-inter uppercase tracking-widest text-outline">
-          <div class="col-span-3">Detalles</div>
+          <div class="col-span-3">Detalle del Producto</div>
           <div class="text-center">Precio</div>
           <div class="text-center">Cantidad</div>
           <div class="text-right">Total</div>
@@ -34,7 +34,7 @@
               <p class="text-xs font-inter text-outline uppercase tracking-wider">SKU: {{ item.sku }}</p>
               <button class="text-[10px] font-inter text-error uppercase tracking-widest mt-2 flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
                 <span class="material-symbols-outlined text-sm">delete</span>
-                Remove
+                Eliminar
               </button>
             </div>
           </div>
@@ -56,18 +56,18 @@
 
       <aside class="lg:col-span-4 lg:sticky lg:top-24">
         <div class="bg-surface-container-lowest border border-outline-variant/15 p-10 space-y-8">
-          <h2 class="text-2xl font-bold tracking-tight text-on-surface">Order Summary</h2>
+          <h2 class="text-2xl font-bold tracking-tight text-on-surface">Resumen de tu Orden</h2>
           <div class="space-y-4">
             <div class="flex justify-between items-center py-2">
               <span class="text-xs font-inter uppercase tracking-widest text-outline">Subtotal</span>
               <span class="font-bold text-on-surface">$1,069.00</span>
             </div>
             <div class="flex justify-between items-center py-2">
-              <span class="text-xs font-inter uppercase tracking-widest text-outline">Shipping Estimation</span>
+              <span class="text-xs font-inter uppercase tracking-widest text-outline">Cálculo de Envío</span>
               <span class="font-bold text-on-surface">$45.00</span>
             </div>
             <div class="flex justify-between items-center py-2">
-              <span class="text-xs font-inter uppercase tracking-widest text-outline">Tax (GST)</span>
+              <span class="text-xs font-inter uppercase tracking-widest text-outline">Impuestos (IVA)</span>
               <span class="font-bold text-on-surface">$85.52</span>
             </div>
             <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
@@ -83,14 +83,14 @@
               Proceder a checkout
               <span class="material-symbols-outlined text-lg">arrow_forward</span>
             </NuxtLink>
-            <p class="text-[10px] text-center text-outline uppercase tracking-wider">Secured by Precision Payments Infrastructure</p>
+            <p class="text-[10px] text-center text-outline uppercase tracking-wider">Pagos protegidos mediante tecnología SSL</p>
           </div>
           <div class="pt-8 mt-8 border-t border-outline-variant/10">
-            <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Promotional Code</label>
+            <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Código Promocional</label>
             <div class="flex gap-2">
-              <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="ENTER CODE" type="text" />
+              <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="INGRESA TU CÓDIGO" type="text" />
               <button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button">
-                Apply
+                Aplicar
               </button>
             </div>
           </div>
@@ -99,9 +99,9 @@
         <div class="mt-8 p-6 bg-primary-container/30 border border-primary-container flex items-start gap-4">
           <span class="material-symbols-outlined text-primary">verified_user</span>
           <div>
-            <h4 class="text-sm font-bold text-on-primary-container mb-1">Lifetime Support Included</h4>
+            <h4 class="text-sm font-bold text-on-primary-container mb-1">Pagos 100% Seguros</h4>
             <p class="text-xs text-on-primary-container/70 leading-relaxed">
-              Every atelier artifact includes dedicated engineering consultation for integration.
+              Tus transacciones y datos están protegidos en todo momento mediante encriptación SSL verificada.
             </p>
           </div>
         </div>

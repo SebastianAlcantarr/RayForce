@@ -22,10 +22,12 @@
 
       <!-- Actions -->
       <div class="flex items-center space-x-4">
-        <div class="relative hidden lg:block">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+        <div class="relative hidden lg:block group">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
           <input
-            class="pl-10 pr-4 py-2 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg text-sm w-56"
+            v-model="searchQuery"
+            @keyup.enter="performSearch"
+            class="pl-10 pr-4 py-2 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg text-sm w-56 outline-none transition-all"
             placeholder="Buscar productos..."
             type="text"
           />
@@ -62,6 +64,16 @@ const navLinks = [
   { label: 'Cotizar', href: '/cotizar' },
   { label: 'Soporte', href: '/soporte' },
 ]
+
+const searchQuery = ref('')
+const router = useRouter()
+
+function performSearch() {
+  if (searchQuery.value.trim()) {
+    router.push({ path: '/tienda', query: { q: searchQuery.value.trim() } })
+    searchQuery.value = ''
+  }
+}
 
 const isActive = (link) => {
   if (link.href === '/') {

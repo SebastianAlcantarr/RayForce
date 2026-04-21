@@ -1,238 +1,318 @@
 <template>
-  <div><!-- Franja superior con teléfonos -->
-    <div class="w-full bg-primary text-white text-xs md:text-sm flex flex-col md:flex-row justify-center items-center gap-2 py-2 font-semibold">
-      <span class="mx-2">numero telefono</span>
-      <span class="hidden md:inline">|</span>
-      <span class="mx-2">numero telefono</span>
-      <span class="hidden md:inline">|</span>
-      <span class="mx-2">numero telefono</span>
-    </div>
+  <div class="bg-[#f9f9fb] min-h-screen">
+    <!-- Franja superior con teléfonos (Eliminada visualmente porque ya está en el Footer, pero conservada si es necesaria. La ocultaremos para limpieza visual) -->
 
-    <!-- Hero principal -->
-    <section class="relative flex items-center justify-center min-h-[420px] md:min-h-[500px] bg-gradient-to-br from-surface-container-lowest via-surface-container-low to-surface-container-lowest">
-      <div class="max-w-5xl w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-8 px-6 md:px-12 py-12">
-        <div class="flex-1 flex flex-col gap-4 md:gap-6">
-          <h1 class="text-3xl md:text-5xl lg:text-6xl font-black leading-tight text-on-surface">
-            Soluciones eléctricas integrales
-          </h1>
-          <p class="text-base md:text-lg text-on-surface-variant font-light max-w-xl">
-            Venta de productos eléctricos, asesoría técnica y cotización de proyectos arquitectónicos y eléctricos.<br>
-          </p>
-          <div class="flex flex-wrap gap-4 mt-2">
-            <NuxtLink
-              to="/tienda"
-              class="px-8 py-4 bg-primary text-on-primary font-bold rounded-md hover:bg-primary-dim transition-all active:scale-95"
-            >
-              Ver productos
-            </NuxtLink>
-            <NuxtLink
-              to="/cotizar"
-              class="px-8 py-4 border-2 border-outline-variant text-on-surface font-bold rounded-md hover:bg-surface-container transition-all"
-            >
-              Cotizar ahora
-            </NuxtLink>
+    <!-- Hero Carrusel Principal -->
+    <section class="relative bg-white pt-8 pb-16 overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+        <div class="relative rounded-3xl overflow-hidden bg-surface-container shadow-2xl min-h-[500px] flex items-center transition-all duration-1000" :class="slides[activeSlide].bgClass">
+          
+          <!-- Contenido del slide -->
+          <div class="p-10 md:p-20 md:w-3/5 z-20 flex flex-col gap-6 relative">
+            <span class="inline-block px-4 py-1.5 bg-white/20 text-white backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest w-fit border border-white/30 animate-fade-in-up">
+              {{ slides[activeSlide].badge }}
+            </span>
+            <h1 :key="activeSlide" class="text-4xl md:text-6xl font-black leading-[1.1] text-white animate-fade-in-up" style="animation-delay: 100ms;">
+              {{ slides[activeSlide].title }}
+            </h1>
+            <p :key="'desc-'+activeSlide" class="text-lg md:text-xl text-white/90 font-light max-w-lg mb-4 animate-fade-in-up" style="animation-delay: 200ms;">
+              {{ slides[activeSlide].desc }}
+            </p>
+            <div class="flex flex-wrap gap-4 animate-fade-in-up" style="animation-delay: 300ms;">
+              <NuxtLink
+                :to="slides[activeSlide].btn1Link"
+                class="px-8 py-4 bg-white text-primary font-extrabold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+              >
+                {{ slides[activeSlide].btn1Text }}
+              </NuxtLink>
+            </div>
+          </div>
+          
+          <!-- Elemento decorativo del slide -->
+          <div class="absolute right-0 top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-20 pointer-events-none">
+            <span class="material-symbols-outlined text-[20rem] text-white transition-opacity duration-1000">{{ slides[activeSlide].icon }}</span>
+          </div>
+
+          <!-- Controles del carrusel -->
+          <div class="absolute bottom-6 right-10 flex gap-2 z-30">
+            <button
+              v-for="(slide, index) in slides"
+              :key="index"
+              @click="activeSlide = index"
+              class="w-12 h-2 rounded-full transition-all duration-300"
+              :class="activeSlide === index ? 'bg-white' : 'bg-white/30 hover:bg-white/50'"
+              aria-label="Cambiar slide"
+            ></button>
           </div>
         </div>
-        </div>
+      </div>
     </section>
 
-    <section class="py-24 bg-surface">
-      <div class="max-w-7xl mx-auto px-8">
-        <div class="flex justify-between items-end mb-12 gap-6">
+    <!-- Publicidad / Llamado a la Acción (Banner) -->
+    <section class="max-w-7xl mx-auto px-6 md:px-12 py-12">
+      <div class="bg-gradient-to-r from-primary to-[#003B80] rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl relative overflow-hidden group">
+        <!-- Decoración de fondo -->
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+        <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+        
+        <div class="relative z-10 md:w-2/3">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">¿Necesitas cotizar un proyecto grande?</h2>
+          <p class="text-primary-container text-lg font-light leading-relaxed">
+            Ofrecemos servicios de Unidad Verificadora Eléctrica, proyectos arquitectónicos, obras civiles y eléctricas con los mejores estándares de calidad.
+          </p>
+        </div>
+        <div class="relative z-10">
+          <NuxtLink
+            to="/cotizar"
+            class="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary font-bold rounded-lg hover:shadow-lg hover:-translate-y-1 transition-all whitespace-nowrap"
+          >
+            <span class="material-symbols-outlined">request_quote</span>
+            Solicitar Cotización
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recomendaciones / Productos Destacados -->
+    <section class="py-16 bg-[#f9f9fb]">
+      <div class="max-w-7xl mx-auto px-6 md:px-12">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 border-b border-outline-variant/20 pb-4">
           <div class="space-y-2">
-            <span class="font-inter text-xs uppercase tracking-[0.2em] text-primary font-bold">Tienda</span>
-            <h2 class="text-4xl font-bold tracking-tight">Productos recientes</h2>
+            <span class="font-inter text-sm uppercase tracking-widest text-primary font-bold">Selección Especial</span>
+            <h2 class="text-3xl md:text-4xl font-black tracking-tight text-on-surface">Productos Recomendados</h2>
           </div>
           <NuxtLink
             to="/tienda"
-            class="text-primary font-bold border-b-2 border-primary/20 hover:border-primary transition-all pb-1 font-inter text-sm"
+            class="text-primary font-bold hover:text-[#003B80] transition-colors flex items-center gap-1 group"
           >
-            Ver catalogo completo
+            Ver catálogo completo
+            <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
           </NuxtLink>
         </div>
 
-        <div v-if="productsPending" class="text-on-surface-variant">Cargando productos...</div>
-        <div v-else-if="productsError" class="text-red-600">No se pudieron cargar productos de WooCommerce.</div>
-
-        <div v-else-if="homeProducts.length === 0" class="text-on-surface-variant">
-          No hay productos publicados en WooCommerce por ahora.
+        <div v-if="productsPending" class="flex justify-center py-20">
+          <span class="material-symbols-outlined animate-spin text-primary text-4xl">autorenew</span>
         </div>
-
+        <div v-else-if="productsError" class="text-red-500 bg-red-50 p-4 rounded-lg text-center">
+          No se pudieron cargar productos. Intente más tarde.
+        </div>
+        <div v-else-if="homeProducts.length === 0" class="text-on-surface-variant text-center py-20">
+          No hay productos destacados por el momento.
+        </div>
         <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <NuxtLink
             v-for="product in homeProducts"
             :key="product.id"
             :to="`/tienda/${product.slug}`"
-            class="group bg-surface-container-low rounded-xl overflow-hidden border border-outline-variant/20 hover:border-primary/50 transition-colors"
+            class="group bg-white rounded-2xl overflow-hidden border border-outline-variant/30 hover:border-primary/50 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col"
           >
-            <div class="aspect-square bg-surface-container-lowest flex items-center justify-center p-6">
+            <div class="aspect-square bg-slate-50 flex items-center justify-center p-8 relative overflow-hidden">
+              <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
               <img
                 :src="product.images?.[0]?.src || '/placeholder.jpg'"
                 :alt="product.name"
-                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500 relative z-0"
               />
             </div>
-            <div class="p-4 space-y-2">
-              <p class="font-inter text-[10px] uppercase tracking-[0.12em] text-outline-variant">
+            <div class="p-6 flex-1 flex flex-col">
+              <p class="font-inter text-[10px] uppercase tracking-widest text-slate-400 mb-2">
                 {{ product.sku || 'SIN SKU' }}
               </p>
-              <h3 class="font-bold text-on-surface leading-tight min-h-[44px]">{{ product.name }}</h3>
-              <p class="text-primary font-bold text-lg">${{ product.price }}</p>
+              <h3 class="font-bold text-slate-800 leading-tight mb-4 flex-1 group-hover:text-primary transition-colors line-clamp-2">
+                {{ product.name }}
+              </h3>
+              <div class="flex items-center justify-between mt-auto">
+                <p class="text-primary font-black text-xl">${{ product.price }}</p>
+                <div class="w-10 h-10 rounded-full bg-slate-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                  <span class="material-symbols-outlined text-[20px]">shopping_cart</span>
+                </div>
+              </div>
             </div>
           </NuxtLink>
         </div>
       </div>
     </section>
 
-    <section class="py-24 bg-surface-container-low">
-      <div class="max-w-7xl mx-auto px-8">
-        <div class="flex justify-between items-end mb-16">
-          <div class="space-y-2">
-            <span class="font-inter text-xs uppercase tracking-[0.2em] text-primary font-bold">Explorar por</span>
-            <h2 class="text-4xl font-bold tracking-tight">Categorias de Ingenieria</h2>
-          </div>
-          <NuxtLink
-            to="/tienda"
-            class="text-primary font-bold border-b-2 border-primary/20 hover:border-primary transition-all pb-1 font-inter text-sm"
-          >
-            Ver todas las lineas
-          </NuxtLink>
+    <!-- Categorías / Servicios Mapeados desde PDF -->
+    <section class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6 md:px-12">
+        <div class="text-center mb-16 space-y-4">
+          <span class="font-inter text-sm uppercase tracking-widest text-primary font-bold">Nuestras Soluciones</span>
+          <h2 class="text-3xl md:text-5xl font-black tracking-tight text-on-surface">Explora por Categoría</h2>
         </div>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
           <div
             v-for="category in categories"
             :key="category.title"
-            class="group relative aspect-square bg-surface-container-lowest rounded-xl overflow-hidden hover:bg-primary transition-colors duration-500"
+            class="group relative bg-[#f9f9fb] rounded-2xl overflow-hidden hover:bg-primary transition-colors duration-500 p-8 border border-outline-variant/20 hover:border-primary shadow-sm"
           >
-            <div class="absolute inset-8 flex flex-col justify-between">
-              <span class="material-symbols-outlined text-4xl text-primary group-hover:text-white transition-colors">
-                {{ category.icon }}
-              </span>
-              <div>
-                <h3 class="text-xl font-bold group-hover:text-white transition-colors">{{ category.title }}</h3>
-                <p class="text-xs font-inter text-on-surface-variant group-hover:text-white/70 transition-colors mt-1">
-                  {{ category.description }}
-                </p>
+            <div class="relative z-10 text-center flex flex-col items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-500">
+                <span class="material-symbols-outlined text-3xl text-primary">
+                  {{ category.icon }}
+                </span>
               </div>
+              <h3 class="text-lg font-bold text-slate-800 group-hover:text-white transition-colors">{{ category.title }}</h3>
+              <p class="text-xs font-inter text-slate-500 group-hover:text-blue-100 transition-colors">
+                Ver productos sugeridos
+              </p>
             </div>
-            <div
-              class="absolute bottom-0 right-0 w-24 h-24 translate-x-4 translate-y-4 opacity-10 group-hover:scale-150 transition-transform"
-            >
-              <span class="material-symbols-outlined text-9xl">{{ category.backdropIcon }}</span>
+            <!-- Decoración de fondo -->
+            <div class="absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity">
+              <span class="material-symbols-outlined text-9xl text-white">{{ category.backdropIcon }}</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-
-    <section class="py-20 border-y border-outline-variant/10">
-      <div class="max-w-7xl mx-auto px-8">
+    <!-- Confianza / Marcas -->
+    <section class="py-20 bg-[#f9f9fb] border-y border-outline-variant/10">
+      <div class="max-w-7xl mx-auto px-6 md:px-12 text-center">
+        <h3 class="text-xl font-bold text-slate-400 uppercase tracking-widest mb-12">Marcas de Calidad que Manejamos</h3>
         <div class="grid md:grid-cols-3 gap-12">
           <div
             v-for="item in trustItems"
             :key="item.title"
-            class="flex flex-col items-center text-center space-y-4 group"
+            class="flex flex-col items-center text-center space-y-4 group p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow"
           >
-            <div
-              class="w-16 h-16 bg-surface-container flex items-center justify-center rounded-full group-hover:bg-primary-container transition-colors duration-300"
-            >
-              <span class="material-symbols-outlined text-primary text-3xl">{{ item.icon }}</span>
+            <div class="w-16 h-16 bg-blue-50 flex items-center justify-center rounded-full group-hover:bg-primary group-hover:text-white transition-colors duration-300 text-primary">
+              <span class="material-symbols-outlined text-3xl">{{ item.icon }}</span>
             </div>
-            <h4 class="font-bold text-xl">{{ item.title }}</h4>
-            <p class="text-on-surface-variant font-light text-sm max-w-[200px]">{{ item.description }}</p>
+            <h4 class="font-bold text-slate-800 text-lg">{{ item.title }}</h4>
+            <p class="text-slate-500 font-light text-sm max-w-[250px]">{{ item.description }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="py-24 bg-surface-container-lowest overflow-hidden relative">
-      <div class="max-w-7xl mx-auto px-8 relative z-10">
-        <div class="max-w-3xl space-y-8">
-          <h2 class="text-5xl md:text-7xl font-black tracking-tight leading-none">
-            Impulsa tu <br /> <span class="text-primary italic">proximo proyecto.</span>
+    <!-- Newsletter -->
+    <section class="py-24 bg-primary overflow-hidden relative">
+      <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10 text-center md:text-left flex flex-col md:flex-row items-center gap-12">
+        <div class="max-w-2xl space-y-8 flex-1">
+          <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight text-white">
+            Impulsa y fortalece tu <br class="hidden md:block"/> <span class="text-blue-300 italic">próximo proyecto.</span>
           </h2>
-          <p class="text-xl font-light text-on-surface-variant">
-            Suscribete para recibir catalogos tecnicos y ofertas exclusivas para profesionales.
+          <p class="text-lg font-light text-blue-100">
+            Suscríbete para recibir catálogos técnicos, testimonios y ofertas exclusivas para la industria y profesionales.
           </p>
-          <div class="flex flex-col sm:flex-row gap-4">
+          <div class="flex flex-col sm:flex-row gap-4 w-full">
             <input
-              class="flex-1 bg-surface-container border-none p-4 rounded-md font-inter focus:ring-2 focus:ring-primary outline-none"
-              placeholder="Tu correo electronico"
+              class="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 p-4 rounded-xl font-inter text-white placeholder-white/60 focus:ring-2 focus:ring-white outline-none transition-all"
+              placeholder="Tu correo electrónico"
               type="email"
             />
             <button
-              class="px-10 py-4 bg-on-surface text-white font-bold rounded-md hover:bg-slate-800 transition-all"
+              class="px-10 py-4 bg-white text-primary font-bold rounded-xl hover:bg-slate-50 hover:shadow-lg transition-all"
               type="button"
             >
-              Unirse ahora
+              Suscribirme
             </button>
           </div>
         </div>
-      </div>
-      <div class="absolute -right-20 top-1/2 -translate-y-1/2 opacity-[0.03] select-none pointer-events-none">
-        <span class="text-[20rem] font-black italic tracking-tighter">RAYFORCE</span>
+        <div class="hidden md:block flex-shrink-0">
+          <span class="material-symbols-outlined text-[15rem] text-white/5">mail_lock</span>
+        </div>
       </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
 
 useSeoMeta({
-  title: 'Rayforce',
-  description: 'Productos electricos para su venta ' +
-      '\n Proyectos etc ' +
-      '' +
-      '',
+  title: 'Rayforce | Refacciones y Servicios Eléctricos',
+  description: 'Venta de materiales eléctricos, ferretería general, tableros eléctricos y proyectos integrales.',
 })
 
-const { data: productsData, pending: productsPending, error: productsError } = await useFetch<WooPaginatedResult<WooProduct>>('/api/products?perPage=8')
+// Carrusel interactivo automático
+const activeSlide = ref(0)
+let slideInterval: any
 
+const slides = [
+  {
+    badge: 'Nuevos Equipos',
+    title: 'Transforma tus Instalaciones',
+    desc: 'Material eléctrico de calidad superior, tableros e iluminación técnica para la industria.',
+    btn1Text: 'Ver Productos',
+    btn1Link: '/tienda',
+    icon: 'electric_bolt',
+    bgClass: 'bg-gradient-to-br from-[#004bb5] to-[#002f7a]'
+  },
+  {
+    badge: 'Servicios Profesionales',
+    title: 'Obras y Proyectos',
+    desc: 'Desarrollamos proyectos arquitectónicos y de ingeniería eléctrica con precisión absoluta.',
+    btn1Text: 'Solicitar Cotización',
+    btn1Link: '/cotizar',
+    icon: 'architecture',
+    bgClass: 'bg-gradient-to-br from-[#003B80] to-[#0f172a]'
+  },
+  {
+    badge: 'Calidad Certificada',
+    title: 'Ferretería General',
+    desc: 'Descubre nuestra línea completa de herramientas y materiales de fijación.',
+    btn1Text: 'Comprar Ahora',
+    btn1Link: '/tienda',
+    icon: 'construction',
+    bgClass: 'bg-gradient-to-br from-[#1e3a8a] to-[#172554]'
+  }
+]
+
+onMounted(() => {
+  slideInterval = setInterval(() => {
+    activeSlide.value = (activeSlide.value + 1) % slides.length
+  }, 6000)
+})
+
+onUnmounted(() => {
+  clearInterval(slideInterval)
+})
+
+// Fetch de Productos desde WooCommerce
+const { data: productsData, pending: productsPending, error: productsError } = await useFetch<WooPaginatedResult<WooProduct>>('/api/products?perPage=8')
 const homeProducts = computed(() => productsData.value?.items || [])
 
+// Categorías alineadas al Documento PDF
 const categories = [
-  {
-    title: 'Material electrico',
-    description: 'Conductores, tableros y protecciones',
-    icon: 'electric_bolt',
-    backdropIcon: 'settings_input_component',
-  },
-  {
-    title: 'Herramientas',
-    description: 'Manuales y electricas de alto torque',
-    icon: 'construction',
-    backdropIcon: 'hand_wrench',
-  },
-  {
-    title: 'Iluminacion',
-    description: 'Industrial, comercial y LED tecnica',
-    icon: 'lightbulb',
-    backdropIcon: 'wb_iridescent',
-  },
-  {
-    title: 'Construccion',
-    description: 'Fijacion, herrajes y estructuras',
-    icon: 'foundation',
-    backdropIcon: 'architecture',
-  },
+  { title: 'Material eléctrico', icon: 'electrical_services', backdropIcon: 'settings_input_component' },
+  { title: 'Herramientas', icon: 'handyman', backdropIcon: 'hand_wrench' },
+  { title: 'Ferretería general', icon: 'hardware', backdropIcon: 'construction' },
+  { title: 'Tubería y conduit', icon: 'water_damage', backdropIcon: 'pipe' },
+  { title: 'Interruptores y tableros', icon: 'switch', backdropIcon: 'toggle_on' },
+  { title: 'Accesorios y fijación', icon: 'build', backdropIcon: 'hardware' },
+  { title: 'Iluminación', icon: 'lightbulb', backdropIcon: 'wb_iridescent' },
+  { title: 'Obras civiles', icon: 'location_city', backdropIcon: 'architecture' },
 ]
+
 const trustItems = [
   {
-    title: 'Envios rapidos',
-    description: 'Logistica optimizada para entregas en 24h a nivel nacional.',
+    title: 'Envío Seguro',
+    description: 'Entregas a domicilio garantizadas con opciones de envío local.',
     icon: 'local_shipping',
   },
   {
-    title: 'Productos de calidad',
-    description: 'Certificaciones internacionales en todo nuestro catalogo.',
+    title: 'Garantía Original',
+    description: 'Solo comercializamos productos con certificación oficial de fábrica.',
     icon: 'verified',
   },
   {
-    title: 'Atencion personalizada',
-    description: 'Asesoria tecnica experta para tus proyectos de ingenieria.',
+    title: 'Asesoría Experta',
+    description: 'Acompañamiento en proyectos con nuestra unidad verificadora eléctrica.',
     icon: 'support_agent',
   },
 ]
 </script>
+
+<style scoped>
+/* Transiciones sutiles añadidas */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+</style>
