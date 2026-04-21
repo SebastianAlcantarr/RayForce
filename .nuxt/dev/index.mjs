@@ -1110,22 +1110,7 @@ const plugins = [
 _zd7PVxQ_3Tt4s2kCEUMR8hk0U4FfBUazIrX87YJQiHw
 ];
 
-const assets = {
-  "/index.mjs": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"16915-RcfG0uYOgiP+BZjE4mTKAbnbpk8\"",
-    "mtime": "2026-04-17T13:59:21.152Z",
-    "size": 92437,
-    "path": "index.mjs"
-  },
-  "/index.mjs.map": {
-    "type": "application/json",
-    "etag": "\"52a7d-D5DP1d/G3+97etqrMfItzyQ13hg\"",
-    "mtime": "2026-04-17T13:59:21.152Z",
-    "size": 338557,
-    "path": "index.mjs.map"
-  }
-};
+const assets = {};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -1669,11 +1654,15 @@ async function getProductBySlug(slug) {
   });
   return products[0] || null;
 }
-async function getProductsList(page = 1, perPage = 20) {
-  const paginated = await getProductsPaginated({
+async function getProductsList(page = 1, perPage = 20, search = "") {
+  const params = {
     orderby: "date",
     order: "desc"
-  }, page, perPage);
+  };
+  if (search) {
+    params.search = search;
+  }
+  const paginated = await getProductsPaginated(params, page, perPage);
   return {
     ...paginated,
     page,
@@ -2033,8 +2022,9 @@ const index = defineEventHandler(async (event) => {
   const page = Math.max(Number(query.page) || 1, 1);
   const perPageRaw = Number((_a = query.perPage) != null ? _a : query.limit) || 20;
   const perPage = Math.min(Math.max(perPageRaw, 1), 20);
+  const search = String(query.search || query.q || "");
   try {
-    return await getProductsList(page, perPage);
+    return await getProductsList(page, perPage, search);
   } catch (error) {
     console.error("Error loading products list:", error);
     throw createError({

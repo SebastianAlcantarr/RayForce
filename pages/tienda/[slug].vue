@@ -33,16 +33,37 @@
 
         <div class="space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ product.name }}</h1>
-          <p class="text-primary text-2xl font-bold">${{ product.price }}</p>
+          <p class="text-primary text-3xl font-black">${{ product.price }}</p>
           <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ product.sku || 'SIN SKU' }}</p>
           <div class="text-on-surface-variant leading-relaxed" v-html="product.short_description || product.description || ''" />
+          
+          <div class="pt-6 mt-6 border-t border-outline-variant/20 flex flex-col sm:flex-row gap-4">
+            <!-- Selector de Cantidad -->
+            <div class="flex items-center border border-outline-variant/30 rounded-md bg-white">
+              <button @click="quantity > 1 ? quantity-- : null" class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500">-</button>
+              <div class="w-12 h-12 flex items-center justify-center font-bold font-inter text-slate-800">{{ quantity }}</div>
+              <button @click="quantity++" class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500">+</button>
+            </div>
+            
+            <!-- Botón Agregar -->
+            <button @click="handleAddToCart" class="flex-1 bg-primary text-white font-bold h-12 rounded-md hover:bg-[#004f9f] transition-all flex items-center justify-center gap-2 active:scale-95">
+              <span class="material-symbols-outlined text-xl">{{ addedToCart ? 'check_circle' : 'shopping_cart' }}</span>
+              {{ addedToCart ? 'Añadido al Carrito' : 'Agregar al Carrito' }}
+            </button>
+            
+            <!-- Botón WhatsApp -->
+            <a :href="whatsappUrl" target="_blank" class="flex-1 border border-primary text-primary font-bold h-12 rounded-md hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+              <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" class="w-5 h-5"/>
+              Preguntar
+            </a>
+          </div>
         </div>
       </section>
 
       <section>
         <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
-            <h2 class="text-3xl font-extrabold tracking-tight mb-2 uppercase">Technical Specifications</h2>
+            <h2 class="text-3xl font-extrabold tracking-tight mb-2 uppercase">Especificaciones Técnicas</h2>
             <div class="h-1 w-12 bg-[#13069f]" />
           </div>
         </div>
@@ -67,6 +88,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+import { useCart } from '~/composables/useCart'
 import type { WooProduct, WooProductImage } from '~/server/services/woocomerce'
 
 useSeoMeta({
@@ -96,20 +119,43 @@ const specGroups = computed(() => {
 
   return [
     {
-      title: 'Product Info',
+      title: 'Información del Producto',
       items: [
         { label: 'SKU', value: product.value.sku || '-' },
-        { label: 'Type', value: product.value.type || '-' },
-        { label: 'Status', value: product.value.status || '-' },
+        { label: 'Tipo', value: product.value.type || '-' },
+        { label: 'Estado', value: product.value.status === 'publish' ? 'Disponible' : product.value.status || '-' },
       ],
     },
     {
-      title: 'Attributes',
+      title: 'Atributos',
       items: product.value.attributes?.map((attribute) => ({
         label: attribute.name,
         value: attribute.options?.join(', ') || '-',
       })) || [],
     },
   ]
+})
+
+// === Lógica Funcional del MVP ===
+const { addToCart } = useCart()
+const quantity = ref(1)
+const addedToCart = ref(false)
+
+const handleAddToCart = () => {
+  if (!product.value) return
+  addToCart(product.value, quantity.value)
+  addedToCart.value = true
+  // Resetear el estado visual después de 2s
+  setTimeout(() => {
+    addedToCart.value = false
+    quantity.value = 1
+  }, 2000)
+}
+
+const whatsappUrl = computed(() => {
+  if (!product.value) return 'https://wa.me/5216621711371'
+  const message = `Hola, me interesa el producto "${product.value.name}" (SKU: ${product.value.sku || 'N/A'}). ` +
+                  `Visto en la tienda: https://rayforce.com.mx/tienda/${slug.value}`
+  return `https://wa.me/5216621711371?text=${encodeURIComponent(message)}`
 })
 </script>

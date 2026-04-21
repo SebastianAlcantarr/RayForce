@@ -8,10 +8,10 @@
       </nav>
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight max-w-2xl leading-[1.1]">
-          Herramientas Industriales y <span class="text-primary italic font-light">Equipo Electrico</span>
+          Herramientas Industriales y <span class="text-primary italic font-light">Equipo Eléctrico</span>
         </h1>
         <p class="font-inter text-xs text-outline-variant max-w-xs leading-relaxed uppercase tracking-wider">
-          Catalogo disenado para entornos de alta exigencia y mantenimiento de precision.
+          Catálogo diseñado para entornos de alta exigencia y mantenimiento de precisión.
         </p>
       </div>
     </header>
@@ -20,22 +20,22 @@
       <aside class="w-full md:w-64 flex-shrink-0">
         <div class="sticky top-40 space-y-12">
           <section>
-            <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categoria</h3>
+            <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3>
             <ul class="space-y-4 text-sm font-medium">
               <li>
                 <a class="text-primary flex justify-between items-center group" href="#">
-                  Perforacion
+                  Perforación
                   <span class="text-[10px] bg-primary-fixed px-1.5 py-0.5 rounded text-on-primary-fixed">12</span>
                 </a>
               </li>
               <li>
-                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Power Tools</a>
+                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Herramientas Eléctricas</a>
               </li>
               <li>
-                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Iluminacion</a>
+                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Iluminación</a>
               </li>
               <li>
-                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Cables</a>
+                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Cables y Conductores</a>
               </li>
             </ul>
           </section>
@@ -57,7 +57,7 @@
                 </div>
               </div>
               <div>
-                <label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">IP Rating</label>
+                <label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Grado de Protección IP</label>
                 <div class="grid grid-cols-2 gap-2">
                   <button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP44</button>
                   <button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP65</button>
@@ -69,7 +69,7 @@
           </section>
 
           <section>
-            <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Rango de precio</h3>
+            <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Rango de Precio</h3>
             <div class="h-1 bg-surface-container rounded-full relative">
               <div class="absolute inset-y-0 left-0 right-1/4 bg-primary rounded-full" />
               <div class="absolute -top-1.5 left-0 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm" />
@@ -172,7 +172,10 @@ const currentPage = computed(() => {
 const perPage = 20
 
 const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
-  () => `/api/products?page=${currentPage.value}&perPage=${perPage}`,
+  () => {
+    const q = route.query.q ? `&q=${route.query.q}` : ''
+    return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}`
+  }
 )
 
 const products = computed(() => data.value?.items || [])
@@ -183,9 +186,13 @@ async function goToPage(page: number) {
     return
   }
 
+  const queryParams: Record<string, string> = {}
+  if (page > 1) queryParams.page = String(page)
+  if (route.query.q) queryParams.q = String(route.query.q)
+
   await navigateTo({
     path: '/tienda',
-    query: page > 1 ? { page: String(page) } : {},
+    query: queryParams,
   })
 }
 </script>

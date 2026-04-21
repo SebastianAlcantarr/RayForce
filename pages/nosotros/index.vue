@@ -11,13 +11,12 @@
       </div>
       <div class="relative z-10 max-w-screen-2xl mx-auto px-8 w-full grid grid-cols-1 md:grid-cols-12 gap-8">
         <div class="md:col-span-8">
-          <span class="font-inter text-xs uppercase tracking-[0.3em] text-primary mb-6 block font-bold">The Digital Atelier</span>
+          <span class="font-inter text-xs uppercase tracking-[0.3em] text-primary mb-6 block font-bold">Acerca de nosotros</span>
           <h1 class="text-6xl md:text-8xl font-extrabold tracking-tighter text-on-surface leading-[0.9] mb-8">
-            La Ingenieria del <br /> Futuro, <span class="text-primary italic">Hoy.</span>
+            La Ingeniería del <br /> Futuro, <span class="text-primary italic">Hoy.</span>
           </h1>
           <p class="text-xl md:text-2xl text-on-surface-variant max-w-xl leading-relaxed">
-            Redefiniendo los estandares industriales mediante precision matematica y diseno vanguardista.
-            No solo fabricamos componentes; disenamos soluciones permanentes.
+            Redefiniendo los estándares industriales en material eléctrico y ferretería ligera. Resolviendo cada necesidad con precisión y diseño vanguardista.
           </p>
         </div>
       </div>
@@ -26,12 +25,12 @@
     <section class="py-32 bg-surface">
       <div class="max-w-screen-2xl mx-auto px-8 grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
         <div class="md:col-span-4">
-          <h2 class="font-inter text-sm uppercase tracking-widest text-outline mb-4">Nuestra Mision</h2>
+          <h2 class="font-inter text-sm uppercase tracking-widest text-outline mb-4">Nuestra Misión</h2>
         </div>
         <div class="md:col-span-8">
           <p class="text-4xl md:text-6xl font-light leading-tight text-on-surface">
-            Nuestra mision es transformar la infraestructura global a traves de la
-            <span class="font-extrabold">excelencia tecnica</span> y la integracion de sistemas inteligentes.
+            Nuestra misión es proveer a la industria mexicana <span class="font-extrabold">excelencia técnica</span>
+            y servicio incomparable en todos sus proyectos de infraestructura y mantenimiento.
           </p>
         </div>
       </div>
@@ -64,14 +63,14 @@
             </div>
           </div>
           <h2 class="text-4xl md:text-7xl font-bold text-on-primary tracking-tighter mb-12 relative z-10 leading-none">
-            Listo para el siguiente nivel <br /> de precision?
+            ¿Listo para tu <br /> próximo proyecto?
           </h2>
           <div class="flex flex-col md:flex-row gap-6 relative z-10">
-            <NuxtLink to="/tienda" class="bg-on-primary text-primary px-12 py-5 font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all">
-              Explorar Productos
+            <NuxtLink to="/tienda" class="bg-on-primary text-primary px-12 py-5 font-bold uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all rounded-md">
+              Explorar Catálogo
             </NuxtLink>
-            <NuxtLink to="/cotizar" class="border border-on-primary text-on-primary px-12 py-5 font-bold uppercase tracking-widest hover:bg-on-primary/10 active:scale-95 transition-all">
-              Agendar Consulta
+            <NuxtLink to="/cotizar" class="border border-on-primary text-on-primary px-12 py-5 font-bold uppercase tracking-widest hover:bg-on-primary/10 active:scale-95 transition-all rounded-md">
+              Cotizar Proyecto
             </NuxtLink>
           </div>
         </div>
@@ -88,24 +87,24 @@ useSeoMeta({
 
 const values = [
   {
-    title: 'Precision',
-    description: 'Tolerancia cero al error. Cada diseno es validado bajo los estandares mas rigurosos del mercado global.',
+    title: 'Precisión',
+    description: 'Trabajamos con componentes y medidas exactas para tus proyectos de grado industrial.',
     icon: 'architecture',
   },
   {
-    title: 'Innovacion',
-    description: 'Exploramos nuevas fronteras en ciencia de materiales y eficiencia energetica.',
+    title: 'Innovación',
+    description: 'Exploramos nuevas tecnologías de iluminación y control para eficientar la operación de tu negocio.',
     icon: 'lightbulb',
   },
   {
     title: 'Fiabilidad',
-    description: 'Componentes disenados para durar decadas, garantizando la continuidad operativa.',
+    description: 'Solo distribuimos herramientas y componentes de marcas certificadas internacionalmente.',
     icon: 'verified_user',
   },
   {
-    title: 'Sostenibilidad',
-    description: 'Compromiso real con la reduccion de la huella de carbono mediante procesos circulares.',
-    icon: 'eco',
+    title: 'Servicio',
+    description: 'Atención especializada para asegurar que obtengas exactamente lo que requiere tu proyecto eléctrico.',
+    icon: 'handshake',
   },
 ]
 

@@ -5,9 +5,10 @@ export default defineEventHandler(async (event) => {
   const page = Math.max(Number(query.page) || 1, 1)
   const perPageRaw = Number(query.perPage ?? query.limit) || 20
   const perPage = Math.min(Math.max(perPageRaw, 1), 20)
+  const search = String(query.search || query.q || '')
 
   try {
-    return await getProductsList(page, perPage)
+    return await getProductsList(page, perPage, search)
   }
   catch (error) {
     console.error('Error loading products list:', error)

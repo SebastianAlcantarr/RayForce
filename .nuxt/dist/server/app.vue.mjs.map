@@ -1,0 +1,1 @@
+{"version":3,"file":"app.vue.mjs","sources":["../../../app.vue"],"sourcesContent":["<template>\r\n  <NuxtLayout>\r\n    <NuxtPage />\r\n  </NuxtLayout>\r\n\r\n</template>\r\n\r\n\r\n"],"names":["_push","_parent","_createVNode"],"mappings":";;;;;;;;;;qBACE,CAEa,GAAAA,QAAAC,UAAA,aAAA;;;;;UADXC,YAAY,mBAAA;AAAA;;;;;;;;;;;;;"}

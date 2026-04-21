@@ -60,9 +60,10 @@ const route = useRoute()
 const navLinks = [
   { label: 'Inicio', href: '/' },
   { label: 'Tienda', href: '/tienda' },
+  { label: 'Servicios', href: '/servicios' },
+  { label: 'Cotizar Proyecto', href: '/cotizar' },
   { label: 'Nosotros', href: '/nosotros' },
-  { label: 'Cotizar', href: '/cotizar' },
-  { label: 'Soporte', href: '/soporte' },
+  { label: 'Contacto', href: '/contacto' },
 ]
 
 const searchQuery = ref('')

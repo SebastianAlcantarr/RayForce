@@ -2,8 +2,22 @@
   <div class="bg-[#f9f9fb] min-h-screen">
     <!-- Franja superior con teléfonos (Eliminada visualmente porque ya está en el Footer, pero conservada si es necesaria. La ocultaremos para limpieza visual) -->
 
+    <!-- Carta de Presentación -->
+    <section class="max-w-7xl mx-auto px-6 md:px-12 pt-16 pb-8 text-center">
+      <span class="inline-block px-4 py-1.5 bg-blue-50 text-primary rounded-full text-xs font-bold uppercase tracking-widest border border-blue-100 mb-6">
+        Bienvenidos a Rayforce
+      </span>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-800 leading-[1.1] mb-6">
+        Potenciando tu negocio con <br class="hidden md:block" />
+        <span class="text-primary italic font-light">innovación eléctrica y ferretera</span>
+      </h1>
+      <p class="text-lg md:text-xl text-slate-500 font-light max-w-3xl mx-auto leading-relaxed">
+        En Rayforce nos enorgullecemos de ser tu aliado estratégico. Desde suministros básicos hasta componentes de precisión industrial, garantizamos la calidad y rápidez que tus proyectos demandan.
+      </p>
+    </section>
+
     <!-- Hero Carrusel Principal -->
-    <section class="relative bg-white pt-8 pb-16 overflow-hidden">
+    <section class="relative bg-[#f9f9fb] pt-8 pb-16 overflow-hidden">
       <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
         <div class="relative rounded-3xl overflow-hidden bg-surface-container shadow-2xl min-h-[500px] flex items-center transition-all duration-1000" :class="slides[activeSlide].bgClass">
           
@@ -34,12 +48,31 @@
           </div>
 
           <!-- Controles del carrusel -->
-          <div class="absolute bottom-6 right-10 flex gap-2 z-30">
+          <div class="absolute inset-y-0 left-0 flex items-center px-4 md:px-8 z-30">
+            <button
+              @click="prevSlide"
+              class="w-12 h-12 rounded-full bg-white/20 hover:bg-white text-white hover:text-primary transition-all flex items-center justify-center backdrop-blur shadow-lg active:scale-95"
+              aria-label="Anterior"
+            >
+              <span class="material-symbols-outlined text-2xl">chevron_left</span>
+            </button>
+          </div>
+          <div class="absolute inset-y-0 right-0 flex items-center px-4 md:px-8 z-30">
+            <button
+              @click="nextSlide"
+              class="w-12 h-12 rounded-full bg-white/20 hover:bg-white text-white hover:text-primary transition-all flex items-center justify-center backdrop-blur shadow-lg active:scale-95"
+              aria-label="Siguiente"
+            >
+              <span class="material-symbols-outlined text-2xl">chevron_right</span>
+            </button>
+          </div>
+
+          <div class="absolute bottom-6 right-0 left-0 flex justify-center gap-3 z-30">
             <button
               v-for="(slide, index) in slides"
               :key="index"
               @click="activeSlide = index"
-              class="w-12 h-2 rounded-full transition-all duration-300"
+              class="w-10 h-1.5 rounded-full transition-all duration-300"
               :class="activeSlide === index ? 'bg-white' : 'bg-white/30 hover:bg-white/50'"
               aria-label="Cambiar slide"
             ></button>
@@ -262,14 +295,29 @@ const slides = [
 ]
 
 onMounted(() => {
-  slideInterval = setInterval(() => {
-    activeSlide.value = (activeSlide.value + 1) % slides.length
-  }, 6000)
+  startTimer()
 })
 
 onUnmounted(() => {
   clearInterval(slideInterval)
 })
+
+const startTimer = () => {
+  clearInterval(slideInterval)
+  slideInterval = setInterval(() => {
+    nextSlide()
+  }, 6000)
+}
+
+const nextSlide = () => {
+  activeSlide.value = (activeSlide.value + 1) % slides.length
+  startTimer()
+}
+
+const prevSlide = () => {
+  activeSlide.value = (activeSlide.value - 1 + slides.length) % slides.length
+  startTimer()
+}
 
 // Fetch de Productos desde WooCommerce
 const { data: productsData, pending: productsPending, error: productsError } = await useFetch<WooPaginatedResult<WooProduct>>('/api/products?perPage=8')

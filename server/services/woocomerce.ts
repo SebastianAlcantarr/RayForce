@@ -223,11 +223,17 @@ export async function getProductBySlug(slug: string) {
   return products[0] || null
 }
 
-export async function getProductsList(page = 1, perPage = 20): Promise<WooPaginatedResult<WooProduct>> {
-  const paginated = await getProductsPaginated({
+export async function getProductsList(page = 1, perPage = 20, search = ''): Promise<WooPaginatedResult<WooProduct>> {
+  const params: Record<string, string | number> = {
     orderby: 'date',
     order: 'desc',
-  }, page, perPage)
+  }
+  
+  if (search) {
+    params.search = search
+  }
+
+  const paginated = await getProductsPaginated(params, page, perPage)
 
   return {
     ...paginated,

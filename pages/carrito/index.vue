@@ -20,88 +20,100 @@
           <div class="text-right">Total</div>
         </div>
 
-        <div v-for="item in cartItems" :key="item.name" class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center">
+        <div v-if="cartItems.length === 0" class="py-12 flex flex-col items-center text-center space-y-4">
+          <span class="material-symbols-outlined text-6xl text-outline-variant">remove_shopping_cart</span>
+          <p class="text-xl text-on-surface font-light">Tu carrito está vacío.</p>
+          <NuxtLink to="/tienda" class="text-primary font-bold hover:underline">Explorar Catálogo</NuxtLink>
+        </div>
+
+        <div v-else v-for="item in cartItems" :key="item.id" class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center">
           <div class="col-span-3 flex items-center gap-8 w-full">
-            <div class="w-32 h-32 bg-surface-container-highest flex-shrink-0 relative overflow-hidden group">
+            <div class="w-32 h-32 bg-surface-container-lowest border border-outline-variant/20 flex-shrink-0 relative overflow-hidden group p-2">
               <img
-                class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500"
+                class="w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500"
                 :alt="item.name"
                 :src="item.image"
               />
             </div>
             <div class="space-y-1">
-              <h3 class="text-xl font-bold tracking-tight text-on-surface">{{ item.name }}</h3>
-              <p class="text-xs font-inter text-outline uppercase tracking-wider">SKU: {{ item.sku }}</p>
-              <button class="text-[10px] font-inter text-error uppercase tracking-widest mt-2 flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
+              <h3 class="text-xl font-bold tracking-tight text-on-surface line-clamp-2 leading-tight">{{ item.name }}</h3>
+              <p class="text-xs font-inter text-outline uppercase tracking-wider mt-1">SKU: {{ item.sku }}</p>
+              <button @click="removeFromCart(item.id)" class="text-[10px] font-inter text-error uppercase tracking-widest mt-2 flex items-center gap-1 hover:opacity-70 transition-opacity" type="button">
                 <span class="material-symbols-outlined text-sm">delete</span>
                 Eliminar
               </button>
             </div>
           </div>
-          <div class="text-center font-manrope font-semibold text-on-surface-variant">{{ item.price }}</div>
+          <div class="text-center font-manrope font-semibold text-on-surface-variant">${{ (item.price).toFixed(2) }}</div>
           <div class="flex justify-center">
-            <div class="flex items-center border border-outline-variant/30 rounded-full overflow-hidden h-10 bg-surface-container-low">
-              <button class="px-3 hover:bg-surface-container-high transition-colors" type="button">
+            <div class="flex items-center border border-outline-variant/30 rounded-md overflow-hidden h-10 bg-white shadow-sm">
+              <button @click="updateQuantity(item.id, item.quantity - 1)" class="w-10 hover:bg-slate-50 transition-colors flex items-center justify-center text-slate-500" type="button">
                 <span class="material-symbols-outlined text-sm">remove</span>
               </button>
-              <span class="px-4 text-sm font-bold w-12 text-center">{{ item.quantity }}</span>
-              <button class="px-3 hover:bg-surface-container-high transition-colors" type="button">
+              <span class="w-12 text-sm font-bold text-center border-x border-outline-variant/10 leading-[40px]">{{ item.quantity }}</span>
+              <button @click="updateQuantity(item.id, item.quantity + 1)" class="w-10 hover:bg-slate-50 transition-colors flex items-center justify-center text-slate-500" type="button">
                 <span class="material-symbols-outlined text-sm">add</span>
               </button>
             </div>
           </div>
-          <div class="text-right font-manrope font-bold text-lg text-on-surface">{{ item.total }}</div>
+          <div class="text-right font-manrope font-bold text-lg text-primary">${{ (item.price * item.quantity).toFixed(2) }}</div>
         </div>
       </div>
 
       <aside class="lg:col-span-4 lg:sticky lg:top-24">
-        <div class="bg-surface-container-lowest border border-outline-variant/15 p-10 space-y-8">
+        <div class="bg-surface-container-lowest border border-outline-variant/15 p-8 md:p-10 space-y-8 rounded-xl shadow-sm">
           <h2 class="text-2xl font-bold tracking-tight text-on-surface">Resumen de tu Orden</h2>
           <div class="space-y-4">
-            <div class="flex justify-between items-center py-2">
+            <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
               <span class="text-xs font-inter uppercase tracking-widest text-outline">Subtotal</span>
-              <span class="font-bold text-on-surface">$1,069.00</span>
+              <span class="font-bold text-on-surface">${{ subtotal.toFixed(2) }}</span>
             </div>
-            <div class="flex justify-between items-center py-2">
+            <div class="flex justify-between items-center py-2 border-b border-outline-variant/10">
               <span class="text-xs font-inter uppercase tracking-widest text-outline">Cálculo de Envío</span>
-              <span class="font-bold text-on-surface">$45.00</span>
+              <span class="font-bold text-on-surface">Calculado al pago</span>
             </div>
-            <div class="flex justify-between items-center py-2">
-              <span class="text-xs font-inter uppercase tracking-widest text-outline">Impuestos (IVA)</span>
-              <span class="font-bold text-on-surface">$85.52</span>
-            </div>
-            <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
-              <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span>
-              <span class="text-3xl font-extrabold text-primary tracking-tighter">$1,199.52</span>
+            <div class="pt-6 flex justify-between items-baseline">
+              <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total Estimado</span>
+              <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ subtotal.toFixed(2) }}</span>
             </div>
           </div>
-          <div class="space-y-4 pt-4">
-            <NuxtLink
-              to="/checkout"
-              class="w-full bg-[#13069f] text-white py-5 rounded-md text-sm font-bold uppercase tracking-[0.2em] hover:bg-[#1a0eb0] transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
-            >
-              Proceder a checkout
-              <span class="material-symbols-outlined text-lg">arrow_forward</span>
-            </NuxtLink>
-            <p class="text-[10px] text-center text-outline uppercase tracking-wider">Pagos protegidos mediante tecnología SSL</p>
-          </div>
-          <div class="pt-8 mt-8 border-t border-outline-variant/10">
-            <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Código Promocional</label>
-            <div class="flex gap-2">
-              <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="INGRESA TU CÓDIGO" type="text" />
-              <button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button">
-                Aplicar
-              </button>
+          
+          <div class="space-y-4 pt-4" v-if="cartItems.length > 0">
+            <!-- Dos Botones Requeridos -->
+            <div class="flex flex-col gap-3">
+              <NuxtLink
+                to="/checkout"
+                class="w-full bg-[#13069f] text-white py-4 rounded-md text-sm font-bold uppercase tracking-[0.1em] hover:bg-[#1a0eb0] hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                <span class="material-symbols-outlined text-lg">credit_card</span>
+                Pagar vía Rayforce
+              </NuxtLink>
+              
+              <a
+                :href="whatsappCheckoutUrl"
+                target="_blank"
+                class="w-full bg-surface-container-low border border-primary text-primary py-4 rounded-md text-sm font-bold uppercase tracking-[0.1em] hover:bg-blue-50 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" class="w-5 h-5"/>
+                Cerrar pedido por WhatsApp
+              </a>
             </div>
+            
+            <div class="flex justify-center items-center gap-4 mt-6 opacity-60">
+              <span class="material-symbols-outlined" title="Visa">credit_card</span>
+              <span class="material-symbols-outlined" title="Mercado Pago">account_balance_wallet</span>
+               <span class="material-symbols-outlined" title="PayPal">payments</span>
+            </div>
+            <p class="text-[10px] text-center text-outline uppercase tracking-wider mt-4 block">Pagos protegidos mediante tecnología encriptada SSL.</p>
           </div>
         </div>
 
-        <div class="mt-8 p-6 bg-primary-container/30 border border-primary-container flex items-start gap-4">
+        <div class="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-100 flex items-start gap-4">
           <span class="material-symbols-outlined text-primary">verified_user</span>
           <div>
-            <h4 class="text-sm font-bold text-on-primary-container mb-1">Pagos 100% Seguros</h4>
-            <p class="text-xs text-on-primary-container/70 leading-relaxed">
-              Tus transacciones y datos están protegidos en todo momento mediante encriptación SSL verificada.
+            <h4 class="text-sm font-bold text-slate-800 mb-1">Pagos 100% Seguros</h4>
+            <p class="text-xs text-slate-500 leading-relaxed">
+              Tus transacciones y datos están protegidos en todo momento, sea pago en web o vía asesor de WhatsApp.
             </p>
           </div>
         </div>
@@ -111,28 +123,26 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useCart } from '~/composables/useCart'
+
 useSeoMeta({
-  title: 'Rayforce | Carrito',
+  title: 'Rayforce | Tu Carrito',
   description: 'Resumen de tu carrito y checkout de Rayforce.',
 })
 
-const cartItems = [
-  {
-    name: 'Industrial Drill XR-500',
-    sku: 'TA-8821-X',
-    price: '$499.00',
-    quantity: '01',
-    total: '$499.00',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB5RlWP4Hprh9A4O4X74rb7IYQ7yrQHk5hyzLfL9MJPMHgq0r3Wi61XtfdEjn-Toy68wvqhHDNynttqJpEpIxlCsoraFvgQLA3BN4zJLLLhx2cVQS6mf90vYUOgJwU9AINwW0r3K6bZCbhPfyhg6yYBMVfTkkTph5Q2SFZyg6ZRJBjm_d2dWVVJcz8u-YtZp9-LcKnjHWlTb2o5N0v0ZtvS4z04uaZgqRvF_3sbVJzlvnP6DxqrrztlWNQQ6MMKb6qoaQBQCgKCCrwU',
-  },
-  {
-    name: 'LED Loft Tech Light',
-    sku: 'TA-3312-L',
-    price: '$285.00',
-    quantity: '02',
-    total: '$570.00',
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDfUKgO4J_WjggzIQc8FgAXBnWWacJ4iJ1hnY7_2chdhASlf1DuQiigWlCjqXqS1cwYiX84qfCTa-nR1P5K30nnNkWvoLNBCCLVM5ksCtGtpRVKlfQTh-J2EZxcx42-ULajcxee0ymME8v3P-hJM8896SkFGBVF_gvCJkuAqNEANeSmZ1VFQvqPC5AdjrTqaNH_RwawFgxbE8Mmfhd2xnqHIHF6MLxXEeXCvi66yNqFz4059G5Gl-8xdEnWv1OkNA47gJOWeNEouJCh',
-  },
-]
-</script>
+const { cartItems, updateQuantity, removeFromCart, subtotal } = useCart()
 
+const whatsappCheckoutUrl = computed(() => {
+  if (cartItems.value.length === 0) return 'https://wa.me/5216621711371'
+  
+  let orderDetails = "Hola, me interesa cerrar el siguiente pedido:\n\n"
+  cartItems.value.forEach(item => {
+    orderDetails += `• ${item.quantity}x ${item.name} (SKU: ${item.sku}) - $${(item.price * item.quantity).toFixed(2)}\n`
+  })
+  orderDetails += `\n*Total Estimado:* $${subtotal.value.toFixed(2)}\n\n`
+  orderDetails += `¿Cuál es el siguiente paso para pagar y coordinar el envío?`
+
+  return `https://wa.me/5216621711371?text=${encodeURIComponent(orderDetails)}`
+})
+</script>
