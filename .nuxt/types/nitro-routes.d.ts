@@ -33,11 +33,26 @@ declare module "nitropack/types" {
     '/api/config': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/config.get').default>>>>
     }
+    '/api/login': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/login.post').default>>>>
+    }
+    '/api/logout': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/logout.post').default>>>>
+    }
+    '/api/me': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/me.get').default>>>>
+    }
     '/api/product/:slug': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/product/[slug]').default>>>>
     }
     '/api/products': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/products/index').default>>>>
+    }
+    '/api/register': {
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/register.post').default>>>>
+    }
+    '/api/user': {
+      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/user').default>>>>
     }
     '/__nuxt_error': {
       'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../node_modules/nuxt/dist/core/runtime/nitro/handlers/renderer').default>>>>

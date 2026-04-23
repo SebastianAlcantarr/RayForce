@@ -1,42 +1,42 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, appendResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, readBody, getQuery as getQuery$1, readMultipartFormData, setCookie, deleteCookie, getCookie, getResponseStatusText } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, appendResponseHeader, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, readBody, getQuery as getQuery$1, readMultipartFormData, getResponseStatusText } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/h3/dist/index.mjs';
 import { promises, readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { Buffer as Buffer$1 } from 'node:buffer';
-import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import destr from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/destr/dist/index.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/ufo/dist/index.mjs';
-import { createHead as createHead$1, propsToString, renderSSRHead } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/unhead/dist/server.mjs';
-import { isVNode, isRef, toValue } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/vue/index.mjs';
-import { walkResolver } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/unhead/dist/utils.mjs';
-import { renderToString } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/vue/server-renderer/index.mjs';
-import { klona } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/klona/dist/index.mjs';
-import defu, { defuFn } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/scule/dist/index.mjs';
-import { stringify, uneval } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/devalue/index.js';
-import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/unhead/dist/plugins.mjs';
-import { createHooks } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/node-mock-http/dist/index.mjs';
-import { createStorage, prefixStorage } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/unstorage/drivers/fs.mjs';
-import { digest } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/ohash/dist/index.mjs';
-import { toRouteMatcher, createRouter } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/radix3/dist/index.mjs';
+import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import destr from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/destr/dist/index.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/ufo/dist/index.mjs';
+import { createHead as createHead$1, propsToString, renderSSRHead } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/unhead/dist/server.mjs';
+import { isVNode, isRef, toValue } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/vue/index.mjs';
+import { walkResolver } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/unhead/dist/utils.mjs';
+import { renderToString } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/vue/server-renderer/index.mjs';
+import { createHooks } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/node-mock-http/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/unstorage/drivers/fs.mjs';
+import { digest } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/ohash/dist/index.mjs';
+import { klona } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/scule/dist/index.mjs';
+import { getContext } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/unctx/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/youch-core/build/index.js';
-import { Youch } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/source-map/source-map.js';
+import consola, { consola as consola$1 } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/youch-core/build/index.js';
+import { Youch } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { getContext } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/unctx/dist/index.mjs';
-import { captureRawStackTrace, parseRawStackTrace } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/errx/dist/index.js';
+import { stringify, uneval } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/devalue/index.js';
+import { captureRawStackTrace, parseRawStackTrace } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/errx/dist/index.js';
 import { fileURLToPath } from 'node:url';
-import { dirname as dirname$1, resolve as resolve$1 } from 'file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/node_modules/pathe/dist/index.mjs';
+import { dirname as dirname$1, resolve as resolve$1 } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/pathe/dist/index.mjs';
+import { DeprecationsPlugin, PromisesPlugin, TemplateParamsPlugin, AliasSortingPlugin } from 'file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/node_modules/unhead/dist/plugins.mjs';
 
-const serverAssets = [{"baseName":"server","dir":"C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/server/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/server/assets"}];
 
 const assets$1 = createStorage();
 
@@ -48,11 +48,11 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets$1);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce","watchOptions":{"ignored":[null]}}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/server","watchOptions":{"ignored":[null]}}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/.nuxt"}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/.nuxt/cache"}));
-storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/.data/kv"}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce","watchOptions":{"ignored":[null]}}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/server","watchOptions":{"ignored":[null]}}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/.nuxt"}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/.nuxt/cache"}));
+storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/.data/kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -648,10 +648,10 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {},
-  "wooUrl": "",
-  "wooKey": "",
-  "wooSecret": "",
-  "adminPassword": ""
+  "wooUrl": "https://springgreen-sparrow-647332.hostingersite.com/",
+  "wooKey": "ck_8c3566e1217c27e84ac4fe9f20752621628e5dca",
+  "wooSecret": "cs_a855360621bee5f3a90ad08368e87687766e7884",
+  "adminPassword": "Rayforcehost05."
 };
 const envOptions = {
   prefix: "NITRO_",
@@ -695,6 +695,11 @@ new Proxy(/* @__PURE__ */ Object.create(null), {
     }
     return void 0;
   }
+});
+
+getContext("nitro-app", {
+  asyncContext: false,
+  AsyncLocalStorage: void 0
 });
 
 const config = useRuntimeConfig();
@@ -1011,13 +1016,13 @@ if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
 window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 `;
 
-const _XpN7_EbAP5HZbzifUiJa6oO8rq0LHa0NA6ICgMUB6AI = (function(nitro) {
+const _iaS2ZlkVc5olWzJkcBEYhYvcKlEm3ltF_aYhv_Q10sc = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
-const rootDir = "C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce";
+const rootDir = "/home/sebastian-alcantar/WebstormProjects/untitled2/RayForce";
 
 const appHead = {"meta":[{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[{"rel":"stylesheet","href":"https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"},{"rel":"stylesheet","href":"https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"}],"style":[],"script":[],"noscript":[],"title":"Rayforce | Technical Support & Help Center"};
 
@@ -1036,7 +1041,7 @@ const devReducers = {
   URL: (data) => data instanceof URL ? data.toString() : void 0
 };
 const asyncContext = getContext("nuxt-dev", { asyncContext: true, AsyncLocalStorage });
-const _zd7PVxQ_3Tt4s2kCEUMR8hk0U4FfBUazIrX87YJQiHw = (nitroApp) => {
+const _dTorhNX5dOnWyGeOGipOh9a6JeBTgR0T_hOYI5VfQ = (nitroApp) => {
   const handler = nitroApp.h3App.handler;
   nitroApp.h3App.handler = (event) => {
     return asyncContext.callAsync({ logs: [], event }, () => handler(event));
@@ -1106,8 +1111,8 @@ function onConsoleLog(callback) {
 }
 
 const plugins = [
-  _XpN7_EbAP5HZbzifUiJa6oO8rq0LHa0NA6ICgMUB6AI,
-_zd7PVxQ_3Tt4s2kCEUMR8hk0U4FfBUazIrX87YJQiHw
+  _iaS2ZlkVc5olWzJkcBEYhYvcKlEm3ltF_aYhv_Q10sc,
+_dTorhNX5dOnWyGeOGipOh9a6JeBTgR0T_hOYI5VfQ
 ];
 
 const assets = {};
@@ -1135,7 +1140,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _5j8ysm = eventHandler((event) => {
+const _1Y8tBF = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -1199,36 +1204,46 @@ const _5j8ysm = eventHandler((event) => {
   return readAsset(id);
 });
 
-const _lazy_vOeTR1 = () => Promise.resolve().then(function () { return bulkUpdate_post$1; });
-const _lazy_RIzTbE = () => Promise.resolve().then(function () { return categories_get$1; });
-const _lazy_xUHLHW = () => Promise.resolve().then(function () { return config_post$1; });
-const _lazy__e6EmH = () => Promise.resolve().then(function () { return createProduct_post$1; });
-const _lazy_H6qPxk = () => Promise.resolve().then(function () { return exportOrders_get$1; });
-const _lazy_D3q7Wk = () => Promise.resolve().then(function () { return searchProduct_get$1; });
-const _lazy_sWE4iI = () => Promise.resolve().then(function () { return updateProduct_put$1; });
-const _lazy_f2pDbt = () => Promise.resolve().then(function () { return uploadImage_post$1; });
-const _lazy__73cLi = () => Promise.resolve().then(function () { return verifyPassword_post$1; });
-const _lazy_KmmL14 = () => Promise.resolve().then(function () { return config_get$1; });
-const _lazy_6OMOAd = () => Promise.resolve().then(function () { return _slug_$1; });
-const _lazy_GB2hZA = () => Promise.resolve().then(function () { return index$1; });
-const _lazy_GoHXxm = () => Promise.resolve().then(function () { return renderer$1; });
+const _lazy_beRro7 = () => Promise.resolve().then(function () { return bulkUpdate_post$1; });
+const _lazy_Z3tK5L = () => Promise.resolve().then(function () { return categories_get$1; });
+const _lazy_z2JxLa = () => Promise.resolve().then(function () { return config_post$1; });
+const _lazy_YXmFBm = () => Promise.resolve().then(function () { return createProduct_post$1; });
+const _lazy_uz18tK = () => Promise.resolve().then(function () { return exportOrders_get$1; });
+const _lazy_KYf4YY = () => Promise.resolve().then(function () { return searchProduct_get$1; });
+const _lazy_RouG4C = () => Promise.resolve().then(function () { return updateProduct_put$1; });
+const _lazy_ouCnCo = () => Promise.resolve().then(function () { return uploadImage_post$1; });
+const _lazy_bMsvSJ = () => Promise.resolve().then(function () { return verifyPassword_post$1; });
+const _lazy_sPi864 = () => Promise.resolve().then(function () { return config_get$1; });
+const _lazy_YJbDrI = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_pGAREG = () => Promise.resolve().then(function () { return logout_post$1; });
+const _lazy_f3Knyk = () => Promise.resolve().then(function () { return me_get$1; });
+const _lazy_jA6ffS = () => Promise.resolve().then(function () { return _slug_$1; });
+const _lazy_LxK860 = () => Promise.resolve().then(function () { return index$1; });
+const _lazy_AGSViA = () => Promise.resolve().then(function () { return register_post$1; });
+const _lazy_YoCTbo = () => Promise.resolve().then(function () { return user$1; });
+const _lazy_odTqrH = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
-  { route: '', handler: _5j8ysm, lazy: false, middleware: true, method: undefined },
-  { route: '/api/admin/bulk-update', handler: _lazy_vOeTR1, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/categories', handler: _lazy_RIzTbE, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/config', handler: _lazy_xUHLHW, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/create-product', handler: _lazy__e6EmH, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/export-orders', handler: _lazy_H6qPxk, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/search-product', handler: _lazy_D3q7Wk, lazy: true, middleware: false, method: "get" },
-  { route: '/api/admin/update-product', handler: _lazy_sWE4iI, lazy: true, middleware: false, method: "put" },
-  { route: '/api/admin/upload-image', handler: _lazy_f2pDbt, lazy: true, middleware: false, method: "post" },
-  { route: '/api/admin/verify-password', handler: _lazy__73cLi, lazy: true, middleware: false, method: "post" },
-  { route: '/api/config', handler: _lazy_KmmL14, lazy: true, middleware: false, method: "get" },
-  { route: '/api/product/:slug', handler: _lazy_6OMOAd, lazy: true, middleware: false, method: undefined },
-  { route: '/api/products', handler: _lazy_GB2hZA, lazy: true, middleware: false, method: undefined },
-  { route: '/__nuxt_error', handler: _lazy_GoHXxm, lazy: true, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_GoHXxm, lazy: true, middleware: false, method: undefined }
+  { route: '', handler: _1Y8tBF, lazy: false, middleware: true, method: undefined },
+  { route: '/api/admin/bulk-update', handler: _lazy_beRro7, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/categories', handler: _lazy_Z3tK5L, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/config', handler: _lazy_z2JxLa, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/create-product', handler: _lazy_YXmFBm, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/export-orders', handler: _lazy_uz18tK, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/search-product', handler: _lazy_KYf4YY, lazy: true, middleware: false, method: "get" },
+  { route: '/api/admin/update-product', handler: _lazy_RouG4C, lazy: true, middleware: false, method: "put" },
+  { route: '/api/admin/upload-image', handler: _lazy_ouCnCo, lazy: true, middleware: false, method: "post" },
+  { route: '/api/admin/verify-password', handler: _lazy_bMsvSJ, lazy: true, middleware: false, method: "post" },
+  { route: '/api/config', handler: _lazy_sPi864, lazy: true, middleware: false, method: "get" },
+  { route: '/api/login', handler: _lazy_YJbDrI, lazy: true, middleware: false, method: "post" },
+  { route: '/api/logout', handler: _lazy_pGAREG, lazy: true, middleware: false, method: "post" },
+  { route: '/api/me', handler: _lazy_f3Knyk, lazy: true, middleware: false, method: "get" },
+  { route: '/api/product/:slug', handler: _lazy_jA6ffS, lazy: true, middleware: false, method: undefined },
+  { route: '/api/products', handler: _lazy_LxK860, lazy: true, middleware: false, method: undefined },
+  { route: '/api/register', handler: _lazy_AGSViA, lazy: true, middleware: false, method: "post" },
+  { route: '/api/user', handler: _lazy_YoCTbo, lazy: true, middleware: false, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_odTqrH, lazy: true, middleware: false, method: undefined },
+  { route: '/**', handler: _lazy_odTqrH, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -2057,6 +2072,150 @@ const config_get$1 = /*#__PURE__*/Object.freeze({
   default: config_get
 });
 
+const login_post = defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const config = useRuntimeConfig();
+  try {
+    const res = await $fetch(`${config.wooUrl}/wp-json/jwt-auth/v1/token`, {
+      method: "POST",
+      body
+    });
+    setCookie(event, "auth_token", res.token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24
+    });
+    return {
+      success: true,
+      token: res.token
+    };
+  } catch (error) {
+    console.error("Error en login:", error);
+    throw createError({
+      statusCode: (error == null ? void 0 : error.status) || 401,
+      statusMessage: "Usuario o contrase\xF1a incorrectos"
+    });
+  }
+});
+
+const login_post$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: login_post
+});
+
+const logout_post = defineEventHandler(async (event) => {
+  deleteCookie(event, "auth_token");
+  return {
+    success: true,
+    message: "Sesi\xF3n cerrada"
+  };
+});
+
+const logout_post$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: logout_post
+});
+
+const me_get = defineEventHandler(async (event) => {
+  var _a, _b, _c, _d, _e, _f, _g;
+  const token = getCookie(event, "auth_token");
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "No autenticado"
+    });
+  }
+  const config = useRuntimeConfig();
+  const wooUrl = String(config.wooUrl || "").replace(/\/+$/, "");
+  const wooKey = String(config.wooKey || "");
+  const wooSecret = String(config.wooSecret || "");
+  if (!wooUrl || !wooKey || !wooSecret) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Faltan credenciales de WooCommerce en runtimeConfig."
+    });
+  }
+  try {
+    await $fetch(`${wooUrl}/wp-json/jwt-auth/v1/token/validate`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const me = await $fetch(`${wooUrl}/wp-json/wp/v2/users/me`, {
+      params: {
+        context: "edit"
+      },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const customerId = me == null ? void 0 : me.id;
+    const customerEmail = (me == null ? void 0 : me.email) || (me == null ? void 0 : me.user_email) || "";
+    const customerName = (me == null ? void 0 : me.name) || (me == null ? void 0 : me.display_name) || "";
+    const basicAuth = btoa(`${wooKey}:${wooSecret}`);
+    let customer = {};
+    if (customerId) {
+      try {
+        customer = await $fetch(`${wooUrl}/wp-json/wc/v3/customers/${customerId}`, {
+          headers: {
+            Authorization: `Basic ${basicAuth}`,
+            "Content-Type": "application/json"
+          }
+        });
+      } catch (customerError) {
+        console.warn("No se pudo cargar el customer de WooCommerce:", customerError);
+        if (customerEmail) {
+          try {
+            const searchResult = await $fetch(`${wooUrl}/wp-json/wc/v3/customers`, {
+              headers: {
+                Authorization: `Basic ${basicAuth}`,
+                "Content-Type": "application/json"
+              },
+              params: {
+                email: customerEmail,
+                per_page: 1
+              }
+            });
+            customer = Array.isArray(searchResult) ? searchResult[0] || {} : searchResult || {};
+          } catch (searchError) {
+            console.warn("No se pudo cargar el customer por email:", searchError);
+          }
+        }
+      }
+    }
+    const firstName = (customer == null ? void 0 : customer.first_name) || (me == null ? void 0 : me.first_name) || "";
+    const lastName = (customer == null ? void 0 : customer.last_name) || (me == null ? void 0 : me.last_name) || "";
+    const fullName = `${firstName} ${lastName}`.trim();
+    const normalizedName = (me == null ? void 0 : me.slug) || (customer == null ? void 0 : customer.username) || ((_c = (_b = (_a = customer == null ? void 0 : customer.email) == null ? void 0 : _a.split) == null ? void 0 : _b.call(_a, "@")) == null ? void 0 : _c[0]) || customerName || "";
+    return {
+      id: (me == null ? void 0 : me.id) || (customer == null ? void 0 : customer.id) || 0,
+      username: normalizedName,
+      email: (me == null ? void 0 : me.email) || (customer == null ? void 0 : customer.email) || customerEmail || "",
+      first_name: firstName,
+      last_name: lastName,
+      name: fullName || customerName || normalizedName,
+      display_name: customerName || fullName || normalizedName,
+      avatar_url: ((_d = me == null ? void 0 : me.avatar_urls) == null ? void 0 : _d["96"]) || ((_e = me == null ? void 0 : me.avatar_urls) == null ? void 0 : _e["48"]) || ((_f = me == null ? void 0 : me.avatar_urls) == null ? void 0 : _f["24"]) || null,
+      billing: (customer == null ? void 0 : customer.billing) || null,
+      shipping: (customer == null ? void 0 : customer.shipping) || null
+    };
+  } catch (error) {
+    const statusCode = (error == null ? void 0 : error.statusCode) || ((_g = error == null ? void 0 : error.response) == null ? void 0 : _g.status) || 401;
+    console.error("Error en /api/me:", error);
+    throw createError({
+      statusCode,
+      statusMessage: statusCode === 401 ? "Sesi\xF3n inv\xE1lida o expirada" : "No se pudo obtener el perfil"
+    });
+  }
+});
+
+const me_get$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: me_get
+});
+
 const _slug_ = defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug");
   if (!slug) {
@@ -2101,6 +2260,116 @@ const index = defineEventHandler(async (event) => {
 const index$1 = /*#__PURE__*/Object.freeze({
   __proto__: null,
   default: index
+});
+
+const register_post = defineEventHandler(async (event) => {
+  var _a, _b, _c;
+  const body = await readBody(event);
+  const { fullName, email, password, username } = body;
+  if (!fullName || !email || !password || !username) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Faltan campos requeridos"
+    });
+  }
+  if (password.length < 8) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "La contrase\xF1a debe tener m\xEDnimo 8 caracteres"
+    });
+  }
+  const config = useRuntimeConfig();
+  const credentials = `${config.wooKey}:${config.wooSecret}`;
+  try {
+    const base64 = Buffer.from(credentials).toString("base64");
+    await $fetch(`${config.wooUrl}/wp-json/wc/v3/customers`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${base64}`,
+        "Content-Type": "application/json"
+      },
+      body: {
+        username,
+        email,
+        first_name: fullName.split(" ")[0],
+        last_name: fullName.split(" ").slice(1).join(" "),
+        password
+      }
+    }).catch((err) => {
+      var _a2, _b2, _c2;
+      console.error("ERROR CREANDO USUARIO:", err.data || err);
+      throw createError({
+        statusCode: ((_a2 = err == null ? void 0 : err.response) == null ? void 0 : _a2.status) || 500,
+        statusMessage: ((_c2 = (_b2 = err == null ? void 0 : err.response) == null ? void 0 : _b2._data) == null ? void 0 : _c2.message) || "Error creando usuario"
+      });
+    });
+    const loginRes = await $fetch(`${config.wooUrl}/wp-json/jwt-auth/v1/token`, {
+      method: "POST",
+      body: {
+        username,
+        // ✅ IMPORTANTE
+        password
+      }
+    });
+    if (!loginRes.token) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "No se pudo autenticar"
+      });
+    }
+    setCookie(event, "auth_token", loginRes.token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 60 * 60 * 24
+    });
+    return {
+      success: true,
+      token: loginRes.token
+    };
+  } catch (err) {
+    console.error("ERROR COMPLETO:", err);
+    console.error("ERROR DATA:", (_a = err == null ? void 0 : err.response) == null ? void 0 : _a._data);
+    throw createError({
+      statusCode: ((_b = err == null ? void 0 : err.response) == null ? void 0 : _b.status) || 500,
+      statusMessage: JSON.stringify((_c = err == null ? void 0 : err.response) == null ? void 0 : _c._data) || err.message || "Error en registro"
+    });
+  }
+});
+
+const register_post$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: register_post
+});
+
+const user = defineEventHandler(async (event) => {
+  const token = getCookie(event, "auth_token");
+  const config = useRuntimeConfig();
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "No hay token de autenticaci\xF3n"
+    });
+  }
+  try {
+    const user = await $fetch(`${config.wooUrl}/wp-json/wp/v2/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return user;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw createError({
+      statusCode: (error == null ? void 0 : error.status) || 401,
+      statusMessage: "No se pudo obtener los datos del usuario"
+    });
+  }
+});
+
+const user$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: user
 });
 
 const VueResolver = (_, value) => {
@@ -2149,8 +2418,8 @@ function publicAssetsURL(...path) {
 
 const APP_ROOT_OPEN_TAG = `<${appRootTag}${propsToString(appRootAttrs)}>`;
 const APP_ROOT_CLOSE_TAG = `</${appRootTag}>`;
-const getClientManifest = () => import('file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
-const getServerEntry = () => import('file://C:/Users/lanfa/.gemini/antigravity/scratch/Rayforce/RayForce/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
+const getClientManifest = () => import('file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
+const getServerEntry = () => import('file:///home/sebastian-alcantar/WebstormProjects/untitled2/RayForce/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
 const getSSRStyles = lazyCachedFunction(() => Promise.resolve().then(function () { return styles$1; }).then((r) => r.default || r));
 const getSSRRenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();
