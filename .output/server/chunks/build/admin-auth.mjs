@@ -1,6 +1,6 @@
 import { h as defineNuxtRouteMiddleware } from './server.mjs';
 import 'vue';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

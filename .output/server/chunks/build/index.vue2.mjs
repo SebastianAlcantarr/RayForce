@@ -1,10 +1,11 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { defineComponent, computed, withAsyncContext, mergeProps, withCtx, createTextVNode, unref, createVNode, toDisplayString, openBlock, createBlock, Fragment, renderList, useSSRContext } from 'vue';
+import { defineComponent, computed, withAsyncContext, mergeProps, withCtx, createTextVNode, unref, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrRenderAttr, ssrInterpolate, ssrIncludeBooleanAttr } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
-import { u as useRoute } from './server.mjs';
+import { a as useRoute, u as useRouter } from './server.mjs';
 import { u as useFetch } from './fetch.mjs';
-import '../_/nitro.mjs';
+import { u as useCart } from './useCart.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -20,6 +21,8 @@ import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
 import 'vue-router';
+import './ssr.mjs';
+import './state.mjs';
 
 const perPage = 20;
 const _sfc_main = /* @__PURE__ */ defineComponent({
@@ -32,6 +35,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       description: "Catalogo de producto industrial Rayforce."
     });
     const route = useRoute();
+    const router = useRouter();
     const currentPage = computed(() => {
       const value = Number(route.query.page || 1);
       return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
@@ -51,6 +55,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       var _a;
       return ((_a = data.value) == null ? void 0 : _a.totalPages) || 1;
     });
+    const { addToCart } = useCart();
+    const handleAddToCart = async (product) => {
+      var _a, _b;
+      addToCart({
+        id: product.id.toString(),
+        name: product.name,
+        sku: product.sku || "SIN SKU",
+        price: parseFloat(product.price || "0"),
+        image: ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg",
+        slug: product.slug
+      });
+      await router.push("/carrito");
+    };
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0;
       _push(`<div${ssrRenderAttrs(mergeProps({ class: "pt-8 pb-20 px-8 max-w-[1440px] mx-auto" }, _attrs))}><header class="mb-16"><nav class="mb-6 flex gap-3 text-[10px] uppercase tracking-[0.1em] font-inter text-outline">`);
@@ -79,56 +96,58 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       } else {
         _push(`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"><!--[-->`);
         ssrRenderList(unref(products), (product) => {
+          _push(`<div class="group block">`);
           _push(ssrRenderComponent(_component_NuxtLink, {
-            key: product.id,
             to: `/tienda/${product.slug}`,
-            class: "group block"
+            class: "block"
           }, {
             default: withCtx((_, _push2, _parent2, _scopeId) => {
               var _a, _b, _c, _d;
               if (_push2) {
-                _push2(`<div class="aspect-[4/5] bg-surface-container-highest overflow-hidden relative mb-6"${_scopeId}><img${ssrRenderAttr("alt", product.name)} class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"${ssrRenderAttr("src", ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg")}${_scopeId}><div class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0" aria-hidden="true"${_scopeId}><span class="material-symbols-outlined"${_scopeId}>add_shopping_cart</span></div></div><div class="space-y-2"${_scopeId}><div class="flex justify-between items-start"${_scopeId}><div${_scopeId}><span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block"${_scopeId}>${ssrInterpolate(product.sku || "SIN SKU")}</span><h4 class="text-lg font-bold tracking-tight"${_scopeId}>${ssrInterpolate(product.name)}</h4></div><span class="text-lg font-light text-primary"${_scopeId}>$${ssrInterpolate(product.price)}</span></div><div class="flex gap-2"${_scopeId}><!--[-->`);
-                ssrRenderList(product.categories || [], (category) => {
-                  _push2(`<span class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant"${_scopeId}>${ssrInterpolate(category.name)}</span>`);
-                });
-                _push2(`<!--]--></div></div>`);
+                _push2(`<div class="aspect-square bg-surface-container-highest overflow-hidden relative mb-6"${_scopeId}><img${ssrRenderAttr("alt", product.name)} class="w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"${ssrRenderAttr("src", ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg")}${_scopeId}><button class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110" type="button"${ssrRenderAttr("aria-label", `Agregar ${product.name} al carrito`)}${_scopeId}><span class="material-symbols-outlined"${_scopeId}>add_shopping_cart</span></button></div>`);
               } else {
                 return [
-                  createVNode("div", { class: "aspect-[4/5] bg-surface-container-highest overflow-hidden relative mb-6" }, [
+                  createVNode("div", { class: "aspect-square bg-surface-container-highest overflow-hidden relative mb-6" }, [
                     createVNode("img", {
                       alt: product.name,
-                      class: "w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700",
+                      class: "w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700",
                       src: ((_d = (_c = product.images) == null ? void 0 : _c[0]) == null ? void 0 : _d.src) || "/placeholder.jpg"
                     }, null, 8, ["alt", "src"]),
-                    createVNode("div", {
-                      class: "absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0",
-                      "aria-hidden": "true"
+                    createVNode("button", {
+                      onClick: withModifiers(($event) => handleAddToCart(product), ["prevent"]),
+                      class: "absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110",
+                      type: "button",
+                      "aria-label": `Agregar ${product.name} al carrito`
                     }, [
                       createVNode("span", { class: "material-symbols-outlined" }, "add_shopping_cart")
-                    ])
-                  ]),
-                  createVNode("div", { class: "space-y-2" }, [
-                    createVNode("div", { class: "flex justify-between items-start" }, [
-                      createVNode("div", null, [
-                        createVNode("span", { class: "font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block" }, toDisplayString(product.sku || "SIN SKU"), 1),
-                        createVNode("h4", { class: "text-lg font-bold tracking-tight" }, toDisplayString(product.name), 1)
-                      ]),
-                      createVNode("span", { class: "text-lg font-light text-primary" }, "$" + toDisplayString(product.price), 1)
-                    ]),
-                    createVNode("div", { class: "flex gap-2" }, [
-                      (openBlock(true), createBlock(Fragment, null, renderList(product.categories || [], (category) => {
-                        return openBlock(), createBlock("span", {
-                          key: category.id,
-                          class: "font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant"
-                        }, toDisplayString(category.name), 1);
-                      }), 128))
-                    ])
+                    ], 8, ["onClick", "aria-label"])
                   ])
                 ];
               }
             }),
             _: 2
           }, _parent));
+          _push(`<div class="space-y-2"><div class="flex justify-between items-start"><div><span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block">${ssrInterpolate(product.sku || "SIN SKU")}</span>`);
+          _push(ssrRenderComponent(_component_NuxtLink, {
+            to: `/tienda/${product.slug}`,
+            class: "text-lg font-bold tracking-tight hover:text-primary transition-colors"
+          }, {
+            default: withCtx((_, _push2, _parent2, _scopeId) => {
+              if (_push2) {
+                _push2(`${ssrInterpolate(product.name)}`);
+              } else {
+                return [
+                  createTextVNode(toDisplayString(product.name), 1)
+                ];
+              }
+            }),
+            _: 2
+          }, _parent));
+          _push(`</div><span class="text-lg font-light text-primary">$${ssrInterpolate(parseFloat(product.price || "0").toFixed(2))}</span></div><div class="flex gap-2"><!--[-->`);
+          ssrRenderList(product.categories || [], (category) => {
+            _push(`<span class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant">${ssrInterpolate(category.name)}</span>`);
+          });
+          _push(`<!--]--></div></div></div>`);
         });
         _push(`<!--]--></div>`);
       }

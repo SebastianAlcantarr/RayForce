@@ -2,7 +2,7 @@ import { ssrRenderAttrs, ssrRenderList, ssrInterpolate, ssrRenderClass } from 'v
 import { a as useSeoMeta } from './v3.mjs';
 import { useSSRContext } from 'vue';
 import './server.mjs';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

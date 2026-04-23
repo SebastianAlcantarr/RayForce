@@ -1,16 +1,7 @@
 import { ref, shallowRef, toRef, getCurrentInstance, onServerPrefetch, unref, computed, toValue, reactive } from 'vue';
-import { C as hash } from '../_/nitro.mjs';
-import { a as useNuxtApp, b as asyncDataDefaults, c as createError, f as fetchDefaults } from './server.mjs';
-
-function useRequestEvent(nuxtApp) {
-  var _a;
-  nuxtApp || (nuxtApp = useNuxtApp());
-  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
-}
-function useRequestFetch() {
-  var _a;
-  return ((_a = useRequestEvent()) == null ? void 0 : _a.$fetch) || globalThis.$fetch;
-}
+import { E as hash } from '../nitro/nitro.mjs';
+import { u as useRequestFetch } from './ssr.mjs';
+import { b as useNuxtApp, e as asyncDataDefaults, f as createError, g as fetchDefaults } from './server.mjs';
 
 const isDefer = (dedupe) => dedupe === "defer" || dedupe === false;
 function useAsyncData(...args) {

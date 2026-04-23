@@ -41,17 +41,36 @@
           aria-label="Carrito"
         >
           <span class="material-symbols-outlined">shopping_cart</span>
-          <span v-if="cartCount > 0" class="absolute -top-2 -right-2 bg-primary text-on-primary text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
-            {{ cartCount > 99 ? '99+' : cartCount }}
+          <span v-if="isClientReady && itemCount > 0" class="absolute -top-2 -right-2 bg-primary text-on-primary text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            {{ itemCount > 99 ? '99+' : itemCount }}
           </span>
         </NuxtLink>
-        <button
+        <NuxtLink
+          v-if="!isAuthenticated"
+          to="/login"
           class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary"
-          aria-label="Cuenta"
-          type="button"
+          aria-label="Iniciar sesión"
         >
           <span class="material-symbols-outlined">account_circle</span>
-        </button>
+        </NuxtLink>
+        <div v-else class="flex items-center gap-3">
+          <NuxtLink
+            to="/perfil"
+            class="flex items-center gap-2 rounded-full border border-outline-variant/40 bg-white/80 px-3 py-1.5 text-sm text-on-surface-variant hover:text-primary transition-colors"
+            aria-label="Abrir perfil"
+          >
+            <span class="material-symbols-outlined text-xl">account_circle</span>
+            <span class="hidden xl:block max-w-[140px] truncate font-medium">{{ userDisplayName || 'Mi cuenta' }}</span>
+          </NuxtLink>
+          <button
+            class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary"
+            aria-label="Cerrar sesión"
+            type="button"
+            @click="handleLogout"
+          >
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
       </div>
 
       <!-- Bottom border -->
@@ -62,7 +81,8 @@
 
 <script setup>
 const route = useRoute()
-const { cartItems } = useCart()
+const { itemCount } = useCart()
+const { isAuthenticated, userDisplayName, logout } = useAuth()
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -75,6 +95,11 @@ const navLinks = [
 
 const searchQuery = ref('')
 const router = useRouter()
+const isClientReady = ref(false)
+
+onMounted(() => {
+  isClientReady.value = true
+})
 
 function performSearch() {
   if (searchQuery.value.trim()) {
@@ -91,6 +116,8 @@ const isActive = (link) => {
   return route.path.startsWith(link.href)
 }
 
-
-const cartCount = computed(() => cartItems.value?.length || 0)
+function handleLogout() {
+  logout()
+  router.push('/')
+}
 </script>

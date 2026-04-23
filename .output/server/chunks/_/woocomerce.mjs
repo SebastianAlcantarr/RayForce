@@ -1,4 +1,4 @@
-import { e as createError, u as useRuntimeConfig } from './nitro.mjs';
+import { c as createError, u as useRuntimeConfig } from '../nitro/nitro.mjs';
 import { Buffer } from 'buffer';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';

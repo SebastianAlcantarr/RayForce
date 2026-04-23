@@ -1,4 +1,4 @@
-import { c as defineEventHandler, h as getRouterParam, e as createError } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, f as getRouterParam, c as createError } from '../../../nitro/nitro.mjs';
 import { b as getProductBySlug } from '../../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';

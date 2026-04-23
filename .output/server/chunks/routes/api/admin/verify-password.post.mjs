@@ -1,4 +1,4 @@
-import { c as defineEventHandler, r as readBody, u as useRuntimeConfig, e as createError } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, u as useRuntimeConfig, c as createError } from '../../../nitro/nitro.mjs';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { Buffer } from 'node:buffer';

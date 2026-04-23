@@ -2,7 +2,7 @@ import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { ref, defineComponent, mergeProps, withCtx, createVNode, unref, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderSlot, ssrRenderList, ssrRenderClass, ssrInterpolate } from 'vue/server-renderer';
 import { _ as _export_sfc } from './server.mjs';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

@@ -18,17 +18,26 @@ export default {
         'primary-dim': '#004494',
         'primary-container': '#D9E2FF',
         'on-primary': '#FFFFFF',
+        'primary-fixed': '#D9E2FF',
+        'on-primary-fixed': '#001A41',
 
         background: '#F8FAFC',
         surface: '#FFFFFF',
         'surface-container': '#EEF2F7',
         'surface-container-low': '#F4F6FA',
         'surface-container-lowest': '#FCFDFF',
+        'surface-container-high': '#E2E8F0',
+        'surface-container-highest': '#CBD5E1',
 
         'on-surface': '#0F172A',
         'on-surface-variant': '#475569',
         outline: '#64748B',
         'outline-variant': '#CBD5E1',
+
+        error: '#DC2626',
+        'on-error': '#FFFFFF',
+        'error-container': '#FEE2E2',
+        'on-error-container': '#7F1D1D',
       },
       fontFamily: {
         manrope: ['Manrope', 'sans-serif'],
