@@ -1,88 +1,138 @@
-import { ref, watch, onMounted } from 'vue'
-
 export interface CartItem {
-  id: number
-  sku: string
+  id: string
   name: string
+  sku: string
   price: number
   quantity: number
   image: string
+  slug?: string
 }
 
+export interface Cart {
+  items: CartItem[]
+}
+
+const STORAGE_KEY = 'rayforce_cart'
+
 export const useCart = () => {
-  // Utilizamos useState para estado global
-  const cartItems = useState<CartItem[]>('cart-items', () => [])
-  
-  // Sincronizar con localStorage solo en el cliente
-  onMounted(() => {
-    if (import.meta.client) {
-      const storedCart = localStorage.getItem('rayforce-cart')
-      if (storedCart) {
+  // Inicializar el estado global dentro del composable
+  const cart = useState<Cart>('rayforce-cart', () => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
         try {
-          const parsed = JSON.parse(storedCart)
-          cartItems.value = parsed
+          return JSON.parse(stored)
         } catch (e) {
-          console.error("Error parsing cart data", e)
+          console.error('Error loading cart:', e)
+          return { items: [] }
         }
       }
     }
+    return { items: [] }
   })
 
-  // Watcher para guardar en localStorage cuando el carrito cambia
-  watch(cartItems, (newCart) => {
-    if (import.meta.client) {
-      localStorage.setItem('rayforce-cart', JSON.stringify(newCart))
+  // Guardar carrito en localStorage
+  const saveCart = () => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cart.value))
+      } catch (e) {
+        console.error('Error saving cart to localStorage:', e)
+      }
     }
-  }, { deep: true })
+  }
 
-  const addToCart = (product: any, quantity: number = 1) => {
-    const existing = cartItems.value.find(item => item.id === product.id)
-    if (existing) {
-      existing.quantity += quantity
+  // Agregar producto al carrito
+  const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+    const existingItem = cart.value.items.find(item => item.id === product.id)
+    
+    if (existingItem) {
+      existingItem.quantity += 1
     } else {
-      cartItems.value.push({
-        id: product.id,
-        sku: product.sku || 'SIN-SKU',
-        name: product.name,
-        price: parseFloat(product.price || 0),
-        quantity: quantity,
-        image: product.images?.[0]?.src || '/placeholder.jpg'
+      cart.value.items.push({
+        ...product,
+        quantity: 1,
       })
     }
+    
+    // Forzar reactividad
+    cart.value = { items: [...cart.value.items] }
+    saveCart()
   }
 
-  const removeFromCart = (id: number) => {
-    cartItems.value = cartItems.value.filter(item => item.id !== id)
+  // Eliminar producto del carrito
+  const removeFromCart = (productId: string) => {
+    cart.value.items = cart.value.items.filter(item => item.id !== productId)
+    // Forzar reactividad
+    cart.value = { items: [...cart.value.items] }
+    saveCart()
   }
 
-  const updateQuantity = (id: number, quantity: number) => {
-    const item = cartItems.value.find(i => i.id === id)
-    if (item && quantity > 0) {
-      item.quantity = quantity
-    } else if (item && quantity <= 0) {
-      removeFromCart(id)
+  // Actualizar cantidad
+  const updateQuantity = (productId: string, quantity: number) => {
+    const item = cart.value.items.find(i => i.id === productId)
+    if (item) {
+      const validQuantity = Math.max(1, Math.floor(quantity))
+      if (validQuantity === 0) {
+        removeFromCart(productId)
+      } else {
+        item.quantity = validQuantity
+        cart.value = { items: [...cart.value.items] }
+        saveCart()
+      }
     }
   }
 
-  const clearCart = () => {
-    cartItems.value = []
+  // Incrementar cantidad
+  const incrementQuantity = (productId: string) => {
+    const item = cart.value.items.find(i => i.id === productId)
+    if (item) {
+      item.quantity += 1
+      cart.value = { items: [...cart.value.items] }
+      saveCart()
+    }
   }
 
-  const totalItems = computed(() => {
-    return cartItems.value.reduce((total, item) => total + item.quantity, 0)
+  // Decrementar cantidad
+  const decrementQuantity = (productId: string) => {
+    const item = cart.value.items.find(i => i.id === productId)
+    if (item) {
+      if (item.quantity > 1) {
+        item.quantity -= 1
+        cart.value = { items: [...cart.value.items] }
+        saveCart()
+      } else {
+        removeFromCart(productId)
+      }
+    }
+  }
+
+  // Vaciar carrito
+  const clearCart = () => {
+    cart.value = { items: [] }
+    saveCart()
+  }
+
+  // Calcular totales
+  const subtotal = computed(() => {
+    return cart.value.items.reduce((total, item) => total + (item.price * item.quantity), 0)
   })
 
-  const subtotal = computed(() => {
-    return cartItems.value.reduce((total, item) => total + (item.price * item.quantity), 0)
+  const itemCount = computed(() => {
+    return cart.value.items.reduce((count, item) => count + item.quantity, 0)
   })
 
   return {
-    cartItems,
+    cart: readonly(cart),
+    cartItems: computed(() => cart.value.items),
     addToCart,
     removeFromCart,
     updateQuantity,
+    incrementQuantity,
+    decrementQuantity,
     clearCart,
-    totalItems,
-    subtotal
+    subtotal,
+    itemCount,
+    saveCart,
   }
 }

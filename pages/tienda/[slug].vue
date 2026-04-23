@@ -12,11 +12,15 @@
     <div v-else-if="error" class="text-red-600">No se pudo cargar este producto.</div>
 
     <div v-else-if="product" class="space-y-16">
-      <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        <div class="space-y-4">
-          <div class="bg-surface-container-low rounded-xl p-6">
-            <img :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" />
-          </div>
+       <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+         <div class="space-y-4">
+           <div class="bg-surface-container-low rounded-xl p-6">
+             <img :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" />
+           </div>
+           <button @click="handleAddToCart" class="w-full bg-primary text-on-primary py-4 rounded-md font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center justify-center gap-3">
+             <span class="material-symbols-outlined">add_shopping_cart</span>
+             Agregar al carrito
+           </button>
           <div v-if="galleryImages.length > 1" class="flex gap-3 overflow-x-auto">
             <button
               v-for="(image, index) in galleryImages"
@@ -145,7 +149,7 @@
                   <span class="material-symbols-outlined text-xl">shopping_cart</span>
                 </div>
               </div>
-              <button @click.prevent="addToCart(relProduct, 1)" class="w-full mt-4 py-2 bg-primary hover:bg-[#004f9f] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
+              <button @click.prevent="addRelatedToCart(relProduct)" class="w-full mt-4 py-2 bg-primary hover:bg-[#004f9f] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-lg">shopping_cart</span> Agregar al carrito
               </button>
             </div>
@@ -167,6 +171,7 @@ useSeoMeta({
 })
 
 const route = useRoute()
+const router = useRouter()
 const slug = computed(() => String(route.params.slug || ''))
 
 const { data: product, pending, error } = await useFetch<WooProduct>(
@@ -224,15 +229,33 @@ const { addToCart } = useCart()
 const quantity = ref(1)
 const addedToCart = ref(false)
 
-const handleAddToCart = () => {
+const handleAddToCart = async () => {
   if (!product.value) return
-  addToCart(product.value, quantity.value)
-  addedToCart.value = true
-  // Resetear el estado visual después de 2s
-  setTimeout(() => {
-    addedToCart.value = false
-    quantity.value = 1
-  }, 2000)
+
+  for(let i = 0; i < quantity.value; i++) {
+    addToCart({
+      id: product.value.id.toString(),
+      name: product.value.name,
+      sku: product.value.sku || 'SIN SKU',
+      price: parseFloat(product.value.price || '0'),
+      image: product.value.images?.[0]?.src || '/placeholder.jpg',
+      slug: route.params.slug as string,
+    })
+  }
+
+  // Navegar al carrito
+  await router.push('/carrito')
+}
+
+const addRelatedToCart = (relProduct: any) => {
+  addToCart({
+    id: relProduct.id.toString(),
+    name: relProduct.name,
+    sku: relProduct.sku || 'SIN SKU',
+    price: parseFloat(relProduct.price || '0'),
+    image: relProduct.images?.[0]?.src || '/placeholder.jpg',
+    slug: relProduct.slug,
+  })
 }
 
 const whatsappUrl = computed(() => {

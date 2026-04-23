@@ -37,10 +37,13 @@
         </div>
         <NuxtLink
           to="/carrito"
-          class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary"
+          class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary relative"
           aria-label="Carrito"
         >
           <span class="material-symbols-outlined">shopping_cart</span>
+          <span v-if="cartCount > 0" class="absolute -top-2 -right-2 bg-primary text-on-primary text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            {{ cartCount > 99 ? '99+' : cartCount }}
+          </span>
         </NuxtLink>
         <button
           class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary"
@@ -59,6 +62,7 @@
 
 <script setup>
 const route = useRoute()
+const { cartItems } = useCart()
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -86,4 +90,7 @@ const isActive = (link) => {
 
   return route.path.startsWith(link.href)
 }
+
+
+const cartCount = computed(() => cartItems.value?.length || 0)
 </script>
