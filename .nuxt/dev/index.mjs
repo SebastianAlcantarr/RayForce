@@ -1110,22 +1110,7 @@ const plugins = [
 _zd7PVxQ_3Tt4s2kCEUMR8hk0U4FfBUazIrX87YJQiHw
 ];
 
-const assets = {
-  "/index.mjs": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"16d28-739IHz+GOQNE/5GgszbUDsJi/EE\"",
-    "mtime": "2026-04-21T22:46:10.741Z",
-    "size": 93480,
-    "path": "index.mjs"
-  },
-  "/index.mjs.map": {
-    "type": "application/json",
-    "etag": "\"53717-A8fqKty3/DahDowPows71DM0eEg\"",
-    "mtime": "2026-04-21T22:46:10.741Z",
-    "size": 341783,
-    "path": "index.mjs.map"
-  }
-};
+const assets = {};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -2038,20 +2023,31 @@ const verifyPassword_post$1 = /*#__PURE__*/Object.freeze({
 
 const config_get = defineEventHandler((event) => {
   const filePath = resolve(process.cwd(), "data/config.json");
+  const defaultCarousel = { slide1Url: "", slide2Url: "", slide3Url: "" };
+  const defaultSideBanner = { imageUrl: "" };
   if (!existsSync(filePath)) {
     return {
       topBanner: { enabled: false, text: "", link: "", color: "primary" },
-      midBanner: { enabled: false, title: "", subtitle: "", buttonText: "", link: "", imageUrl: "" }
+      midBanner: { enabled: false, title: "", subtitle: "", buttonText: "", link: "", imageUrl: "" },
+      carousel: defaultCarousel,
+      sideBanner: defaultSideBanner
     };
   }
   try {
     const raw = readFileSync(filePath, "utf-8");
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return {
+      ...parsed,
+      carousel: parsed.carousel || defaultCarousel,
+      sideBanner: parsed.sideBanner || defaultSideBanner
+    };
   } catch (e) {
     console.error("Error reading config.json", e);
     return {
       topBanner: { enabled: false },
-      midBanner: { enabled: false }
+      midBanner: { enabled: false },
+      carousel: defaultCarousel,
+      sideBanner: defaultSideBanner
     };
   }
 });

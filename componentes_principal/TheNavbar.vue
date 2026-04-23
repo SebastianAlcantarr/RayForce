@@ -12,11 +12,14 @@
           v-for="link in navLinks"
           :key="link.label"
           :to="link.href"
-          :class="isActive(link)
-            ? 'text-primary border-b-2 border-primary pb-1 font-bold'
-            : 'text-on-surface-variant font-medium hover:text-primary transition-colors'"
+          class="relative font-medium text-[16px] md:text-[17px] transition-all duration-300 group pb-1"
+          :class="isActive(link) ? 'text-primary font-bold' : 'text-on-surface-variant hover:text-primary hover:-translate-y-0.5'"
         >
           {{ link.label }}
+          <span 
+            class="absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300"
+            :class="isActive(link) ? 'w-full' : 'w-0 group-hover:w-full'"
+          ></span>
         </NuxtLink>
       </div>
 

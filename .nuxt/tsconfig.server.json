@@ -59,9 +59,6 @@
       "@vue/runtime-core": [
         "../node_modules/@vue/runtime-core"
       ],
-      "@vue/compiler-sfc": [
-        "../node_modules/@vue/compiler-sfc"
-      ],
       "unplugin-vue-router/client": [
         "../node_modules/unplugin-vue-router/client"
       ],

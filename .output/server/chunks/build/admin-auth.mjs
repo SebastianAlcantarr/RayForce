@@ -1,4 +1,4 @@
-import { d as defineNuxtRouteMiddleware } from './server.mjs';
+import { h as defineNuxtRouteMiddleware } from './server.mjs';
 import 'vue';
 import '../_/nitro.mjs';
 import 'node:http';

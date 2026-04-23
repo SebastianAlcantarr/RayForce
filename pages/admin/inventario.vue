@@ -373,6 +373,8 @@
           ✅ Descargado: <strong>{{ exportResult.filename }}</strong> — {{ exportResult.totalRows }} líneas de {{ exportResult.totalOrders }} pedidos.
         </div>
       </div>
+    </div>
+
     <!-- ═══════════════════════════════════════ -->
     <!-- MÓDULO 5: Administración de Publicidad  -->
     <!-- ═══════════════════════════════════════ -->
@@ -383,7 +385,7 @@
           <div class="module-sub">Configura promociones temporales que se mostrarán en la página principal.</div>
         </div>
         <button class="btn-primary" @click="saveAdsConfig" :disabled="adsSaving">
-          <span v-if="adsSaving" class="spinner-sm" />
+          <span v-if="adsSaving" class="spinner-sm"></span>
           <span v-else>💾 Guardar Banners</span>
         </button>
       </div>
@@ -450,6 +452,42 @@
             <div class="form-field form-field--full">
               <label class="f-label">URL de la Imagen de Fondo</label>
               <input type="text" v-model="adsConfig.midBanner.imageUrl" class="f-input" placeholder="https://unsplash.com/..." />
+            </div>
+          </div>
+        </section>
+
+        <!-- Carousel Background Images -->
+        <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6">
+          <div class="mb-6">
+            <h3 class="text-lg font-bold text-on-surface">Imágenes de Fondo del Carrusel</h3>
+            <p class="text-sm text-outline">Añade imágenes de fondo personalizadas para cada una de las 3 diapositivas del carrusel principal.</p>
+          </div>
+          <div class="grid grid-cols-1 gap-4">
+            <div class="form-field form-field--full">
+              <label class="f-label">Slide 1 (Imagen URL)</label>
+              <input type="text" v-model="adsConfig.carousel.slide1Url" class="f-input" placeholder="https://ejemplo.com/slide1.jpg" />
+            </div>
+            <div class="form-field form-field--full">
+              <label class="f-label">Slide 2 (Imagen URL)</label>
+              <input type="text" v-model="adsConfig.carousel.slide2Url" class="f-input" placeholder="https://ejemplo.com/slide2.jpg" />
+            </div>
+            <div class="form-field form-field--full">
+              <label class="f-label">Slide 3 (Imagen URL)</label>
+              <input type="text" v-model="adsConfig.carousel.slide3Url" class="f-input" placeholder="https://ejemplo.com/slide3.jpg" />
+            </div>
+          </div>
+        </section>
+
+        <!-- Side Banner Image -->
+        <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6">
+          <div class="mb-6">
+            <h3 class="text-lg font-bold text-on-surface">Imagen del Banner Lateral</h3>
+            <p class="text-sm text-outline">Imagen de fondo para la tarjeta lateral junto al carrusel principal.</p>
+          </div>
+          <div class="grid grid-cols-1 gap-4">
+            <div class="form-field form-field--full">
+              <label class="f-label">URL de la Imagen de Fondo</label>
+              <input type="text" v-model="adsConfig.sideBanner.imageUrl" class="f-input" placeholder="https://ejemplo.com/banner-lateral.jpg" />
             </div>
           </div>
         </section>

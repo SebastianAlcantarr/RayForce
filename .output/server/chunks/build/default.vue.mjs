@@ -1,7 +1,7 @@
 import { ref, mergeProps, withCtx, createTextVNode, toDisplayString, unref, createVNode, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderAttr, ssrRenderSlot } from 'vue/server-renderer';
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { u as useRoute, e as useRouter, _ as _export_sfc } from './server.mjs';
+import { u as useRoute, d as useRouter, _ as _export_sfc } from './server.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';

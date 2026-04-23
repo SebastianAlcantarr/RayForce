@@ -8,7 +8,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/admin/inventario.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const inventario = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-386df907"]]);
+const inventario = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-78c33d27"]]);
 export {
   inventario as default
 };

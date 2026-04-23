@@ -12,5 +12,5 @@
 <script setup>
 import TheNavbar from "~/componentes_principal/TheNavbar.vue"
 import TheFooter from "~/componentes_principal/TheFooter.vue"
-import WhatsAppButton from "~/components/WhatsAppButton.vue"
+import WhatsAppButton from "~/componentes_principal/WhatsAppButton.vue"
 </script>

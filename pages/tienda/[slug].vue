@@ -83,6 +83,75 @@
           </div>
         </div>
       </section>
+
+      <!-- Productos Relacionados -->
+      <section class="mt-20">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+          <div>
+            <h2 class="text-3xl font-extrabold tracking-tight mb-2 text-[#0b1f3f]">Productos Relacionados</h2>
+            <div class="h-1 w-12 bg-primary" />
+          </div>
+          <div class="flex gap-2">
+            <button @click="scrollRelated('left')" class="w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container transition-colors text-slate-600">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <button @click="scrollRelated('right')" class="w-10 h-10 rounded-full border border-outline-variant/30 flex items-center justify-center hover:bg-surface-container transition-colors text-slate-600">
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <div v-if="relatedPending" class="flex gap-6 overflow-hidden">
+          <div v-for="i in 4" :key="i" class="animate-pulse min-w-[280px] w-[280px] bg-white rounded-2xl p-6 border border-outline-variant/10 shrink-0">
+            <div class="bg-slate-200 aspect-square rounded-xl mb-4"></div>
+            <div class="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
+            <div class="h-4 bg-slate-200 rounded w-1/2 mb-6"></div>
+          </div>
+        </div>
+        
+        <div 
+          v-else-if="relatedProducts && relatedProducts.length > 0"
+          ref="relatedContainer"
+          class="flex gap-6 overflow-x-auto snap-x snap-mandatory hide-scrollbar pb-4"
+          style="scroll-behavior: smooth;"
+        >
+          <NuxtLink
+            v-for="relProduct in relatedProducts"
+            :key="relProduct.id"
+            :to="`/tienda/${relProduct.slug}`"
+            class="snap-start min-w-[280px] w-[280px] md:min-w-[300px] md:w-[300px] group bg-white rounded-2xl p-5 border border-outline-variant/30 hover:border-primary shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative shrink-0"
+          >
+            <span v-if="relProduct.sale_price" class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10">OFERTA</span>
+            <div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5">
+              <img
+                :src="relProduct.images?.[0]?.src || '/placeholder.jpg'"
+                :alt="relProduct.name"
+                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div class="flex-1 flex flex-col">
+              <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 line-clamp-1 block">
+                {{ relProduct.sku || 'SIN SKU' }} · {{ relProduct.categories?.[0]?.name || 'Equipos' }}
+              </span>
+              <h3 class="font-bold text-base text-slate-800 leading-tight mb-4 group-hover:text-primary transition-colors line-clamp-2">
+                {{ relProduct.name }}
+              </h3>
+              <div class="mt-auto flex items-end justify-between">
+                <div>
+                  <span v-if="relProduct.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ relProduct.regular_price }}</span>
+                  <p class="text-primary font-black text-xl">${{ relProduct.price }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                  <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                </div>
+              </div>
+              <button @click.prevent="addToCart(relProduct, 1)" class="w-full mt-4 py-2 bg-primary hover:bg-[#004f9f] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-lg">shopping_cart</span> Agregar al carrito
+              </button>
+            </div>
+          </NuxtLink>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -103,6 +172,20 @@ const slug = computed(() => String(route.params.slug || ''))
 const { data: product, pending, error } = await useFetch<WooProduct>(
   () => `/api/product/${encodeURIComponent(slug.value)}`,
 )
+
+const { data: relatedData, pending: relatedPending } = await useFetch<any>('/api/products?perPage=8')
+const relatedProducts = computed(() => relatedData.value?.items || [])
+
+const relatedContainer = ref<HTMLElement | null>(null)
+const scrollRelated = (direction: 'left' | 'right') => {
+  if (!relatedContainer.value) return
+  const scrollAmount = 320 // approx width of one card + gap
+  if (direction === 'left') {
+    relatedContainer.value.scrollBy({ left: -scrollAmount, behavior: 'smooth' })
+  } else {
+    relatedContainer.value.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  }
+}
 
 const selectedImageIndex = ref(0)
 
@@ -159,3 +242,13 @@ const whatsappUrl = computed(() => {
   return `https://wa.me/5216621711371?text=${encodeURIComponent(message)}`
 })
 </script>
+
+<style scoped>
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

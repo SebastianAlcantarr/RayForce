@@ -4,7 +4,7 @@
     <!-- Top Banner (Publicidad Administrable) -->
     <div 
       v-if="adsConfig?.topBanner?.enabled" 
-      :class="[`bg-${adsConfig.topBanner.color || 'primary'} text-white text-center py-2.5 px-4 text-[11px] uppercase tracking-widest font-bold font-inter relative z-50`]"
+      :class="[`bg-${adsConfig.topBanner.color || 'primary'} text-white text-center py-2.5 px-4 text-[11px] uppercase tracking-widest font-bold font-inter relative z-30`]"
     >
       <NuxtLink v-if="adsConfig.topBanner.link" :to="adsConfig.topBanner.link" class="hover:underline flex items-center justify-center gap-2">
         {{ adsConfig.topBanner.text }}
@@ -18,31 +18,51 @@
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         <!-- Carrusel Principal (Ocupa 3 columnas en desktop) -->
-        <div class="lg:col-span-3 relative rounded-3xl overflow-hidden bg-surface-container shadow-2xl min-h-[480px] flex items-center transition-all duration-1000 group" :class="slides[activeSlide].bgClass">
-          <!-- Slide Content -->
-          <div class="p-10 md:p-16 z-20 flex flex-col gap-6 relative w-full lg:w-3/4">
-            <span class="inline-block px-4 py-1.5 bg-white/20 text-white backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest w-fit border border-white/30 animate-fade-in-up">
-              {{ slides[activeSlide].badge }}
-            </span>
-            <h1 :key="activeSlide" class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-white animate-fade-in-up" style="animation-delay: 100ms;">
-              {{ slides[activeSlide].title }}
-            </h1>
-            <p :key="'desc-'+activeSlide" class="text-lg md:text-xl text-white/80 font-light max-w-lg mb-4 animate-fade-in-up" style="animation-delay: 200ms;">
-              {{ slides[activeSlide].desc }}
-            </p>
-            <div class="flex flex-wrap gap-4 animate-fade-in-up" style="animation-delay: 300ms;">
-              <NuxtLink
-                :to="slides[activeSlide].btn1Link"
-                class="px-8 py-4 bg-white text-slate-800 font-extrabold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm uppercase tracking-wider"
-              >
-                {{ slides[activeSlide].btn1Text }}
-              </NuxtLink>
+        <div class="lg:col-span-3 relative rounded-3xl overflow-hidden bg-surface-container shadow-2xl min-h-[480px] group">
+          <!-- Slide Container -->
+          <div 
+            class="flex transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] h-full absolute inset-0 w-full"
+            :style="{ transform: `translateX(-${activeSlide * 100}%)` }"
+          >
+            <!-- Slides -->
+            <div 
+              v-for="(slide, index) in slides" 
+              :key="index"
+              class="w-full flex-shrink-0 h-full relative flex items-center justify-start overflow-hidden"
+              :class="slide.bgClass"
+            >
+              <img 
+                v-if="adsConfig?.carousel?.[`slide${index + 1}Url`]"
+                :src="adsConfig.carousel[`slide${index + 1}Url`]"
+                class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay"
+              />
+              
+              <!-- Slide Content -->
+              <div class="p-10 md:p-16 z-20 flex flex-col gap-6 relative w-full lg:w-3/4">
+                <span class="inline-block px-4 py-1.5 bg-white/20 text-white backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest w-fit border border-white/30">
+                  {{ slide.badge }}
+                </span>
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-white">
+                  {{ slide.title }}
+                </h1>
+                <p class="text-lg md:text-xl text-white/80 font-light max-w-lg mb-4">
+                  {{ slide.desc }}
+                </p>
+                <div class="flex flex-wrap gap-4">
+                  <NuxtLink
+                    :to="slide.btn1Link"
+                    class="px-8 py-4 bg-white text-slate-800 font-extrabold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm uppercase tracking-wider"
+                  >
+                    {{ slide.btn1Text }}
+                  </NuxtLink>
+                </div>
+              </div>
+              
+              <!-- Slide Decorative Icon -->
+              <div class="absolute right-[-10%] top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-30 pointer-events-none mix-blend-overlay">
+                <span class="material-symbols-outlined text-[30rem] text-white">{{ slide.icon }}</span>
+              </div>
             </div>
-          </div>
-          
-          <!-- Slide Decorative Icon / Image -->
-          <div class="absolute right-[-10%] top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-30 pointer-events-none mix-blend-overlay">
-            <span class="material-symbols-outlined text-[30rem] text-white transition-opacity duration-1000">{{ slides[activeSlide].icon }}</span>
           </div>
 
           <!-- Carousel Controls -->
@@ -64,6 +84,11 @@
 
         <!-- Banner Lateral Fijo (Promocional Constante) -->
         <NuxtLink to="/nosotros" class="hidden lg:flex flex-col rounded-3xl overflow-hidden shadow-xl bg-gradient-to-b from-[#1e293b] to-[#0f172a] text-white p-10 relative group justify-end">
+          <img 
+            v-if="adsConfig?.sideBanner?.imageUrl"
+            :src="adsConfig.sideBanner.imageUrl"
+            class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60 group-hover:scale-105 transition-transform duration-700"
+          />
           <div class="absolute -right-10 -top-10 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/40 transition-colors duration-700"></div>
           <span class="material-symbols-outlined text-6xl text-primary mb-4 relative z-10 group-hover:scale-110 transition-transform">verified_user</span>
           <h3 class="text-2xl font-bold mb-2 relative z-10 leading-tight">Garantía Directa en Proyectos</h3>

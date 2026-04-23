@@ -4,21 +4,34 @@ import { resolve } from 'node:path'
 export default defineEventHandler((event) => {
   const filePath = resolve(process.cwd(), 'data/config.json')
   
+  const defaultCarousel = { slide1Url: '', slide2Url: '', slide3Url: '' }
+  const defaultSideBanner = { imageUrl: '' }
+
   if (!existsSync(filePath)) {
     return {
       topBanner: { enabled: false, text: '', link: '', color: 'primary' },
-      midBanner: { enabled: false, title: '', subtitle: '', buttonText: '', link: '', imageUrl: '' }
+      midBanner: { enabled: false, title: '', subtitle: '', buttonText: '', link: '', imageUrl: '' },
+      carousel: defaultCarousel,
+      sideBanner: defaultSideBanner
     }
   }
 
   try {
     const raw = readFileSync(filePath, 'utf-8')
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    // Merge with defaults in case they are missing
+    return {
+      ...parsed,
+      carousel: parsed.carousel || defaultCarousel,
+      sideBanner: parsed.sideBanner || defaultSideBanner
+    }
   } catch (e) {
     console.error('Error reading config.json', e)
     return {
       topBanner: { enabled: false },
       midBanner: { enabled: false },
+      carousel: defaultCarousel,
+      sideBanner: defaultSideBanner
     }
   }
 })
