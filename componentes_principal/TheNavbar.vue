@@ -45,6 +45,7 @@
             {{ itemCount > 99 ? '99+' : itemCount }}
           </span>
         </NuxtLink>
+
         <NuxtLink
           v-if="!isAuthenticated"
           to="/login"

@@ -2,7 +2,7 @@ node_modules/
 .nuxt/
 .output/
 dist/
-.env
+../../Proyecto_RayForce/RayForce/.env
 .env.*
 *.log
 .DS_Store
