@@ -1,5 +1,5 @@
-import { toRef, isRef, watch, computed } from 'vue';
-import { a as useNuxtApp } from './server.mjs';
+import { toRef, isRef, computed, readonly } from 'vue';
+import { b as useNuxtApp } from './server.mjs';
 
 const useStateKeyPrefix = "$s";
 function useState(...args) {
@@ -29,53 +29,78 @@ function useState(...args) {
 }
 
 const useCart = () => {
-  const cartItems = useState("cart-items", () => []);
-  watch(cartItems, (newCart) => {
-  }, { deep: true });
-  const addToCart = (product, quantity = 1) => {
-    var _a, _b;
-    const existing = cartItems.value.find((item) => item.id === product.id);
-    if (existing) {
-      existing.quantity += quantity;
+  const cart = useState("rayforce-cart", () => {
+    return { items: [] };
+  });
+  const saveCart = () => {
+  };
+  const addToCart = (product) => {
+    const existingItem = cart.value.items.find((item) => item.id === product.id);
+    if (existingItem) {
+      existingItem.quantity += 1;
     } else {
-      cartItems.value.push({
-        id: product.id,
-        sku: product.sku || "SIN-SKU",
-        name: product.name,
-        price: parseFloat(product.price || 0),
-        quantity,
-        image: ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg"
+      cart.value.items.push({
+        ...product,
+        quantity: 1
       });
     }
+    cart.value = { items: [...cart.value.items] };
   };
-  const removeFromCart = (id) => {
-    cartItems.value = cartItems.value.filter((item) => item.id !== id);
+  const removeFromCart = (productId) => {
+    cart.value.items = cart.value.items.filter((item) => item.id !== productId);
+    cart.value = { items: [...cart.value.items] };
   };
-  const updateQuantity = (id, quantity) => {
-    const item = cartItems.value.find((i) => i.id === id);
-    if (item && quantity > 0) {
-      item.quantity = quantity;
-    } else if (item && quantity <= 0) {
-      removeFromCart(id);
+  const updateQuantity = (productId, quantity) => {
+    const item = cart.value.items.find((i) => i.id === productId);
+    if (item) {
+      const validQuantity = Math.max(1, Math.floor(quantity));
+      if (validQuantity === 0) {
+        removeFromCart(productId);
+      } else {
+        item.quantity = validQuantity;
+        cart.value = { items: [...cart.value.items] };
+      }
+    }
+  };
+  const incrementQuantity = (productId) => {
+    const item = cart.value.items.find((i) => i.id === productId);
+    if (item) {
+      item.quantity += 1;
+      cart.value = { items: [...cart.value.items] };
+    }
+  };
+  const decrementQuantity = (productId) => {
+    const item = cart.value.items.find((i) => i.id === productId);
+    if (item) {
+      if (item.quantity > 1) {
+        item.quantity -= 1;
+        cart.value = { items: [...cart.value.items] };
+      } else {
+        removeFromCart(productId);
+      }
     }
   };
   const clearCart = () => {
-    cartItems.value = [];
+    cart.value = { items: [] };
   };
-  const totalItems = computed(() => {
-    return cartItems.value.reduce((total, item) => total + item.quantity, 0);
-  });
   const subtotal = computed(() => {
-    return cartItems.value.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cart.value.items.reduce((total, item) => total + item.price * item.quantity, 0);
+  });
+  const itemCount = computed(() => {
+    return cart.value.items.reduce((count, item) => count + item.quantity, 0);
   });
   return {
-    cartItems,
+    cart: readonly(cart),
+    cartItems: computed(() => cart.value.items),
     addToCart,
     removeFromCart,
     updateQuantity,
+    incrementQuantity,
+    decrementQuantity,
     clearCart,
-    totalItems,
-    subtotal
+    subtotal,
+    itemCount,
+    saveCart
   };
 };
 

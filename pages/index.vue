@@ -211,7 +211,8 @@
             <div class="mt-auto flex items-end justify-between">
               <div>
                 <span v-if="product.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ product.regular_price }}</span>
-                <p class="text-primary font-black text-xl">${{ product.price }}</p>
+                <span v-if="product.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full">Opciones</span>
+                <p v-else class="text-primary font-black text-xl">${{ product.price }}</p>
               </div>
               <div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                 <span class="material-symbols-outlined text-xl">shopping_cart</span>

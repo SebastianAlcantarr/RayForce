@@ -1,9 +1,10 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { defineComponent, computed, withAsyncContext, mergeProps, withCtx, createTextVNode, unref, createVNode, toDisplayString, openBlock, createBlock, Fragment, renderList, useSSRContext } from 'vue';
-import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrRenderAttr, ssrInterpolate, ssrIncludeBooleanAttr } from 'vue/server-renderer';
+import { defineComponent, computed, withAsyncContext, ref, mergeProps, withCtx, createTextVNode, unref, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderAttr, ssrIncludeBooleanAttr } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
-import { u as useRoute } from './server.mjs';
+import { u as useRoute, a as useRouter } from './server.mjs';
 import { u as useFetch } from './fetch.mjs';
+import { u as useCart } from './useCart.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -32,16 +33,21 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       description: "Catalogo de producto industrial Rayforce."
     });
     const route = useRoute();
+    const router = useRouter();
     const currentPage = computed(() => {
       const value = Number(route.query.page || 1);
       return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
     });
+    const { data: categoriesData } = ([__temp, __restore] = withAsyncContext(() => useFetch("/api/categories", "$_CBZAjg39E")), __temp = await __temp, __restore(), __temp);
+    const categoriesList = computed(() => categoriesData.value || []);
+    const currentCategoryFilter = computed(() => Number(route.query.category) || null);
     const { data, pending, error } = ([__temp, __restore] = withAsyncContext(() => useFetch(
       () => {
         const q = route.query.q ? `&q=${route.query.q}` : "";
-        return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}`;
+        const cat = route.query.category ? `&category=${route.query.category}` : "";
+        return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}${cat}`;
       },
-      "$_CBZAjg39E"
+      "$DFi1N3A7Cj"
     )), __temp = await __temp, __restore(), __temp);
     const products = computed(() => {
       var _a;
@@ -51,6 +57,27 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       var _a;
       return ((_a = data.value) == null ? void 0 : _a.totalPages) || 1;
     });
+    const { addToCart } = useCart();
+    const addedProductId = ref(null);
+    const handleAddToCart = async (product) => {
+      var _a, _b;
+      if (product.type === "variable") {
+        await router.push(`/tienda/${product.slug}`);
+        return;
+      }
+      addToCart({
+        id: product.id.toString(),
+        name: product.name,
+        sku: product.sku || "SIN SKU",
+        price: parseFloat(product.price || "0"),
+        image: ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg",
+        slug: product.slug
+      });
+      addedProductId.value = product.id.toString();
+      setTimeout(() => {
+        addedProductId.value = null;
+      }, 2e3);
+    };
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0;
       _push(`<div${ssrRenderAttrs(mergeProps({ class: "pt-8 pb-20 px-8 max-w-[1440px] mx-auto" }, _attrs))}><header class="mb-16"><nav class="mb-6 flex gap-3 text-[10px] uppercase tracking-[0.1em] font-inter text-outline">`);
@@ -69,7 +96,17 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`<span>/</span><span class="text-on-surface">Tienda</span></nav><div class="flex flex-col md:flex-row md:items-end justify-between gap-8"><h1 class="text-5xl md:text-6xl font-extrabold tracking-tight max-w-2xl leading-[1.1]"> Herramientas Industriales y <span class="text-primary italic font-light">Equipo Eléctrico</span></h1><p class="font-inter text-xs text-outline-variant max-w-xs leading-relaxed uppercase tracking-wider"> Catálogo diseñado para entornos de alta exigencia y mantenimiento de precisión. </p></div></header><div class="flex flex-col md:flex-row gap-16"><aside class="w-full md:w-64 flex-shrink-0"><div class="sticky top-40 space-y-12"><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3><ul class="space-y-4 text-sm font-medium"><li><a class="text-primary flex justify-between items-center group" href="#"> Perforación <span class="text-[10px] bg-primary-fixed px-1.5 py-0.5 rounded text-on-primary-fixed">12</span></a></li><li><a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Herramientas Eléctricas</a></li><li><a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Iluminación</a></li><li><a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Cables y Conductores</a></li></ul></section><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Especificaciones</h3><div class="space-y-6"><div><label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Voltaje</label><div class="space-y-2"><label class="flex items-center gap-3 cursor-pointer group"><input class="w-4 h-4 border-outline-variant rounded-sm text-primary focus:ring-primary/20" type="checkbox"><span class="text-xs font-inter text-on-surface-variant group-hover:text-on-surface transition-colors">110V - 230V</span></label><label class="flex items-center gap-3 cursor-pointer group"><input class="w-4 h-4 border-outline-variant rounded-sm text-primary focus:ring-primary/20" type="checkbox"><span class="text-xs font-inter text-on-surface-variant group-hover:text-on-surface transition-colors">400V Industrial</span></label></div></div><div><label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Grado de Protección IP</label><div class="grid grid-cols-2 gap-2"><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP44</button><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP65</button><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP67</button><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP68</button></div></div></div></section><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Rango de Precio</h3><div class="h-1 bg-surface-container rounded-full relative"><div class="absolute inset-y-0 left-0 right-1/4 bg-primary rounded-full"></div><div class="absolute -top-1.5 left-0 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div><div class="absolute -top-1.5 right-1/4 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div></div><div class="flex justify-between mt-4 font-inter text-[10px] text-outline"><span>$0</span><span>$5,000+</span></div></section></div></aside><div class="flex-1">`);
+      _push(`<span>/</span><span class="text-on-surface">Tienda</span></nav><div class="flex flex-col md:flex-row md:items-end justify-between gap-8"><h1 class="text-5xl md:text-6xl font-extrabold tracking-tight max-w-2xl leading-[1.1]"> Herramientas Industriales y <span class="text-primary italic font-light">Equipo Eléctrico</span></h1><p class="font-inter text-xs text-outline-variant max-w-xs leading-relaxed uppercase tracking-wider"> Catálogo diseñado para entornos de alta exigencia y mantenimiento de precisión. </p></div></header><div class="flex flex-col md:flex-row gap-16"><aside class="w-full md:w-64 flex-shrink-0"><div class="sticky top-40 space-y-12"><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3><ul class="space-y-4 text-sm font-medium"><li><button class="${ssrRenderClass([!unref(currentCategoryFilter) ? "text-primary" : "text-outline hover:text-on-surface", "flex justify-between items-center group w-full text-left transition-colors"])}"> Todas </button></li><!--[-->`);
+      ssrRenderList(unref(categoriesList), (category) => {
+        _push(`<li><button class="${ssrRenderClass([unref(currentCategoryFilter) === category.id ? "text-primary" : "text-outline hover:text-on-surface", "flex justify-between items-center group w-full text-left transition-colors"])}">${ssrInterpolate(category.name)} `);
+        if (category.count > 0) {
+          _push(`<span class="text-[10px] bg-surface-container-high px-1.5 py-0.5 rounded text-on-surface-variant">${ssrInterpolate(category.count)}</span>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</button></li>`);
+      });
+      _push(`<!--]--></ul></section><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Especificaciones</h3><div class="space-y-6"><div><label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Voltaje</label><div class="space-y-2"><label class="flex items-center gap-3 cursor-pointer group"><input class="w-4 h-4 border-outline-variant rounded-sm text-primary focus:ring-primary/20" type="checkbox"><span class="text-xs font-inter text-on-surface-variant group-hover:text-on-surface transition-colors">110V - 230V</span></label><label class="flex items-center gap-3 cursor-pointer group"><input class="w-4 h-4 border-outline-variant rounded-sm text-primary focus:ring-primary/20" type="checkbox"><span class="text-xs font-inter text-on-surface-variant group-hover:text-on-surface transition-colors">400V Industrial</span></label></div></div><div><label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Grado de Protección IP</label><div class="grid grid-cols-2 gap-2"><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP44</button><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP65</button><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP67</button><button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP68</button></div></div></div></section><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Rango de Precio</h3><div class="h-1 bg-surface-container rounded-full relative"><div class="absolute inset-y-0 left-0 right-1/4 bg-primary rounded-full"></div><div class="absolute -top-1.5 left-0 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div><div class="absolute -top-1.5 right-1/4 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm"></div></div><div class="flex justify-between mt-4 font-inter text-[10px] text-outline"><span>$0</span><span>$5,000+</span></div></section></div></aside><div class="flex-1">`);
       if (unref(pending)) {
         _push(`<div class="text-on-surface-variant">Cargando productos...</div>`);
       } else if (unref(error)) {
@@ -79,56 +116,64 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       } else {
         _push(`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16"><!--[-->`);
         ssrRenderList(unref(products), (product) => {
+          _push(`<div class="group block">`);
           _push(ssrRenderComponent(_component_NuxtLink, {
-            key: product.id,
             to: `/tienda/${product.slug}`,
-            class: "group block"
+            class: "block"
           }, {
             default: withCtx((_, _push2, _parent2, _scopeId) => {
               var _a, _b, _c, _d;
               if (_push2) {
-                _push2(`<div class="aspect-[4/5] bg-surface-container-highest overflow-hidden relative mb-6"${_scopeId}><img${ssrRenderAttr("alt", product.name)} class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"${ssrRenderAttr("src", ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg")}${_scopeId}><div class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0" aria-hidden="true"${_scopeId}><span class="material-symbols-outlined"${_scopeId}>add_shopping_cart</span></div></div><div class="space-y-2"${_scopeId}><div class="flex justify-between items-start"${_scopeId}><div${_scopeId}><span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block"${_scopeId}>${ssrInterpolate(product.sku || "SIN SKU")}</span><h4 class="text-lg font-bold tracking-tight"${_scopeId}>${ssrInterpolate(product.name)}</h4></div><span class="text-lg font-light text-primary"${_scopeId}>$${ssrInterpolate(product.price)}</span></div><div class="flex gap-2"${_scopeId}><!--[-->`);
-                ssrRenderList(product.categories || [], (category) => {
-                  _push2(`<span class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant"${_scopeId}>${ssrInterpolate(category.name)}</span>`);
-                });
-                _push2(`<!--]--></div></div>`);
+                _push2(`<div class="aspect-square bg-surface-container-highest overflow-hidden relative mb-6"${_scopeId}><img${ssrRenderAttr("alt", product.name)} class="w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"${ssrRenderAttr("src", ((_b = (_a = product.images) == null ? void 0 : _a[0]) == null ? void 0 : _b.src) || "/placeholder.jpg")}${_scopeId}><button class="${ssrRenderClass([
+                  "absolute bottom-6 right-6 w-12 h-12 text-on-primary rounded-full flex items-center justify-center transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110",
+                  unref(addedProductId) === product.id.toString() ? "bg-green-600 opacity-100" : "bg-primary opacity-0 group-hover:opacity-100"
+                ])}" type="button"${ssrRenderAttr("aria-label", product.type === "variable" ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`)}${_scopeId}><span class="material-symbols-outlined"${_scopeId}>${ssrInterpolate(unref(addedProductId) === product.id.toString() ? "check" : product.type === "variable" ? "visibility" : "add_shopping_cart")}</span></button></div>`);
               } else {
                 return [
-                  createVNode("div", { class: "aspect-[4/5] bg-surface-container-highest overflow-hidden relative mb-6" }, [
+                  createVNode("div", { class: "aspect-square bg-surface-container-highest overflow-hidden relative mb-6" }, [
                     createVNode("img", {
                       alt: product.name,
-                      class: "w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700",
+                      class: "w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700",
                       src: ((_d = (_c = product.images) == null ? void 0 : _c[0]) == null ? void 0 : _d.src) || "/placeholder.jpg"
                     }, null, 8, ["alt", "src"]),
-                    createVNode("div", {
-                      class: "absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0",
-                      "aria-hidden": "true"
+                    createVNode("button", {
+                      onClick: withModifiers(($event) => handleAddToCart(product), ["prevent"]),
+                      class: [
+                        "absolute bottom-6 right-6 w-12 h-12 text-on-primary rounded-full flex items-center justify-center transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110",
+                        unref(addedProductId) === product.id.toString() ? "bg-green-600 opacity-100" : "bg-primary opacity-0 group-hover:opacity-100"
+                      ],
+                      type: "button",
+                      "aria-label": product.type === "variable" ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`
                     }, [
-                      createVNode("span", { class: "material-symbols-outlined" }, "add_shopping_cart")
-                    ])
-                  ]),
-                  createVNode("div", { class: "space-y-2" }, [
-                    createVNode("div", { class: "flex justify-between items-start" }, [
-                      createVNode("div", null, [
-                        createVNode("span", { class: "font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block" }, toDisplayString(product.sku || "SIN SKU"), 1),
-                        createVNode("h4", { class: "text-lg font-bold tracking-tight" }, toDisplayString(product.name), 1)
-                      ]),
-                      createVNode("span", { class: "text-lg font-light text-primary" }, "$" + toDisplayString(product.price), 1)
-                    ]),
-                    createVNode("div", { class: "flex gap-2" }, [
-                      (openBlock(true), createBlock(Fragment, null, renderList(product.categories || [], (category) => {
-                        return openBlock(), createBlock("span", {
-                          key: category.id,
-                          class: "font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant"
-                        }, toDisplayString(category.name), 1);
-                      }), 128))
-                    ])
+                      createVNode("span", { class: "material-symbols-outlined" }, toDisplayString(unref(addedProductId) === product.id.toString() ? "check" : product.type === "variable" ? "visibility" : "add_shopping_cart"), 1)
+                    ], 10, ["onClick", "aria-label"])
                   ])
                 ];
               }
             }),
             _: 2
           }, _parent));
+          _push(`<div class="space-y-2"><div class="flex justify-between items-start"><div><span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block">${ssrInterpolate(product.sku || "SIN SKU")}</span>`);
+          _push(ssrRenderComponent(_component_NuxtLink, {
+            to: `/tienda/${product.slug}`,
+            class: "text-lg font-bold tracking-tight hover:text-primary transition-colors"
+          }, {
+            default: withCtx((_, _push2, _parent2, _scopeId) => {
+              if (_push2) {
+                _push2(`${ssrInterpolate(product.name)}`);
+              } else {
+                return [
+                  createTextVNode(toDisplayString(product.name), 1)
+                ];
+              }
+            }),
+            _: 2
+          }, _parent));
+          _push(`</div><span class="text-lg font-light text-primary">$${ssrInterpolate(parseFloat(product.price || "0").toFixed(2))}</span></div><div class="flex gap-2"><!--[-->`);
+          ssrRenderList(product.categories || [], (category) => {
+            _push(`<span class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant">${ssrInterpolate(category.name)}</span>`);
+          });
+          _push(`<!--]--></div></div></div>`);
         });
         _push(`<!--]--></div>`);
       }

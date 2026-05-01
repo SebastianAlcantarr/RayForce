@@ -1,5 +1,5 @@
 import { c as defineEventHandler, g as getQuery, e as createError } from '../../_/nitro.mjs';
-import { c as getProductsList } from '../../_/woocomerce.mjs';
+import { d as getProductsList } from '../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -17,8 +17,9 @@ const index = defineEventHandler(async (event) => {
   const perPageRaw = Number((_a = query.perPage) != null ? _a : query.limit) || 20;
   const perPage = Math.min(Math.max(perPageRaw, 1), 20);
   const search = String(query.search || query.q || "");
+  const categoryId = Number(query.category) || void 0;
   try {
-    return await getProductsList(page, perPage, search);
+    return await getProductsList(page, perPage, search, categoryId);
   } catch (error) {
     console.error("Error loading products list:", error);
     throw createError({

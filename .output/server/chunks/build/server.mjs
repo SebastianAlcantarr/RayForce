@@ -1162,5 +1162,5 @@ const server = /*#__PURE__*/Object.freeze({
   default: entry_default
 });
 
-export { _export_sfc as _, useNuxtApp as a, asyncDataDefaults as b, createError as c, useRouter as d, useRuntimeConfig as e, fetchDefaults as f, nuxtLinkDefaults as g, defineNuxtRouteMiddleware as h, navigateTo as n, resolveRouteObject as r, server as s, tryUseNuxtApp as t, useRoute as u };
+export { _export_sfc as _, useRouter as a, useNuxtApp as b, asyncDataDefaults as c, createError as d, useRuntimeConfig as e, fetchDefaults as f, nuxtLinkDefaults as g, defineNuxtRouteMiddleware as h, navigateTo as n, resolveRouteObject as r, server as s, tryUseNuxtApp as t, useRoute as u };
 //# sourceMappingURL=server.mjs.map

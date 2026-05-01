@@ -28,7 +28,6 @@
             <div>
               <h3 class="font-bold text-lg text-slate-800">Teléfonos</h3>
               <p class="text-slate-500 font-light mt-1"><a href="tel:6621711371" class="hover:text-primary">662 171 1371</a></p>
-              <p class="text-slate-500 font-light mt-1"><a href="tel:6622151020" class="hover:text-primary">662 215 1020</a> / 662 215 1080</p>
             </div>
           </div>
 
@@ -39,7 +38,6 @@
             <div>
               <h3 class="font-bold text-lg text-slate-800">Mensajes</h3>
               <p class="text-slate-500 font-light mt-1"><a href="mailto:ventas2@rayforce.com.mx" class="hover:text-primary">ventas2@rayforce.com.mx</a></p>
-              <p class="text-slate-500 font-light mt-1"><a href="mailto:m.olea@rayforce.com.mx" class="hover:text-primary">m.olea@rayforce.com.mx</a></p>
             </div>
           </div>
         </div>

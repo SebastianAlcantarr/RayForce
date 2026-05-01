@@ -1,4 +1,4 @@
-import { getProductBySlug } from '~/server/services/woocomerce'
+import { getProductBySlug, getProductVariations } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -19,6 +19,14 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  return product
+  let variations = []
+  if (product.type === 'variable') {
+    variations = await getProductVariations(product.id)
+  }
+
+  return {
+    ...product,
+    variations,
+  }
 })
 

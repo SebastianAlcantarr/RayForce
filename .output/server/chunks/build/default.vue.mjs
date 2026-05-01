@@ -1,7 +1,8 @@
-import { ref, mergeProps, withCtx, createTextVNode, toDisplayString, unref, createVNode, useSSRContext } from 'vue';
-import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderAttr, ssrRenderSlot } from 'vue/server-renderer';
+import { ref, computed, mergeProps, withCtx, createTextVNode, toDisplayString, createVNode, unref, openBlock, createBlock, createCommentVNode, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrInterpolate, ssrRenderClass, ssrRenderAttr, ssrRenderSlot } from 'vue/server-renderer';
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { u as useRoute, d as useRouter, _ as _export_sfc } from './server.mjs';
+import { u as useRoute, a as useRouter, _ as _export_sfc } from './server.mjs';
+import { u as useCart } from './useCart.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -18,6 +19,7 @@ const _sfc_main$3 = {
   __ssrInlineRender: true,
   setup(__props) {
     const route = useRoute();
+    const { cartItems } = useCart();
     const navLinks = [
       { label: "Inicio", href: "/" },
       { label: "Tienda", href: "/tienda" },
@@ -34,6 +36,10 @@ const _sfc_main$3 = {
       }
       return route.path.startsWith(link.href);
     };
+    const cartCount = computed(() => {
+      var _a;
+      return ((_a = cartItems.value) == null ? void 0 : _a.length) || 0;
+    });
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0;
       _push(`<nav${ssrRenderAttrs(mergeProps({ class: "fixed top-0 w-full z-50 bg-[#f9f9fb]/70 backdrop-blur-xl font-manrope antialiased tracking-tight" }, _attrs))}><div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto relative">`);
@@ -57,14 +63,17 @@ const _sfc_main$3 = {
         _push(ssrRenderComponent(_component_NuxtLink, {
           key: link.label,
           to: link.href,
-          class: isActive(link) ? "text-primary border-b-2 border-primary pb-1 font-bold" : "text-on-surface-variant font-medium hover:text-primary transition-colors"
+          class: ["relative font-medium text-[16px] md:text-[17px] transition-all duration-300 group pb-1", isActive(link) ? "text-primary font-bold" : "text-on-surface-variant hover:text-primary hover:-translate-y-0.5"]
         }, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`${ssrInterpolate(link.label)}`);
+              _push2(`${ssrInterpolate(link.label)} <span class="${ssrRenderClass([isActive(link) ? "w-full" : "w-0 group-hover:w-full", "absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300"])}"${_scopeId}></span>`);
             } else {
               return [
-                createTextVNode(toDisplayString(link.label), 1)
+                createTextVNode(toDisplayString(link.label) + " ", 1),
+                createVNode("span", {
+                  class: ["absolute bottom-0 left-0 h-0.5 bg-primary transition-all duration-300", isActive(link) ? "w-full" : "w-0 group-hover:w-full"]
+                }, null, 2)
               ];
             }
           }),
@@ -74,15 +83,24 @@ const _sfc_main$3 = {
       _push(`<!--]--></div><div class="flex items-center space-x-4"><div class="relative hidden lg:block group"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span><input${ssrRenderAttr("value", unref(searchQuery))} class="pl-10 pr-4 py-2 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg text-sm w-56 outline-none transition-all" placeholder="Buscar productos..." type="text"></div>`);
       _push(ssrRenderComponent(_component_NuxtLink, {
         to: "/carrito",
-        class: "scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary",
+        class: "scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary relative",
         "aria-label": "Carrito"
       }, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
             _push2(`<span class="material-symbols-outlined"${_scopeId}>shopping_cart</span>`);
+            if (unref(cartCount) > 0) {
+              _push2(`<span class="absolute -top-2 -right-2 bg-primary text-on-primary text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center"${_scopeId}>${ssrInterpolate(unref(cartCount) > 99 ? "99+" : unref(cartCount))}</span>`);
+            } else {
+              _push2(`<!---->`);
+            }
           } else {
             return [
-              createVNode("span", { class: "material-symbols-outlined" }, "shopping_cart")
+              createVNode("span", { class: "material-symbols-outlined" }, "shopping_cart"),
+              unref(cartCount) > 0 ? (openBlock(), createBlock("span", {
+                key: 0,
+                class: "absolute -top-2 -right-2 bg-primary text-on-primary text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center"
+              }, toDisplayString(unref(cartCount) > 99 ? "99+" : unref(cartCount)), 1)) : createCommentVNode("", true)
             ];
           }
         }),
@@ -101,7 +119,84 @@ _sfc_main$3.setup = (props, ctx) => {
 
 const _sfc_main$2 = {};
 function _sfc_ssrRender$1(_ctx, _push, _parent, _attrs) {
-  _push(`<footer${ssrRenderAttrs(mergeProps({ class: "bg-surface-container-lowest w-full border-t border-outline-variant/15 font-manrope text-sm tracking-wide" }, _attrs))}><div class="max-w-screen-2xl mx-auto px-8 py-12 grid grid-cols-1 md:grid-cols-3 gap-8"><div class="space-y-4"><div class="font-bold text-on-surface uppercase text-lg">Rayforce</div><p class="text-on-surface-variant max-w-xs leading-relaxed"> Distribuidor líder en componentes eléctricos y hardware de precisión. Tecnología al servicio de la industria. </p></div><div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:col-span-2"><div class="space-y-3 flex flex-col"><span class="font-bold text-on-surface text-xs uppercase tracking-widest mb-2">Contacto</span><a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" href="tel:6621711371"><span class="material-symbols-outlined text-sm">phone</span> 662 171 1371 </a><a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" href="mailto:ventas2@rayforce.com.mx"><span class="material-symbols-outlined text-sm">mail</span> ventas2@rayforce.com.mx </a></div><div class="space-y-3 flex flex-col"><span class="font-bold text-on-surface text-xs uppercase tracking-widest mb-2">Redes</span><a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" href="https://www.instagram.com/rayforce.mx/" target="_blank"><span class="material-symbols-outlined text-sm">photo_camera</span> @rayforce.mx </a><a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" href="https://www.facebook.com/people/Rayforce/61586457534163/#" target="_blank"><span class="material-symbols-outlined text-sm">thumb_up</span> Rayforce </a><a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" href="https://www.tiktok.com/@rayforce.mx" target="_blank"><span class="material-symbols-outlined text-sm">play_arrow</span> @rayfrce.mx </a></div><div class="space-y-3 flex flex-col"><span class="font-bold text-on-surface text-xs uppercase tracking-widest mb-2">Legal</span><a class="text-on-surface-variant hover:text-primary transition-colors block" href="#">Aviso de Privacidad</a><a class="text-on-surface-variant hover:text-primary transition-colors block" href="#">Términos y Condiciones</a></div></div></div><div class="border-t border-outline-variant/15 mt-8 max-w-screen-2xl mx-auto px-8 py-6 flex flex-col sm:flex-row justify-between items-center text-xs text-outline-variant"><span>© ${ssrInterpolate((/* @__PURE__ */ new Date()).getFullYear())} Rayforce. Todos los derechos reservados.</span></div></footer>`);
+  const _component_NuxtLink = __nuxt_component_0;
+  _push(`<footer${ssrRenderAttrs(mergeProps({ class: "bg-surface-container-lowest w-full border-t border-outline-variant/15 font-manrope text-sm tracking-wide" }, _attrs))}><div class="max-w-screen-2xl mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12"><div class="space-y-4"><div class="text-3xl md:text-4xl tracking-tighter font-rayforce mb-10"><span class="text-3xl md:text-5xl tracking-tighter text-primary font-rayforce">Rayforce</span></div><p class="text-on-surface-variant max-w-xs leading-relaxed text-xs"> Soluciones eléctricas, materiales de calidad y servicios integrales. Más de 2,000 productos disponibles para proyectos residenciales, comerciales e industriales. </p></div><div class="space-y-4"><span class="font-bold text-primary text-xs uppercase tracking-widest block">Navegación</span><nav class="space-y-3 flex flex-col">`);
+  _push(ssrRenderComponent(_component_NuxtLink, {
+    class: "text-on-surface-variant hover:text-primary transition-colors text-xs",
+    to: "/tienda"
+  }, {
+    default: withCtx((_, _push2, _parent2, _scopeId) => {
+      if (_push2) {
+        _push2(`Tienda en Línea`);
+      } else {
+        return [
+          createTextVNode("Tienda en Línea")
+        ];
+      }
+    }),
+    _: 1
+  }, _parent));
+  _push(ssrRenderComponent(_component_NuxtLink, {
+    class: "text-on-surface-variant hover:text-primary transition-colors text-xs",
+    to: "/soporte"
+  }, {
+    default: withCtx((_, _push2, _parent2, _scopeId) => {
+      if (_push2) {
+        _push2(`Servicios`);
+      } else {
+        return [
+          createTextVNode("Servicios")
+        ];
+      }
+    }),
+    _: 1
+  }, _parent));
+  _push(ssrRenderComponent(_component_NuxtLink, {
+    class: "text-on-surface-variant hover:text-primary transition-colors text-xs",
+    to: "/cotizar"
+  }, {
+    default: withCtx((_, _push2, _parent2, _scopeId) => {
+      if (_push2) {
+        _push2(`Cotizar Proyecto`);
+      } else {
+        return [
+          createTextVNode("Cotizar Proyecto")
+        ];
+      }
+    }),
+    _: 1
+  }, _parent));
+  _push(ssrRenderComponent(_component_NuxtLink, {
+    class: "text-on-surface-variant hover:text-primary transition-colors text-xs",
+    to: "/nosotros"
+  }, {
+    default: withCtx((_, _push2, _parent2, _scopeId) => {
+      if (_push2) {
+        _push2(`Sobre Nosotros`);
+      } else {
+        return [
+          createTextVNode("Sobre Nosotros")
+        ];
+      }
+    }),
+    _: 1
+  }, _parent));
+  _push(ssrRenderComponent(_component_NuxtLink, {
+    class: "text-on-surface-variant hover:text-primary transition-colors text-xs",
+    to: "/soporte"
+  }, {
+    default: withCtx((_, _push2, _parent2, _scopeId) => {
+      if (_push2) {
+        _push2(`Contacto`);
+      } else {
+        return [
+          createTextVNode("Contacto")
+        ];
+      }
+    }),
+    _: 1
+  }, _parent));
+  _push(`</nav></div><div class="space-y-4"><span class="font-bold text-primary text-xs uppercase tracking-widest block">Categorías</span><div class="space-y-3 flex flex-col"><a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Material Eléctrico</a><a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Herramientas</a><a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Iluminación</a><a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Interruptores y Tableros</a><a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Ferretería General</a></div></div><div class="space-y-4"><span class="font-bold text-primary text-xs uppercase tracking-widest block">Contacto</span><div class="space-y-3 text-xs"><div class="flex items-start gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">location_on</span><span>Campeche 250, Col San Benito,<br>C.P. 83100, Hermosillo, Sonora</span></div><div class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-sm flex-shrink-0">phone</span><span>(662) 171 1371</span></div><div class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-sm flex-shrink-0">mail</span><span>ventas2@rayforce.com.mx</span></div><div class="flex items-start gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">schedule</span><span>Lun - Vie: 8:00 - 18:00 | Sáb: 8:00 - 14:00</span></div></div></div></div><div class="max-w-screen-2xl mx-auto px-8 py-8 border-t border-outline-variant/15 flex flex-col items-center justify-center gap-4"><span class="font-bold text-primary text-xs uppercase tracking-widest block mb-2">Síguenos en nuestras redes</span><div class="flex gap-6 items-center"><a href="https://www.facebook.com/people/Rayforce/61586457534163/#" target="_blank" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-all flex items-center justify-center text-on-surface-variant"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path></svg></a><a href="https://www.instagram.com/rayforce.mx/" target="_blank" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-all flex items-center justify-center text-on-surface-variant"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path></svg></a><a href="https://www.tiktok.com/@rayforce.mx" target="_blank" class="w-10 h-10 rounded-full bg-surface-container-high hover:bg-primary hover:text-white transition-all flex items-center justify-center text-on-surface-variant"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 448 512" aria-hidden="true"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"></path></svg></a></div></div><div class="max-w-screen-2xl mx-auto px-8 py-6 border-t border-outline-variant/15 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-on-surface-variant"><div class="flex gap-6"><a class="hover:text-primary transition-colors" href="#">Aviso de Privacidad</a><a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a><a class="hover:text-primary transition-colors" href="#">Devoluciones</a></div></div></footer>`);
 }
 const _sfc_setup$2 = _sfc_main$2.setup;
 _sfc_main$2.setup = (props, ctx) => {
@@ -124,7 +219,7 @@ function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
 const _sfc_setup$1 = _sfc_main$1.setup;
 _sfc_main$1.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("components/WhatsAppButton.vue");
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("componentes_principal/WhatsAppButton.vue");
   return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
 const WhatsAppButton = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["ssrRender", _sfc_ssrRender]]);

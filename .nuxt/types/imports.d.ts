@@ -182,7 +182,7 @@ declare global {
   export type { NotifyType, Notification } from '../../composables/useAdminNotify'
   import('../../composables/useAdminNotify')
   // @ts-ignore
-  export type { CartItem } from '../../composables/useCart'
+  export type { CartItem, Cart } from '../../composables/useCart'
   import('../../composables/useCart')
 }
 // for vue template auto import

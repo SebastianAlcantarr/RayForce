@@ -86,6 +86,7 @@ export interface WooProductAttribute {
   id?: number
   name: string
   options?: string[]
+  option?: string
 }
 
 export interface WooProductCategory {
@@ -111,7 +112,9 @@ export interface WooProduct {
   stock_quantity?: number | null
   categories?: WooProductCategory[]
   images?: WooProductImage[]
+  image?: WooProductImage
   attributes?: WooProductAttribute[]
+  variations?: WooProduct[]
 }
 
 export interface WooCategory {
@@ -223,7 +226,13 @@ export async function getProductBySlug(slug: string) {
   return products[0] || null
 }
 
-export async function getProductsList(page = 1, perPage = 20, search = ''): Promise<WooPaginatedResult<WooProduct>> {
+export async function getProductVariations(productId: number) {
+  return wooFetch<WooProduct[]>(`/products/${productId}/variations`, {
+    params: { per_page: 100 },
+  })
+}
+
+export async function getProductsList(page = 1, perPage = 20, search = '', categoryId?: number): Promise<WooPaginatedResult<WooProduct>> {
   const params: Record<string, string | number> = {
     orderby: 'date',
     order: 'desc',
@@ -231,6 +240,10 @@ export async function getProductsList(page = 1, perPage = 20, search = ''): Prom
   
   if (search) {
     params.search = search
+  }
+
+  if (categoryId) {
+    params.category = categoryId
   }
 
   const paginated = await getProductsPaginated(params, page, perPage)

@@ -6,9 +6,10 @@ export default defineEventHandler(async (event) => {
   const perPageRaw = Number(query.perPage ?? query.limit) || 20
   const perPage = Math.min(Math.max(perPageRaw, 1), 20)
   const search = String(query.search || query.q || '')
+  const categoryId = Number(query.category) || undefined
 
   try {
-    return await getProductsList(page, perPage, search)
+    return await getProductsList(page, perPage, search, categoryId)
   }
   catch (error) {
     console.error('Error loading products list:', error)
@@ -18,4 +19,3 @@ export default defineEventHandler(async (event) => {
     })
   }
 })
-

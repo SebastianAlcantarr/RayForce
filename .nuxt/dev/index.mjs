@@ -1110,7 +1110,22 @@ const plugins = [
 _zd7PVxQ_3Tt4s2kCEUMR8hk0U4FfBUazIrX87YJQiHw
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"5503f-T/eeikYIt0mtYBdCg8Nqr5RRBb8\"",
+    "mtime": "2026-05-01T20:15:33.235Z",
+    "size": 348223,
+    "path": "index.mjs.map"
+  },
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"17415-DcVpnE2nyf0KZ4271nIN+YDE/rg\"",
+    "mtime": "2026-05-01T20:15:33.235Z",
+    "size": 95253,
+    "path": "index.mjs"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -1208,6 +1223,7 @@ const _lazy_D3q7Wk = () => Promise.resolve().then(function () { return searchPro
 const _lazy_sWE4iI = () => Promise.resolve().then(function () { return updateProduct_put$1; });
 const _lazy_f2pDbt = () => Promise.resolve().then(function () { return uploadImage_post$1; });
 const _lazy__73cLi = () => Promise.resolve().then(function () { return verifyPassword_post$1; });
+const _lazy_X8aydS = () => Promise.resolve().then(function () { return categories$1; });
 const _lazy_KmmL14 = () => Promise.resolve().then(function () { return config_get$1; });
 const _lazy_6OMOAd = () => Promise.resolve().then(function () { return _slug_$1; });
 const _lazy_GB2hZA = () => Promise.resolve().then(function () { return index$1; });
@@ -1224,6 +1240,7 @@ const handlers = [
   { route: '/api/admin/update-product', handler: _lazy_sWE4iI, lazy: true, middleware: false, method: "put" },
   { route: '/api/admin/upload-image', handler: _lazy_f2pDbt, lazy: true, middleware: false, method: "post" },
   { route: '/api/admin/verify-password', handler: _lazy__73cLi, lazy: true, middleware: false, method: "post" },
+  { route: '/api/categories', handler: _lazy_X8aydS, lazy: true, middleware: false, method: undefined },
   { route: '/api/config', handler: _lazy_KmmL14, lazy: true, middleware: false, method: "get" },
   { route: '/api/product/:slug', handler: _lazy_6OMOAd, lazy: true, middleware: false, method: undefined },
   { route: '/api/products', handler: _lazy_GB2hZA, lazy: true, middleware: false, method: undefined },
@@ -1658,13 +1675,21 @@ async function getProductBySlug(slug) {
   });
   return products[0] || null;
 }
-async function getProductsList(page = 1, perPage = 20, search = "") {
+async function getProductVariations(productId) {
+  return wooFetch(`/products/${productId}/variations`, {
+    params: { per_page: 100 }
+  });
+}
+async function getProductsList(page = 1, perPage = 20, search = "", categoryId) {
   const params = {
     orderby: "date",
     order: "desc"
   };
   if (search) {
     params.search = search;
+  }
+  if (categoryId) {
+    params.category = categoryId;
   }
   const paginated = await getProductsPaginated(params, page, perPage);
   return {
@@ -2021,6 +2046,16 @@ const verifyPassword_post$1 = /*#__PURE__*/Object.freeze({
   default: verifyPassword_post
 });
 
+const categories = defineEventHandler(async () => {
+  const categories = await getCategories();
+  return categories.filter((c) => c.name !== "Uncategorized");
+});
+
+const categories$1 = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  default: categories
+});
+
 const config_get = defineEventHandler((event) => {
   const filePath = resolve(process.cwd(), "data/config.json");
   const defaultCarousel = { slide1Url: "", slide2Url: "", slide3Url: "" };
@@ -2072,7 +2107,14 @@ const _slug_ = defineEventHandler(async (event) => {
       statusMessage: "Producto no encontrado"
     });
   }
-  return product;
+  let variations = [];
+  if (product.type === "variable") {
+    variations = await getProductVariations(product.id);
+  }
+  return {
+    ...product,
+    variations
+  };
 });
 
 const _slug_$1 = /*#__PURE__*/Object.freeze({
@@ -2087,8 +2129,9 @@ const index = defineEventHandler(async (event) => {
   const perPageRaw = Number((_a = query.perPage) != null ? _a : query.limit) || 20;
   const perPage = Math.min(Math.max(perPageRaw, 1), 20);
   const search = String(query.search || query.q || "");
+  const categoryId = Number(query.category) || void 0;
   try {
-    return await getProductsList(page, perPage, search);
+    return await getProductsList(page, perPage, search, categoryId);
   } catch (error) {
     console.error("Error loading products list:", error);
     throw createError({

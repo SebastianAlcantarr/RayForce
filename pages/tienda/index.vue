@@ -23,19 +23,23 @@
             <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3>
             <ul class="space-y-4 text-sm font-medium">
               <li>
-                <a class="text-primary flex justify-between items-center group" href="#">
-                  Perforación
-                  <span class="text-[10px] bg-primary-fixed px-1.5 py-0.5 rounded text-on-primary-fixed">12</span>
-                </a>
+                <button
+                  class="flex justify-between items-center group w-full text-left transition-colors"
+                  :class="!currentCategoryFilter ? 'text-primary' : 'text-outline hover:text-on-surface'"
+                  @click="filterByCategory(null)"
+                >
+                  Todas
+                </button>
               </li>
-              <li>
-                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Herramientas Eléctricas</a>
-              </li>
-              <li>
-                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Iluminación</a>
-              </li>
-              <li>
-                <a class="text-outline hover:text-on-surface transition-colors flex justify-between items-center" href="#">Cables y Conductores</a>
+              <li v-for="category in categoriesList" :key="category.id">
+                <button
+                  class="flex justify-between items-center group w-full text-left transition-colors"
+                  :class="currentCategoryFilter === category.id ? 'text-primary' : 'text-outline hover:text-on-surface'"
+                  @click="filterByCategory(category.id)"
+                >
+                  {{ category.name }}
+                  <span v-if="category.count > 0" class="text-[10px] bg-surface-container-high px-1.5 py-0.5 rounded text-on-surface-variant">{{ category.count }}</span>
+                </button>
               </li>
             </ul>
           </section>
@@ -106,11 +110,16 @@
                 />
                 <button
                     @click.prevent="handleAddToCart(product)"
-                    class="absolute bottom-6 right-6 w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110"
+                    :class="[
+                      'absolute bottom-6 right-6 w-12 h-12 text-on-primary rounded-full flex items-center justify-center transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110',
+                      addedProductId === product.id.toString() ? 'bg-green-600 opacity-100' : 'bg-primary opacity-0 group-hover:opacity-100'
+                    ]"
                     type="button"
-                    :aria-label="`Agregar ${product.name} al carrito`"
+                    :aria-label="product.type === 'variable' ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`"
                 >
-                  <span class="material-symbols-outlined">add_shopping_cart</span>
+                  <span class="material-symbols-outlined">
+                    {{ addedProductId === product.id.toString() ? 'check' : (product.type === 'variable' ? 'visibility' : 'add_shopping_cart') }}
+                  </span>
                 </button>
               </div>
             </NuxtLink>
@@ -120,7 +129,8 @@
                   <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 block">{{ product.sku || 'SIN SKU' }}</span>
                   <NuxtLink :to="`/tienda/${product.slug}`" class="text-lg font-bold tracking-tight hover:text-primary transition-colors">{{ product.name }}</NuxtLink>
                 </div>
-                <span class="text-lg font-light text-primary">${{ parseFloat(product.price || '0').toFixed(2) }}</span>
+                <span v-if="product.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full mt-1">Opciones</span>
+                <span v-else class="text-lg font-light text-primary">${{ parseFloat(product.price || '0').toFixed(2) }}</span>
               </div>
               <div class="flex gap-2">
                 <span
@@ -178,10 +188,29 @@ const currentPage = computed(() => {
 
 const perPage = 20
 
+const { data: categoriesData } = await useFetch<any[]>('/api/categories')
+const categoriesList = computed(() => categoriesData.value || [])
+
+const filterByCategory = (categoryId: number | null) => {
+  const queryParams: Record<string, any> = { ...route.query }
+  if (categoryId) {
+    queryParams.category = String(categoryId)
+  } else {
+    delete queryParams.category
+  }
+  // Reset page when filtering
+  delete queryParams.page
+  
+  router.push({ path: '/tienda', query: queryParams })
+}
+
+const currentCategoryFilter = computed(() => Number(route.query.category) || null)
+
 const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
   () => {
     const q = route.query.q ? `&q=${route.query.q}` : ''
-    return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}`
+    const cat = route.query.category ? `&category=${route.query.category}` : ''
+    return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}${cat}`
   }
 )
 
@@ -189,8 +218,14 @@ const products = computed(() => data.value?.items || [])
 const totalPages = computed(() => data.value?.totalPages || 1)
 
 const { addToCart } = useCart()
+const addedProductId = ref<string | null>(null)
 
 const handleAddToCart = async (product: WooProduct) => {
+  if (product.type === 'variable') {
+    await router.push(`/tienda/${product.slug}`)
+    return
+  }
+
   addToCart({
     id: product.id.toString(),
     name: product.name,
@@ -200,8 +235,10 @@ const handleAddToCart = async (product: WooProduct) => {
     slug: product.slug,
   })
 
-  // Navegar al carrito
-  await router.push('/carrito')
+  addedProductId.value = product.id.toString()
+  setTimeout(() => {
+    addedProductId.value = null
+  }, 2000)
 }
 
 async function goToPage(page: number) {
@@ -212,6 +249,7 @@ async function goToPage(page: number) {
   const queryParams: Record<string, string> = {}
   if (page > 1) queryParams.page = String(page)
   if (route.query.q) queryParams.q = String(route.query.q)
+  if (route.query.category) queryParams.category = String(route.query.category)
 
   await navigateTo({
     path: '/tienda',

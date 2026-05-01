@@ -8,7 +8,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("layouts/admin.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const admin = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-af716df2"]]);
+const admin = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-eb585ed8"]]);
 export {
   admin as default
 };

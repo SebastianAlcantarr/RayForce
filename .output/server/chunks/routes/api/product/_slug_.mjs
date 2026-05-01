@@ -1,5 +1,5 @@
 import { c as defineEventHandler, h as getRouterParam, e as createError } from '../../../_/nitro.mjs';
-import { b as getProductBySlug } from '../../../_/woocomerce.mjs';
+import { b as getProductBySlug, c as getProductVariations } from '../../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -25,7 +25,14 @@ const _slug_ = defineEventHandler(async (event) => {
       statusMessage: "Producto no encontrado"
     });
   }
-  return product;
+  let variations = [];
+  if (product.type === "variable") {
+    variations = await getProductVariations(product.id);
+  }
+  return {
+    ...product,
+    variations
+  };
 });
 
 export { _slug_ as default };

@@ -30,6 +30,9 @@ declare module "nitropack/types" {
     '/api/admin/verify-password': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/admin/verify-password.post').default>>>>
     }
+    '/api/categories': {
+      'default': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/categories').default>>>>
+    }
     '/api/config': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/config.get').default>>>>
     }

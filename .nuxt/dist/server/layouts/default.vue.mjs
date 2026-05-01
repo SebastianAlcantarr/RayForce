@@ -2,7 +2,7 @@ import { mergeProps, useSSRContext } from "vue";
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderSlot } from "vue/server-renderer";
 import _sfc_main$1 from "../componentes_principal/TheNavbar.vue.mjs";
 import TheFooter from "../componentes_principal/TheFooter.vue.mjs";
-import WhatsAppButton from "../components/WhatsAppButton.vue.mjs";
+import WhatsAppButton from "../componentes_principal/WhatsAppButton.vue.mjs";
 const _sfc_main = {
   __name: "default",
   __ssrInlineRender: true,

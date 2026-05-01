@@ -116,13 +116,21 @@ async function getProductBySlug(slug) {
   });
   return products[0] || null;
 }
-async function getProductsList(page = 1, perPage = 20, search = "") {
+async function getProductVariations(productId) {
+  return wooFetch(`/products/${productId}/variations`, {
+    params: { per_page: 100 }
+  });
+}
+async function getProductsList(page = 1, perPage = 20, search = "", categoryId) {
   const params = {
     orderby: "date",
     order: "desc"
   };
   if (search) {
     params.search = search;
+  }
+  if (categoryId) {
+    params.category = categoryId;
   }
   const paginated = await getProductsPaginated(params, page, perPage);
   return {
@@ -137,5 +145,5 @@ async function getCategories() {
   });
 }
 
-export { getWooAuth as a, getProductBySlug as b, getProductsList as c, getCategories as g, wooFetch as w };
+export { getWooAuth as a, getProductBySlug as b, getProductVariations as c, getProductsList as d, getCategories as g, wooFetch as w };
 //# sourceMappingURL=woocomerce.mjs.map

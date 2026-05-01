@@ -14,13 +14,9 @@
     <div v-else-if="product" class="space-y-16">
        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
          <div class="space-y-4">
-           <div class="bg-surface-container-low rounded-xl p-6">
+           <div class="bg-surface-container-low rounded-xl p-6 mb-4">
              <img :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" />
            </div>
-           <button @click="handleAddToCart" class="w-full bg-primary text-on-primary py-4 rounded-md font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors flex items-center justify-center gap-3">
-             <span class="material-symbols-outlined">add_shopping_cart</span>
-             Agregar al carrito
-           </button>
           <div v-if="galleryImages.length > 1" class="flex gap-3 overflow-x-auto">
             <button
               v-for="(image, index) in galleryImages"
@@ -37,9 +33,36 @@
 
         <div class="space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ product.name }}</h1>
-          <p class="text-primary text-3xl font-black">${{ product.price }}</p>
-          <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ product.sku || 'SIN SKU' }}</p>
-          <div class="text-on-surface-variant leading-relaxed" v-html="product.short_description || product.description || ''" />
+          <p class="text-primary text-3xl font-black">${{ currentPrice }}</p>
+          <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ currentSku }}</p>
+          <div class="text-on-surface-variant leading-relaxed" v-html="activeVariation?.description || product.short_description || product.description || ''" />
+          
+          <!-- Variaciones (Chips) -->
+          <div v-if="product.type === 'variable' && product.attributes && product.attributes.length > 0" class="space-y-4 pt-4 border-t border-outline-variant/20">
+            <div v-for="attr in product.attributes.filter(a => a.options && a.options.length > 0)" :key="attr.name">
+              <span class="font-bold text-sm block mb-2">{{ attr.name }}</span>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="opt in attr.options"
+                  :key="opt"
+                  @click="selectOption(attr.name, opt)"
+                  :class="[
+                    'px-4 py-2 text-sm font-bold rounded-full border transition-all',
+                    selectedOptions[attr.name] === opt 
+                      ? 'bg-primary text-white border-primary' 
+                      : 'bg-white text-slate-700 border-outline-variant/30 hover:border-primary'
+                  ]"
+                >
+                  {{ opt }}
+                </button>
+              </div>
+            </div>
+            
+            <p v-if="variationError" class="text-red-500 text-sm font-bold mt-2 flex items-center gap-1 animate-pulse">
+              <span class="material-symbols-outlined text-sm">error</span>
+              {{ variationError }}
+            </p>
+          </div>
           
           <div class="pt-6 mt-6 border-t border-outline-variant/20 flex flex-col sm:flex-row gap-4">
             <!-- Selector de Cantidad -->
@@ -50,13 +73,20 @@
             </div>
             
             <!-- Botón Agregar -->
-            <button @click="handleAddToCart" class="flex-1 bg-primary text-white font-bold h-12 rounded-md hover:bg-[#004f9f] transition-all flex items-center justify-center gap-2 active:scale-95">
-              <span class="material-symbols-outlined text-xl">{{ addedToCart ? 'check_circle' : 'shopping_cart' }}</span>
-              {{ addedToCart ? 'Añadido al Carrito' : 'Agregar al Carrito' }}
+            <button 
+              :disabled="product.stock_status === 'outofstock'"
+              @click="handleAddToCart" 
+              :class="[
+                addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-primary hover:bg-[#004f9f]',
+                product.stock_status === 'outofstock' ? 'opacity-60 cursor-not-allowed bg-slate-400 hover:bg-slate-400' : 'active:scale-95'
+              ]" 
+              class="flex-1 text-white font-bold h-12 rounded-md transition-all flex items-center justify-center gap-2 shadow-sm">
+              <span class="material-symbols-outlined text-xl">{{ addedToCart ? 'check_circle' : (product.stock_status === 'outofstock' ? 'remove_shopping_cart' : 'shopping_cart') }}</span>
+              {{ product.stock_status === 'outofstock' ? 'Agotado' : (addedToCart ? '¡Añadido!' : 'Agregar al Carrito') }}
             </button>
             
             <!-- Botón WhatsApp -->
-            <a :href="whatsappUrl" target="_blank" class="flex-1 border border-primary text-primary font-bold h-12 rounded-md hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
+            <a :href="whatsappUrl" target="_blank" class="flex-1 border-2 border-primary/20 text-primary font-bold h-12 rounded-md hover:border-primary hover:bg-blue-50 transition-all flex items-center justify-center gap-2 shadow-sm">
               <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" class="w-5 h-5"/>
               Preguntar
             </a>
@@ -143,7 +173,8 @@
               <div class="mt-auto flex items-end justify-between">
                 <div>
                   <span v-if="relProduct.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ relProduct.regular_price }}</span>
-                  <p class="text-primary font-black text-xl">${{ relProduct.price }}</p>
+                  <span v-if="relProduct.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full">Opciones</span>
+                  <p v-else class="text-primary font-black text-xl">${{ relProduct.price }}</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                   <span class="material-symbols-outlined text-xl">shopping_cart</span>
@@ -200,7 +231,12 @@ watch(product, () => {
   selectedImageIndex.value = 0
 })
 
-const mainImage = computed(() => galleryImages.value[selectedImageIndex.value]?.src || '/placeholder.jpg')
+const mainImage = computed(() => {
+  if (activeVariation.value?.image?.src) {
+    return activeVariation.value.image.src
+  }
+  return galleryImages.value[selectedImageIndex.value]?.src || '/placeholder.jpg'
+})
 
 const specGroups = computed(() => {
   if (!product.value) return []
@@ -209,13 +245,13 @@ const specGroups = computed(() => {
     {
       title: 'Información del Producto',
       items: [
-        { label: 'SKU', value: product.value.sku || '-' },
+        { label: 'SKU', value: currentSku.value },
         { label: 'Tipo', value: product.value.type || '-' },
         { label: 'Estado', value: product.value.status === 'publish' ? 'Disponible' : product.value.status || '-' },
       ],
     },
     {
-      title: 'Atributos',
+      title: 'Atributos Generales',
       items: product.value.attributes?.map((attribute) => ({
         label: attribute.name,
         value: attribute.options?.join(', ') || '-',
@@ -229,22 +265,88 @@ const { addToCart } = useCart()
 const quantity = ref(1)
 const addedToCart = ref(false)
 
+// Manejo de Variaciones
+const selectedOptions = ref<Record<string, string>>({})
+const variationError = ref('')
+
+const selectOption = (attrName: string, option: string) => {
+  selectedOptions.value[attrName] = option
+  variationError.value = ''
+}
+
+const activeVariation = computed(() => {
+  if (product.value?.type !== 'variable' || !product.value.variations) return null
+  
+  return product.value.variations.find(v => {
+    return v.attributes?.every(attr => {
+      if (!attr.option) return true
+      return selectedOptions.value[attr.name] === attr.option
+    }) ?? true
+  })
+})
+
+const currentPrice = computed(() => {
+  if (product.value?.type === 'variable') {
+    if (activeVariation.value && activeVariation.value.price) {
+       return activeVariation.value.price
+    }
+    // Si no hay variación seleccionada o no tiene precio, mostramos un rango o '-'
+    return product.value?.price || '-'
+  }
+  return product.value?.price || '0'
+})
+
+const currentSku = computed(() => {
+  if (product.value?.type === 'variable' && activeVariation.value?.sku) {
+    return activeVariation.value.sku
+  }
+  return product.value?.sku || 'SIN SKU'
+})
+
 const handleAddToCart = async () => {
   if (!product.value) return
 
-  for(let i = 0; i < quantity.value; i++) {
-    addToCart({
-      id: product.value.id.toString(),
-      name: product.value.name,
-      sku: product.value.sku || 'SIN SKU',
-      price: parseFloat(product.value.price || '0'),
-      image: product.value.images?.[0]?.src || '/placeholder.jpg',
-      slug: route.params.slug as string,
-    })
+  let itemToAdd = {
+    id: product.value.id.toString(),
+    name: product.value.name,
+    sku: product.value.sku || 'SIN SKU',
+    price: parseFloat(product.value.price || '0'),
+    image: product.value.images?.[0]?.src || '/placeholder.jpg',
+    slug: route.params.slug as string,
   }
 
-  // Navegar al carrito
-  await router.push('/carrito')
+  if (product.value.type === 'variable') {
+    const requiredAttrs = product.value.attributes?.filter(a => a.options && a.options.length > 0) || []
+    const missingAttr = requiredAttrs.find(a => !selectedOptions.value[a.name])
+    
+    if (missingAttr) {
+      variationError.value = `Por favor selecciona una opción para ${missingAttr.name}`
+      return
+    }
+
+    if (activeVariation.value) {
+      itemToAdd.id = activeVariation.value.id.toString()
+      itemToAdd.name = activeVariation.value.name || product.value.name
+      itemToAdd.price = parseFloat(activeVariation.value.price || '0')
+      itemToAdd.sku = activeVariation.value.sku || product.value.sku || 'SIN SKU'
+      if (activeVariation.value.images?.[0]?.src) {
+        itemToAdd.image = activeVariation.value.images[0].src
+      }
+    } else {
+       variationError.value = `Esta combinación no está disponible.`
+       return
+    }
+  }
+
+  for(let i = 0; i < quantity.value; i++) {
+    addToCart(itemToAdd)
+  }
+
+  // Animación visual de éxito sin redirección
+  addedToCart.value = true
+  setTimeout(() => {
+    addedToCart.value = false
+  }, 2500)
 }
 
 const addRelatedToCart = (relProduct: any) => {

@@ -1,6 +1,6 @@
 import { ref, shallowRef, toRef, getCurrentInstance, onServerPrefetch, unref, computed, toValue, reactive } from 'vue';
 import { C as hash } from '../_/nitro.mjs';
-import { a as useNuxtApp, b as asyncDataDefaults, c as createError, f as fetchDefaults } from './server.mjs';
+import { b as useNuxtApp, c as asyncDataDefaults, d as createError, f as fetchDefaults } from './server.mjs';
 
 function useRequestEvent(nuxtApp) {
   var _a;

@@ -29,6 +29,6 @@ export { withCtx, withDirectives, withKeys, withMemo, withModifiers, withScopeId
 export { requestIdleCallback, cancelIdleCallback } from '#app/compat/idle-callback';
 export { setInterval } from '#app/compat/interval';
 export { useAdminNotify, NotifyType, Notification } from '../composables/useAdminNotify';
-export { useCart, CartItem } from '../composables/useCart';
+export { useCart, CartItem, Cart } from '../composables/useCart';
 export { useNuxtDevTools } from '../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';
 export { definePageMeta } from '../node_modules/nuxt/dist/pages/runtime/composables';
