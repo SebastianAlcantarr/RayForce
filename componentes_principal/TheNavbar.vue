@@ -45,13 +45,13 @@
             {{ cartCount > 99 ? '99+' : cartCount }}
           </span>
         </NuxtLink>
-        <button
-          class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary"
+        <NuxtLink
+          :to="isAuthenticated ? '/perfil' : '/login'"
+          class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary flex items-center"
           aria-label="Cuenta"
-          type="button"
         >
           <span class="material-symbols-outlined">account_circle</span>
-        </button>
+        </NuxtLink>
       </div>
 
       <!-- Bottom border -->
@@ -63,6 +63,7 @@
 <script setup>
 const route = useRoute()
 const { cartItems } = useCart()
+const { isAuthenticated } = useAuth()
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
