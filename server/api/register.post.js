@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
         const loginRes = await $fetch(`${config.wooUrl}/wp-json/jwt-auth/v1/token`, {
             method: 'POST',
             body: {
-                username, // ✅ IMPORTANTE
+                username,
                 password
             }
         })

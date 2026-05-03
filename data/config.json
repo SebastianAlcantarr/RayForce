@@ -1,24 +1,24 @@
 {
   "topBanner": {
-    "enabled": true,
-    "text": "🔥 Envío GRATIS en pedidos mayores a $5,000 MXN en equipo seleccionado. ¡Cotiza Hoy!",
+    "enabled": false,
+    "text": "",
     "link": "/cotizar",
-    "color": "red-600"
+    "color": "primary"
   },
   "midBanner": {
-    "enabled": true,
+    "enabled": false,
     "title": "Gran Venta de Iluminación Industrial",
     "subtitle": "Hasta 30% de descuento en campanas LED y reflectores IP65",
     "buttonText": "Ver Ofertas",
     "link": "/tienda?q=Iluminacion",
-    "imageUrl": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1994&auto=format&fit=crop"
+    "imageUrl": ""
   },
   "carousel": {
-    "slide1Url": "https://i5.walmartimages.com/asr/92f4164f-f5ce-4463-acf2-76af9046e652.7fa11a5a36d162153e8e2c64136a6d2d.png",
+    "slide1Url": "",
     "slide2Url": "",
     "slide3Url": ""
   },
   "sideBanner": {
-    "imageUrl": "https://i5.walmartimages.com/asr/92f4164f-f5ce-4463-acf2-76af9046e652.7fa11a5a36d162153e8e2c64136a6d2d.png"
+    "imageUrl": ""
   }
 }

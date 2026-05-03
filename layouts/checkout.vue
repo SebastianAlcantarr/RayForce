@@ -1,23 +1,37 @@
 <template>
   <div class="bg-surface text-on-surface min-h-screen">
-    <header class="fixed top-0 w-full z-50 bg-[#f9f9fb]/70 backdrop-blur-xl shadow-[0_40px_40px_-15px_rgba(45,51,56,0.06)]">
-      <div class="flex justify-between items-center px-8 py-6 max-w-[1440px] mx-auto w-full">
-        <NuxtLink to="/" class="text-2xl font-black tracking-tighter text-[#13069f] uppercase">
-          Rayforce
-        </NuxtLink>
+    <!-- Checkout Navbar -->
+    <header class="fixed top-0 w-full z-50 bg-[#f9f9fb]/95 backdrop-blur-xl border-b border-outline-variant/15">
+      <div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto">
+        <!-- Logo & Back -->
         <div class="flex items-center gap-6">
-          <div class="hidden md:flex items-center gap-2 text-on-surface-variant font-inter text-[11px] uppercase tracking-widest">
-            <span class="material-symbols-outlined text-sm">lock</span>
-            Secure Checkout
-          </div>
-          <NuxtLink class="text-on-surface hover:text-primary transition-colors" to="/carrito" aria-label="Cerrar checkout">
-            <span class="material-symbols-outlined">close</span>
+          <NuxtLink to="/tienda" class="hover:opacity-70 transition-opacity">
+            <span class="text-2xl md:text-3xl tracking-tighter text-primary font-rayforce font-black">Rayforce</span>
           </NuxtLink>
+          <div class="hidden sm:flex items-center gap-2 text-xs text-on-surface-variant">
+            <span class="material-symbols-outlined text-sm">shopping_bag</span>
+            <span class="font-inter uppercase tracking-widest">Estado: Checkout</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-6">
+          <div class="hidden md:block text-right">
+            <p class="text-[10px] uppercase tracking-widest text-on-surface-variant font-inter">Total a pagar</p>
+            <slot name="navbar-total">
+              <p class="text-lg font-bold text-primary">Cálculo automático</p>
+            </slot>
+          </div>
+          <div class="flex items-center gap-4">
+            <NuxtLink class="text-on-surface hover:text-primary transition-colors" to="/carrito" aria-label="Volver al carrito">
+              <span class="material-symbols-outlined">shopping_cart</span>
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </header>
 
-    <main class="pt-32 pb-20 px-8 max-w-[1440px] mx-auto">
+    <main class="pt-24 pb-20">
       <slot />
     </main>
 
@@ -38,3 +52,6 @@
   </div>
 </template>
 
+<script setup lang="ts">
+
+</script>

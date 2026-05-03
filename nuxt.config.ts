@@ -22,14 +22,14 @@ export default defineNuxtConfig({
     },
   },
 
-  runtimeConfig: {
-    wooUrl: process.env.WOO_URL || '',
-    wooKey: process.env.WOO_KEY || '',
-    wooSecret: process.env.WOO_SECRET || '',
-    adminPassword: process.env.NUXT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '',
-
-    public: {}
-  },
+runtimeConfig: {
+  wooUrl: process.env.WOO_URL,
+  wooKey: process.env.WOO_KEY,
+  wooSecret: process.env.WOO_SECRET,
+  adminPassword: process.env.ADMIN_PASSWORD,
+  jwtSecret: process.env.JWT_SECRET,
+  public: {}
+},
 
   // Fix Node 24 Windows ESM: xlsx usa require() interno con rutas C:\ absolutas
   // que no son válidas para el loader ESM. Lo excluimos del bundle del servidor

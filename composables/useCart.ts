@@ -31,6 +31,28 @@ export const useCart = () => {
     return { items: [] }
   })
 
+  const isCartHydrated = useState<boolean>('rayforce-cart-hydrated', () => false)
+
+  const loadCartFromStorage = () => {
+    if (typeof window === 'undefined' || isCartHydrated.value) return
+
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        cart.value = { items: Array.isArray(parsed?.items) ? parsed.items : [] }
+      } catch (e) {
+        console.error('Error loading cart:', e)
+      }
+    }
+
+    isCartHydrated.value = true
+  }
+
+  onMounted(() => {
+    loadCartFromStorage()
+  })
+
   // Guardar carrito en localStorage
   const saveCart = () => {
     if (typeof window !== 'undefined') {
@@ -134,5 +156,6 @@ export const useCart = () => {
     subtotal,
     itemCount,
     saveCart,
+    loadCartFromStorage,
   }
 }
