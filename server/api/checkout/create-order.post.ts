@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken'
 
-
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const body = await readBody(event)
@@ -42,6 +41,8 @@ export default defineEventHandler(async (event) => {
       body: orderBody
     })
 
+    console.log('✅ Orden creada:', order.id)
+
     const token = jwt.sign(
         {
           user_id: body.customer_id,
@@ -50,13 +51,23 @@ export default defineEventHandler(async (event) => {
         config.jwtSecret,
         { expiresIn: '15m' }
     )
+
+    console.log('🔑 JWT generado:', token.substring(0, 50) + '...')
+    console.log('🔐 Secret usado:', config.jwtSecret)
+    console.log('👤 User ID en token:', body.customer_id)
+    console.log('📧 Email en token:', body.billing.email)
+
     const redirectUrl = `${config.wooUrl}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}&auth_token=${token}`
+
+    console.log('🔗 Redirect URL:', redirectUrl)
+    console.log('⏰ Token expira en: 15 minutos')
 
     return {
       success: true,
       redirectUrl
     }
   } catch (error: any) {
+    console.error('❌ Error al crear orden:', error.message)
     console.error('   Full Error:', JSON.stringify(error.data, null, 2))
     throw createError({
       statusCode: error.statusCode || 500,
@@ -64,4 +75,3 @@ export default defineEventHandler(async (event) => {
     })
   }
 })
-

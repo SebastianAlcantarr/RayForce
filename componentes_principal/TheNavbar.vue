@@ -52,10 +52,34 @@
         >
           <span class="material-symbols-outlined">account_circle</span>
         </NuxtLink>
+        <button
+          class="md:hidden text-on-surface-variant hover:text-primary transition-colors"
+          aria-label="Abrir menu"
+          type="button"
+          @click="isMenuOpen = !isMenuOpen"
+        >
+          <span class="material-symbols-outlined">menu</span>
+        </button>
       </div>
 
       <!-- Bottom border -->
       <div class="bg-outline-variant h-[1px] w-full absolute bottom-0 opacity-15" />
+    </div>
+
+    <!-- Mobile Menu -->
+    <div v-if="isMenuOpen" class="md:hidden px-8 pb-6 pt-2 max-w-screen-2xl mx-auto">
+      <div class="flex flex-col gap-4 bg-surface-container-lowest border border-outline-variant/10 rounded-lg p-4">
+        <NuxtLink
+          v-for="link in navLinks"
+          :key="link.label"
+          :to="link.href"
+          class="text-sm font-semibold uppercase tracking-wide"
+          :class="isActive(link) ? 'text-primary' : 'text-on-surface-variant'"
+          @click="isMenuOpen = false"
+        >
+          {{ link.label }}
+        </NuxtLink>
+      </div>
     </div>
   </nav>
 </template>
@@ -76,6 +100,7 @@ const navLinks = [
 
 const searchQuery = ref('')
 const router = useRouter()
+const isMenuOpen = ref(false)
 
 function performSearch() {
   if (searchQuery.value.trim()) {
@@ -92,6 +117,12 @@ const isActive = (link) => {
   return route.path.startsWith(link.href)
 }
 
-
 const cartCount = computed(() => cartItems.value?.length || 0)
+
+watch(
+  () => route.path,
+  () => {
+    isMenuOpen.value = false
+  }
+)
 </script>
