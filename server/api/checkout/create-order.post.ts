@@ -20,15 +20,13 @@ export default defineEventHandler(async (event) => {
     }))
 
     const orderBody = {
-      customer_id: 0,
+      customer_id: body.customer_id || 0,  // ← Usa el que viene en la request, o 0 si no existe
       status: 'pending',
       set_paid: false,
       line_items: lineItems,
       billing: body.billing,
       shipping: body.shipping
     }
-
-    console.log('🔵 Crear orden - Body enviado:', JSON.stringify(orderBody, null, 2))
 
     const order = await $fetch<any>(`${config.wooUrl}/wp-json/wc/v3/orders`, {
       method: 'POST',
@@ -39,7 +37,6 @@ export default defineEventHandler(async (event) => {
       body: orderBody
     })
 
-    console.log('✅ Orden creada:', order.id)
 
     const token = jwt.sign(
         {
@@ -50,22 +47,14 @@ export default defineEventHandler(async (event) => {
         { expiresIn: '15m' }
     )
 
-    console.log('🔑 JWT generado:', token.substring(0, 50) + '...')
-    console.log('🔐 Secret usado:', config.jwtSecret)
-    console.log('👤 User ID en token:', body.customer_id)
-    console.log('📧 Email en token:', body.billing.email)
-
     const redirectUrl = `${config.wooUrl}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}&auth_token=${token}`
-
-    console.log('🔗 Redirect URL:', redirectUrl)
-    console.log('⏰ Token expira en: 15 minutos')
 
     return {
       success: true,
       redirectUrl
     }
   } catch (error: any) {
-    console.error('❌ Error al crear orden:', error.message)
+    console.error('Error al crear orden:', error.message)
     console.error('   Full Error:', JSON.stringify(error.data, null, 2))
     throw createError({
       statusCode: error.statusCode || 500,
