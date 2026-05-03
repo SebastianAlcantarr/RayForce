@@ -20,10 +20,8 @@ export default defineEventHandler(async (event) => {
     }))
 
     const orderBody = {
-      customer_id: parseInt(body.customer_id),
+      customer_id: 0,
       status: 'pending',
-      payment_method: 'stripe',
-      payment_method_title: 'Tarjeta De Debito/Credito ',
       set_paid: false,
       line_items: lineItems,
       billing: body.billing,
