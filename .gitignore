@@ -6,3 +6,14 @@ dist/
 .env.*
 *.log
 .DS_Store
+
+# Migration & Data Clutter
+_migration/
+*.csv
+*.xlsx
+*.xls
+*.py
+*.txt
+*.json
+!package.json
+!tsconfig.json

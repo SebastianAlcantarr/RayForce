@@ -63,6 +63,37 @@
               {{ variationError }}
             </p>
           </div>
+
+          <!-- ── Chips de hermanos (variantes del mismo producto) ── -->
+          <div
+            v-if="siblings && siblings.length > 0"
+            class="space-y-3 pt-4 border-t border-outline-variant/20"
+          >
+            <span class="font-bold text-sm block">{{ siblingsAttrName || 'Otras medidas' }}</span>
+            <div class="flex flex-wrap gap-2">
+              <!-- Chip del producto actual (activo) -->
+              <span
+                class="px-4 py-2 text-sm font-bold rounded-full border bg-primary text-white border-primary"
+              >
+                {{ currentAttrValue || product.name }}
+              </span>
+              <!-- Chips de hermanos -->
+              <NuxtLink
+                v-for="sib in siblings"
+                :key="sib.sku"
+                :to="`/tienda/${sib.slug}`"
+                :class="[
+                  'px-4 py-2 text-sm font-bold rounded-full border transition-all',
+                  sib.stock_status === 'outofstock'
+                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                    : 'bg-white text-slate-700 border-outline-variant/30 hover:border-primary hover:text-primary'
+                ]"
+                :title="sib.stock_status === 'outofstock' ? 'Agotado' : sib.name"
+              >
+                {{ sib.attrValue }}
+              </NuxtLink>
+            </div>
+          </div>
           
           <div class="pt-6 mt-6 border-t border-outline-variant/20 flex flex-col sm:flex-row gap-4">
             <!-- Selector de Cantidad -->
@@ -211,6 +242,28 @@ const { data: product, pending, error } = await useFetch<WooProduct>(
 
 const { data: relatedData, pending: relatedPending } = await useFetch<any>('/api/products?perPage=8')
 const relatedProducts = computed(() => relatedData.value?.items || [])
+
+// === Hermanos (siblings): otras variantes del mismo producto ===
+const siblingsUrl = computed(() =>
+  product.value?.sku ? `/api/siblings/${encodeURIComponent(product.value.sku)}` : null
+)
+
+const siblingsData = ref<{ siblings: any[]; currentAttrValue: string; attrName: string } | null>(null)
+
+// Cargar hermanos cuando el producto esté disponible (sin bloquear la página)
+watchEffect(async () => {
+  if (!siblingsUrl.value) return
+  try {
+    const result = await $fetch<{ siblings: any[]; currentAttrValue: string; attrName: string }>(siblingsUrl.value)
+    siblingsData.value = result
+  } catch {
+    siblingsData.value = null
+  }
+})
+
+const siblings = computed(() => siblingsData.value?.siblings || [])
+const currentAttrValue = computed(() => siblingsData.value?.currentAttrValue || '')
+const siblingsAttrName = computed(() => siblingsData.value?.attrName || '')
 
 const relatedContainer = ref<HTMLElement | null>(null)
 const scrollRelated = (direction: 'left' | 'right') => {

@@ -25,16 +25,59 @@
 
       <!-- Actions -->
       <div class="flex items-center space-x-4">
-        <div class="relative hidden lg:block group">
+        <div class="relative hidden lg:block group" ref="searchContainer">
           <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
           <input
             v-model="searchQuery"
             @keyup.enter="performSearch"
-            class="pl-10 pr-4 py-2 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg text-sm w-56 outline-none transition-all"
+            @focus="showResults = true"
+            class="pl-10 pr-4 py-2 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg text-sm w-80 outline-none transition-all"
             placeholder="Buscar productos..."
             type="text"
           />
+          
+          <!-- Live Search Results Dropdown -->
+          <transition name="fade">
+            <div 
+              v-if="showResults && (searchResults.length > 0 || isSearching)" 
+              class="absolute top-full mt-2 w-full right-0 bg-white/90 backdrop-blur-xl border border-outline-variant/20 rounded-xl shadow-2xl z-[60] overflow-hidden"
+            >
+              <!-- Loading State -->
+              <div v-if="isSearching" class="p-4 flex items-center justify-center space-x-2 text-primary">
+                <div class="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-.3s]"></div>
+                <div class="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-.5s]"></div>
+              </div>
+
+              <!-- Results List -->
+              <div v-else-if="searchResults.length > 0" class="max-h-[400px] overflow-y-auto">
+                <NuxtLink
+                  v-for="product in searchResults"
+                  :key="product.id"
+                  :to="getProductPath(product.slug)"
+                  class="flex items-center p-3 hover:bg-primary/5 transition-colors border-b border-outline-variant/10 last:border-0 group/item"
+                  @click="closeSearch"
+                >
+                  <div class="w-12 h-12 flex-shrink-0 bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10">
+                    <img :src="product.image_url" :alt="product.title" class="w-full h-full object-contain p-1 group-hover/item:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div class="ml-4 flex-grow">
+                    <h4 class="text-sm font-bold text-on-surface line-clamp-1 group-hover/item:text-primary transition-colors" v-html="product.title"></h4>
+                    <span class="text-[10px] text-outline uppercase tracking-widest font-semibold">{{ product.sku || 'Producto' }}</span>
+                  </div>
+                  <span class="material-symbols-outlined text-outline group-hover/item:text-primary transition-all translate-x-[-4px] opacity-0 group-hover/item:translate-x-0 group-hover/item:opacity-100">chevron_right</span>
+                </NuxtLink>
+                
+                <div class="p-3 bg-surface-container/30 text-center border-t border-outline-variant/10">
+                  <button @click="performSearch" class="text-xs font-bold text-primary hover:underline">
+                    Ver todos los resultados para "{{ searchQuery }}"
+                  </button>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
+
         <NuxtLink
           to="/carrito"
           class="scale-95 active:opacity-80 transition-transform text-on-surface-variant hover:text-primary relative"
@@ -88,6 +131,7 @@
 const route = useRoute()
 const { cartItems } = useCart()
 const { isAuthenticated } = useAuth()
+const router = useRouter()
 
 const navLinks = [
   { label: 'Inicio', href: '/' },
@@ -99,21 +143,97 @@ const navLinks = [
 ]
 
 const searchQuery = ref('')
-const router = useRouter()
 const isMenuOpen = ref(false)
+const searchResults = ref([])
+const isSearching = ref(false)
+const showResults = ref(false)
+const searchContainer = ref(null)
+let debounceTimer = null
+
+// Real-time search logic
+watch(searchQuery, (newQuery) => {
+  clearTimeout(debounceTimer)
+  
+  if (!newQuery || newQuery.length < 2) {
+    searchResults.value = []
+    isSearching.value = false
+    return
+  }
+
+  isSearching.value = true
+  showResults.value = true
+
+  debounceTimer = setTimeout(async () => {
+    try {
+      console.log('Buscando en API interna:', newQuery)
+      // Usamos tu propia API interna de Nuxt para evitar CORS y 404
+      const response = await $fetch('/api/products', {
+        params: { 
+          q: newQuery,
+          limit: 10
+        }
+      })
+      
+      console.log('Resultados internos:', response)
+
+      if (response && response.items && response.items.length > 0) {
+        // Mapeamos el formato de tu API interna al que espera el buscador
+        searchResults.value = response.items.map(item => ({
+          id: item.id,
+          title: item.name,
+          sku: item.sku,
+          image_url: item.images && item.images[0] ? item.images[0].src : '/placeholder.png',
+          slug: item.slug
+        }))
+        showResults.value = true
+      } else {
+        searchResults.value = []
+      }
+    } catch (error) {
+      console.error('Error en búsqueda interna:', error)
+      searchResults.value = []
+    } finally {
+      isSearching.value = false
+    }
+  }, 400)
+})
+
+// Close dropdown when clicking outside
+const handleClickOutside = (event) => {
+  if (searchContainer.value && !searchContainer.value.contains(event.target)) {
+    showResults.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', handleClickOutside)
+})
+
+function closeSearch() {
+  showResults.value = false
+}
 
 function performSearch() {
   if (searchQuery.value.trim()) {
     router.push({ path: '/tienda', query: { q: searchQuery.value.trim() } })
+    closeSearch()
     searchQuery.value = ''
   }
+}
+
+// Simplificado para usar el slug directamente de tu API
+function getProductPath(slug) {
+  return `/tienda/${slug}`
 }
 
 const isActive = (link) => {
   if (link.href === '/') {
     return route.path === '/'
   }
-
   return route.path.startsWith(link.href)
 }
 
@@ -126,3 +246,31 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Custom scrollbar for dropdown */
+.max-h-\[400px\]::-webkit-scrollbar {
+  width: 6px;
+}
+.max-h-\[400px\]::-webkit-scrollbar-track {
+  background: transparent;
+}
+.max-h-\[400px\]::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.max-h-\[400px\]::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+</style>

@@ -238,7 +238,27 @@ export async function getProductsList(page = 1, perPage = 20, search = '', categ
     order: 'desc',
   }
   
+  // Lógica inteligente de búsqueda:
   if (search) {
+    // 1. Si la búsqueda no tiene espacios, intentamos buscar primero por SKU exacto
+    if (!search.includes(' ')) {
+      try {
+        const productsBySku = await getProducts({ sku: search.trim() })
+        if (productsBySku.length > 0) {
+          return {
+            items: productsBySku,
+            total: productsBySku.length,
+            totalPages: 1,
+            page: 1,
+            perPage
+          }
+        }
+      } catch (e) {
+        console.error('Error buscando por SKU:', e)
+      }
+    }
+    
+    // 2. Si no es un SKU o no hubo resultados, buscamos por nombre/contenido
     params.search = search
   }
 
