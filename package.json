@@ -1,0 +1,24 @@
+{
+  "name": "rayforce-support",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.3",
+    "nuxt": "3.16.2",
+    "vue": "^3.5.0",
+    "vue-router": "^4.4.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.12.0",
+    "@types/node": "^25.6.0",
+    "@vue/compiler-sfc": "^3.5.32"
+  }
+}
