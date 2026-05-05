@@ -16,4 +16,5 @@ _migration/
 *.txt
 *.json
 !package.json
+!package-lock.json
 !tsconfig.json
