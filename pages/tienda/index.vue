@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-8 pb-20 px-8 max-w-[1440px] mx-auto">
+  <div class="pt-8 pb-20 px-4 md:px-8 max-w-[1440px] mx-auto">
     <header class="mb-16">
       <nav class="mb-6 flex gap-3 text-[10px] uppercase tracking-[0.1em] font-inter text-outline">
         <NuxtLink class="hover:text-primary transition-colors" to="/">Inicio</NuxtLink>
@@ -16,9 +16,24 @@
       </div>
     </header>
 
-    <div class="flex flex-col md:flex-row gap-16">
-      <aside class="w-full md:w-64 flex-shrink-0">
-        <div class="sticky top-40 space-y-12">
+    <!-- Mobile Filter Toggle -->
+    <div class="md:hidden mb-6 flex justify-between items-center bg-surface-container rounded-lg p-4">
+      <span class="font-bold text-on-surface">Filtros y Categorías</span>
+      <button 
+        @click="showMobileFilters = !showMobileFilters"
+        class="flex items-center gap-2 text-primary font-bold text-sm bg-white px-4 py-2 rounded shadow-sm border border-outline-variant/20"
+      >
+        <span class="material-symbols-outlined text-xl">{{ showMobileFilters ? 'close' : 'tune' }}</span>
+        {{ showMobileFilters ? 'Ocultar' : 'Filtrar' }}
+      </button>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-8 md:gap-16">
+      <aside 
+        class="w-full md:w-64 flex-shrink-0"
+        :class="showMobileFilters ? 'block mb-8' : 'hidden md:block'"
+      >
+        <div class="md:sticky md:top-40 space-y-12">
           <section>
             <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3>
             <ul class="space-y-4 text-sm font-medium">
@@ -181,6 +196,7 @@ useSeoMeta({
 
 const route = useRoute()
 const router = useRouter()
+const showMobileFilters = ref(false)
 const currentPage = computed(() => {
   const value = Number(route.query.page || 1)
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1

@@ -14,7 +14,7 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="max-w-[1440px] mx-auto px-6 md:px-8 pt-8 pb-12">
+    <section class="max-w-[1440px] mx-auto px-4 md:px-8 pt-8 pb-12">
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         <!-- Carrusel Principal (Ocupa 3 columnas en desktop) -->
@@ -38,7 +38,7 @@
               />
               
               <!-- Slide Content -->
-              <div class="p-10 md:p-16 z-20 flex flex-col gap-6 relative w-full lg:w-3/4">
+              <div class="p-6 md:p-16 z-20 flex flex-col gap-6 relative w-full lg:w-3/4">
                 <span class="inline-block px-4 py-1.5 bg-white/20 text-white backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest w-fit border border-white/30">
                   {{ slide.badge }}
                 </span>
@@ -101,7 +101,7 @@
     </section>
 
     <!-- Trusted Brands / Mini Features -->
-    <section class="max-w-[1440px] mx-auto px-6 md:px-8 mb-16">
+    <section class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
       <div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-2 border-b-4 border-b-primary">
         <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-outline-variant/20">
           <div v-for="feature in trustItems" :key="feature.title" class="px-6 py-4 flex items-center gap-4">
@@ -118,7 +118,7 @@
     </section>
 
     <!-- Mid Promotional Banner (Admin Editable) -->
-    <section v-if="adsConfig?.midBanner?.enabled" class="max-w-[1440px] mx-auto px-6 md:px-8 mb-16">
+    <section v-if="adsConfig?.midBanner?.enabled" class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
       <div class="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 h-[300px] md:h-[400px] flex items-center group">
         <img 
           :src="adsConfig.midBanner.imageUrl" 
@@ -126,7 +126,7 @@
           class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000"
           v-if="adsConfig.midBanner.imageUrl"
         />
-        <div class="relative z-20 px-10 md:px-20 text-white max-w-3xl">
+        <div class="relative z-20 px-6 md:px-20 text-white max-w-3xl">
           <span class="inline-block px-3 py-1 bg-red-600 text-white rounded font-bold uppercase tracking-widest text-[10px] mb-4 shadow-lg shadow-red-600/30">Promoción Especial</span>
           <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">{{ adsConfig.midBanner.title }}</h2>
           <p class="text-lg text-slate-300 font-light mb-8">{{ adsConfig.midBanner.subtitle }}</p>
@@ -138,9 +138,9 @@
     </section>
 
     <!-- Video Section (Admin Editable) -->
-    <section ref="videoSectionRef" v-if="adsConfig?.videoSection?.enabled" class="max-w-[1440px] mx-auto px-6 md:px-8 mb-16">
+    <section ref="videoSectionRef" v-if="adsConfig?.videoSection?.enabled" class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
       <div :class="`relative rounded-3xl overflow-hidden shadow-xl bg-${adsConfig.videoSection.backgroundColor} flex flex-col md:flex-row items-center group min-h-[400px]`">
-        <div class="w-full md:w-1/2 p-10 md:p-16 text-white flex flex-col justify-center min-h-[300px]">
+        <div class="w-full md:w-1/2 p-6 md:p-16 text-white flex flex-col justify-center min-h-[300px]">
           <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4 min-h-[3rem] md:min-h-[4rem] flex items-center">
             {{ animatedTitle }}<span v-if="isTypingTitle" class="ml-1 w-1 h-[1em] bg-white animate-pulse"></span>
           </h2>
@@ -163,7 +163,7 @@
     </section>
 
     <!-- Categorías Superiores -->
-    <section class="max-w-[1440px] mx-auto px-6 md:px-8 py-10">
+    <section class="max-w-[1440px] mx-auto px-4 md:px-8 py-10">
       <div class="flex items-end justify-between mb-8">
         <h2 class="text-3xl font-black text-slate-800 tracking-tight">Buscar por Categoría</h2>
       </div>
@@ -183,7 +183,7 @@
     </section>
 
     <!-- Destacados / Productos Recomendados -->
-    <section class="max-w-[1440px] mx-auto px-6 md:px-8 py-16">
+    <section class="max-w-[1440px] mx-auto px-4 md:px-8 py-16">
       <div class="flex items-end justify-between mb-10 pb-4 border-b border-outline-variant/20">
         <div>
           <span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Novedades</span>

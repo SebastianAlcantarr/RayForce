@@ -1,6 +1,6 @@
 <template>
   <nav class="fixed top-0 w-full z-50 bg-[#f9f9fb]/70 backdrop-blur-xl font-manrope antialiased tracking-tight">
-    <div class="flex justify-between items-center px-8 py-4 max-w-screen-2xl mx-auto relative">
+    <div class="flex justify-between items-center px-4 md:px-8 py-4 max-w-screen-2xl mx-auto relative">
       <!-- Logo -->
       <NuxtLink to="/" class="text-3xl md:text-5xl  tracking-tighter text-primary  font-rayforce">
         Rayforce
@@ -110,8 +110,58 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div v-if="isMenuOpen" class="md:hidden px-8 pb-6 pt-2 max-w-screen-2xl mx-auto">
+    <div v-if="isMenuOpen" class="md:hidden px-4 md:px-8 pb-6 pt-2 max-w-screen-2xl mx-auto">
       <div class="flex flex-col gap-4 bg-surface-container-lowest border border-outline-variant/10 rounded-lg p-4">
+        
+        <!-- Mobile Search -->
+        <div class="relative group w-full mb-2">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
+          <input
+            v-model="searchQuery"
+            @keyup.enter="performSearch"
+            @focus="showResults = true"
+            class="pl-10 pr-4 py-3 bg-surface-container border-none focus:ring-2 focus:ring-primary rounded-lg text-sm w-full outline-none transition-all"
+            placeholder="Buscar productos..."
+            type="text"
+          />
+          
+          <!-- Mobile Search Results Dropdown -->
+          <transition name="fade">
+            <div 
+              v-if="showResults && (searchResults.length > 0 || isSearching)" 
+              class="absolute top-full mt-2 w-full left-0 bg-white/95 backdrop-blur-xl border border-outline-variant/20 rounded-xl shadow-2xl z-[60] overflow-hidden"
+            >
+              <div v-if="isSearching" class="p-4 flex items-center justify-center space-x-2 text-primary">
+                <div class="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-.3s]"></div>
+                <div class="w-2 h-2 bg-primary rounded-full animate-bounce [animation-delay:-.5s]"></div>
+              </div>
+              <div v-else-if="searchResults.length > 0" class="max-h-[300px] overflow-y-auto">
+                <NuxtLink
+                  v-for="product in searchResults"
+                  :key="product.id"
+                  :to="getProductPath(product.slug)"
+                  class="flex items-center p-3 hover:bg-primary/5 transition-colors border-b border-outline-variant/10 last:border-0 group/item"
+                  @click="closeSearch(); isMenuOpen = false"
+                >
+                  <div class="w-10 h-10 flex-shrink-0 bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10">
+                    <img :src="product.image_url" :alt="product.title" class="w-full h-full object-contain p-1 group-hover/item:scale-110 transition-transform duration-300" />
+                  </div>
+                  <div class="ml-3 flex-grow">
+                    <h4 class="text-xs font-bold text-on-surface line-clamp-1 group-hover/item:text-primary transition-colors" v-html="product.title"></h4>
+                    <span class="text-[9px] text-outline uppercase tracking-widest font-semibold">{{ product.sku || 'Producto' }}</span>
+                  </div>
+                  <span class="material-symbols-outlined text-outline text-sm">chevron_right</span>
+                </NuxtLink>
+                <div class="p-3 bg-surface-container/30 text-center border-t border-outline-variant/10">
+                  <button @click="performSearch(); isMenuOpen = false" class="text-xs font-bold text-primary hover:underline">
+                    Ver todos los resultados
+                  </button>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
         <NuxtLink
           v-for="link in navLinks"
           :key="link.label"
