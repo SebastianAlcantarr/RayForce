@@ -6,13 +6,15 @@ export default defineEventHandler((event) => {
   
   const defaultCarousel = { slide1Url: '', slide2Url: '', slide3Url: '' }
   const defaultSideBanner = { imageUrl: '' }
+  const defaultVideoSection = { enabled: false, videoUrl: '', title: 'Contenido Destacado', subtitle: '', backgroundColor: 'slate-800' }
 
   if (!existsSync(filePath)) {
     return {
       topBanner: { enabled: false, text: '', link: '', color: 'primary' },
       midBanner: { enabled: false, title: '', subtitle: '', buttonText: '', link: '', imageUrl: '' },
       carousel: defaultCarousel,
-      sideBanner: defaultSideBanner
+      sideBanner: defaultSideBanner,
+      videoSection: defaultVideoSection
     }
   }
 
@@ -23,7 +25,8 @@ export default defineEventHandler((event) => {
     return {
       ...parsed,
       carousel: parsed.carousel || defaultCarousel,
-      sideBanner: parsed.sideBanner || defaultSideBanner
+      sideBanner: parsed.sideBanner || defaultSideBanner,
+      videoSection: parsed.videoSection || defaultVideoSection
     }
   } catch (e) {
     console.error('Error reading config.json', e)
@@ -31,7 +34,8 @@ export default defineEventHandler((event) => {
       topBanner: { enabled: false },
       midBanner: { enabled: false },
       carousel: defaultCarousel,
-      sideBanner: defaultSideBanner
+      sideBanner: defaultSideBanner,
+      videoSection: defaultVideoSection
     }
   }
 })

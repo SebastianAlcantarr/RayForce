@@ -12,11 +12,7 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "types": ["node", "nuxt"],
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
-    },
+
     "moduleResolution": "bundler"
   },
   "include": [

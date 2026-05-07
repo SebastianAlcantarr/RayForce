@@ -161,12 +161,12 @@
     </div>
 
     <!-- ═══════════════════════════════════════ -->
-    <!-- MÓDULO 2: Modo Mostrador                -->
+    <!-- MÓDULO 2: Modo Edición                  -->
     <!-- ═══════════════════════════════════════ -->
     <div v-show="activeTab === 'mostrador'" class="module-card">
       <div class="module-header">
-        <div class="module-title">🔍 Modo Mostrador</div>
-        <div class="module-sub">Busca un producto por SKU y ajusta el stock en tiempo real.</div>
+        <div class="module-title">🔍 Modo Edición</div>
+        <div class="module-sub">Busca un producto por SKU y ajusta todos sus datos en tiempo real.</div>
       </div>
 
       <div class="search-row">
@@ -185,51 +185,100 @@
       </div>
 
       <!-- Product Card -->
-      <div v-if="foundProduct" class="product-card">
-        <img
-          v-if="foundProduct.image"
-          :src="foundProduct.image"
-          :alt="foundProduct.name"
-          class="product-thumb"
-        />
-        <div v-else class="product-no-img">📦</div>
-
-        <div class="product-info">
-          <div class="product-name">{{ foundProduct.name }}</div>
-          <div class="product-sku">SKU: {{ foundProduct.sku }}</div>
-          
-          <div class="price-edit-row">
-            <label for="price-edit-input" class="product-price-label">Precio (MXN):</label>
-            <div class="price-input-wrapper">
-              <span class="price-symbol">$</span>
+      <div v-if="foundProduct" class="product-card flex-col md:flex-row items-stretch">
+        <!-- Columna Izquierda: Imagen y Datos básicos -->
+        <div class="flex-1 flex flex-col gap-4">
+          <div class="flex gap-4 items-start">
+            <div
+              class="img-upload-zone p-2 min-h-[120px] w-[120px] flex-shrink-0"
+              :class="{ 'img-upload-zone--preview': previewEditUrl || foundProduct.image }"
+              @click="triggerEditImgInput"
+            >
               <input
-                id="price-edit-input"
-                v-model="currentPrice"
-                type="number"
-                step="0.01"
-                min="0"
-                class="price-input-small"
+                ref="editImgInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleEditImgChange"
               />
+              <img v-if="previewEditUrl || foundProduct.image" :src="previewEditUrl || foundProduct.image" class="img-preview object-cover w-full h-full" alt="Preview" />
+              <div v-else class="img-placeholder text-center">
+                <span class="img-icon text-2xl">🖼️</span>
+                <span class="img-hint text-[10px]">Cambiar imagen</span>
+              </div>
             </div>
+
+            <div class="product-info flex-1">
+              <input v-model="currentName" type="text" class="f-input font-bold text-lg mb-2 w-full" placeholder="Nombre del producto..." />
+              <div class="product-sku mb-2">SKU: {{ foundProduct.sku }}</div>
+              
+              <div class="price-edit-row">
+                <label for="price-edit-input" class="product-price-label">Precio (MXN):</label>
+                <div class="price-input-wrapper">
+                  <span class="price-symbol">$</span>
+                  <input
+                    id="price-edit-input"
+                    v-model="currentPrice"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="price-input-small"
+                  />
+                </div>
+              </div>
+              
+              <div class="stock-control mt-4 items-start">
+                <div class="stock-label">Stock actual</div>
+                <div class="stock-counter">
+                  <button id="stock-dec-btn" class="counter-btn" @click="adjustStock(-1)">−</button>
+                  <div class="stock-num">{{ currentStock }}</div>
+                  <button id="stock-inc-btn" class="counter-btn" @click="adjustStock(1)">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-field form-field--full mt-2">
+            <label class="f-label">Descripción</label>
+            <textarea v-model="currentDescription" class="f-input f-textarea" rows="3" placeholder="Descripción del producto…" />
           </div>
         </div>
 
-        <div class="stock-control">
-          <div class="stock-label">Stock actual</div>
-          <div class="stock-counter">
-            <button id="stock-dec-btn" class="counter-btn" @click="adjustStock(-1)">−</button>
-            <div class="stock-num">{{ currentStock }}</div>
-            <button id="stock-inc-btn" class="counter-btn" @click="adjustStock(1)">+</button>
+        <!-- Columna Derecha: Categorías y Guardar -->
+        <div class="flex-1 flex flex-col justify-between border-l border-outline-variant/20 pl-0 md:pl-6 pt-4 md:pt-0 mt-4 md:mt-0">
+          <div class="form-field form-field--full">
+            <label class="f-label mb-2 block">Categorías</label>
+            <div v-if="catLoading" class="text-slate-500 text-sm py-2">Cargando categorías…</div>
+            <div v-else class="cat-grid max-h-[160px] overflow-y-auto pr-2 pb-2">
+              <label
+                v-for="cat in categories"
+                :key="cat.id"
+                class="cat-chip text-[11px] py-1 px-3"
+                :class="{ 'cat-chip--active': currentCategories.includes(cat.id) }"
+              >
+                <input
+                  type="checkbox"
+                  class="hidden"
+                  :value="cat.id"
+                  :checked="currentCategories.includes(cat.id)"
+                  @change="toggleEditCategory(cat.id)"
+                />
+                {{ cat.name }}
+              </label>
+            </div>
           </div>
-          <button
-            id="save-stock-btn"
-            class="btn-primary save-btn"
-            :disabled="saveLoading || (currentStock === foundProduct.stock_quantity && currentPrice === foundProduct.regular_price)"
-            @click="saveProductChanges"
-          >
-            <span v-if="saveLoading" class="spinner-sm" />
-            <span v-else>💾 Guardar Cambios</span>
-          </button>
+
+          <div class="mt-6 flex justify-end">
+            <button
+              id="save-stock-btn"
+              class="btn-primary w-full md:w-auto justify-center"
+              :disabled="saveLoading"
+              @click="saveProductChanges"
+            >
+              <span v-if="saveLoading" class="spinner-sm" />
+              <span v-else>💾 Guardar Cambios</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -391,6 +440,8 @@
       </div>
 
       <div class="space-y-12" v-if="adsConfig">
+        <input type="file" ref="genericMediaInput" class="hidden" @change="handleGenericMediaChange" />
+        
         <!-- Top Banner -->
         <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6">
           <div class="flex items-center justify-between mb-6">
@@ -451,7 +502,10 @@
             </div>
             <div class="form-field form-field--full">
               <label class="f-label">URL de la Imagen de Fondo</label>
-              <input type="text" v-model="adsConfig.midBanner.imageUrl" class="f-input" placeholder="https://unsplash.com/..." />
+              <div class="flex gap-2">
+                <input type="text" v-model="adsConfig.midBanner.imageUrl" class="f-input flex-1" placeholder="https://unsplash.com/..." />
+                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.midBanner, 'imageUrl')">Subir</button>
+              </div>
             </div>
           </div>
         </section>
@@ -465,15 +519,24 @@
           <div class="grid grid-cols-1 gap-4">
             <div class="form-field form-field--full">
               <label class="f-label">Slide 1 (Imagen URL)</label>
-              <input type="text" v-model="adsConfig.carousel.slide1Url" class="f-input" placeholder="https://ejemplo.com/slide1.jpg" />
+              <div class="flex gap-2">
+                <input type="text" v-model="adsConfig.carousel.slide1Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide1.jpg" />
+                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide1Url')">Subir</button>
+              </div>
             </div>
             <div class="form-field form-field--full">
               <label class="f-label">Slide 2 (Imagen URL)</label>
-              <input type="text" v-model="adsConfig.carousel.slide2Url" class="f-input" placeholder="https://ejemplo.com/slide2.jpg" />
+              <div class="flex gap-2">
+                <input type="text" v-model="adsConfig.carousel.slide2Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide2.jpg" />
+                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide2Url')">Subir</button>
+              </div>
             </div>
             <div class="form-field form-field--full">
               <label class="f-label">Slide 3 (Imagen URL)</label>
-              <input type="text" v-model="adsConfig.carousel.slide3Url" class="f-input" placeholder="https://ejemplo.com/slide3.jpg" />
+              <div class="flex gap-2">
+                <input type="text" v-model="adsConfig.carousel.slide3Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide3.jpg" />
+                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide3Url')">Subir</button>
+              </div>
             </div>
           </div>
         </section>
@@ -487,7 +550,50 @@
           <div class="grid grid-cols-1 gap-4">
             <div class="form-field form-field--full">
               <label class="f-label">URL de la Imagen de Fondo</label>
-              <input type="text" v-model="adsConfig.sideBanner.imageUrl" class="f-input" placeholder="https://ejemplo.com/banner-lateral.jpg" />
+              <div class="flex gap-2">
+                <input type="text" v-model="adsConfig.sideBanner.imageUrl" class="f-input flex-1" placeholder="https://ejemplo.com/banner-lateral.jpg" />
+                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.sideBanner, 'imageUrl')">Subir</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Video Promocional -->
+        <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6" v-if="adsConfig.videoSection">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="text-lg font-bold text-on-surface">Video Promocional</h3>
+              <p class="text-sm text-outline">Un apartado especial en el inicio para mostrar un video corporativo o promocional.</p>
+            </div>
+            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm">
+              <input type="checkbox" v-model="adsConfig.videoSection.enabled" class="hidden peer" />
+              <div class="w-10 h-5 bg-slate-600 rounded-full peer-checked:bg-green-600 relative transition-colors before:content-[''] before:absolute before:bg-white before:w-4 before:h-4 before:rounded-full before:top-0.5 before:left-0.5 peer-checked:before:translate-x-5 before:transition-transform"></div>
+              Habilitado
+            </label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="form-field form-field--full">
+              <label class="f-label">Título</label>
+              <input type="text" v-model="adsConfig.videoSection.title" class="f-input" placeholder="Contenido Destacado" />
+            </div>
+            <div class="form-field form-field--full">
+              <label class="f-label">Subtítulo descriptivo</label>
+              <textarea v-model="adsConfig.videoSection.subtitle" class="f-input f-textarea" rows="2" placeholder="Descubre cómo nuestros productos..."></textarea>
+            </div>
+            <div class="form-field">
+              <label class="f-label">URL del Video (MP4)</label>
+              <div class="flex gap-2">
+                <input type="text" v-model="adsConfig.videoSection.videoUrl" class="f-input flex-1" placeholder="https://ejemplo.com/video.mp4" />
+                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.videoSection, 'videoUrl')">Subir Video</button>
+              </div>
+            </div>
+            <div class="form-field">
+              <label class="f-label">Color de Fondo</label>
+              <select v-model="adsConfig.videoSection.backgroundColor" class="f-input" style="height: 42px;">
+                <option value="slate-800">Gris Oscuro</option>
+                <option value="primary">Azul Corporativo</option>
+                <option value="black">Negro Profundo</option>
+              </select>
             </div>
           </div>
         </section>
@@ -509,7 +615,7 @@ const { success, error: notifyError } = useAdminNotify()
 // ── Tabs ────────────────────────────────────────
 const tabs = [
   { id: 'buzon',     icon: '📥', label: 'Buzón Masivo' },
-  { id: 'mostrador', icon: '🔍', label: 'Modo Mostrador' },
+  { id: 'mostrador', icon: '🔍', label: 'Modo Edición' },
   { id: 'creador',   icon: '✨', label: 'Creador de Productos' },
   { id: 'exportador',icon: '📊', label: 'Exportador CONTPAQi' },
   { id: 'publicidad',icon: '📢', label: 'Publicidad (Banners)' },
@@ -604,7 +710,7 @@ async function runBulkUpdate() {
 }
 
 // ════════════════════════════════════════════════
-// MÓDULO 2: Modo Mostrador
+// MÓDULO 2: Modo Edición
 // ════════════════════════════════════════════════
 const skuQuery    = ref('')
 const skuLoading  = ref(false)
@@ -612,24 +718,52 @@ const skuError    = ref('')
 const saveLoading = ref(false)
 const currentStock = ref(0)
 const currentPrice = ref('')
+const currentDescription = ref('')
+const currentName = ref('')
+const currentCategories = ref<number[]>([])
+
+const editImgInput = ref<HTMLInputElement | null>(null)
+const previewEditUrl = ref<string | null>(null)
+const editImgFile = ref<File | null>(null)
 
 interface FoundProduct {
   id: number; name: string; sku: string
-  stock_quantity: number; regular_price: string; image: string | null
+  stock_quantity: number; regular_price: string; image: string | null; image_id: number | null
+  description: string; categories: number[]
 }
 const foundProduct = ref<FoundProduct | null>(null)
+
+function triggerEditImgInput() { editImgInput.value?.click() }
+
+function handleEditImgChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  editImgFile.value = file
+  previewEditUrl.value = URL.createObjectURL(file)
+}
+
+function toggleEditCategory(id: number) {
+  const idx = currentCategories.value.indexOf(id)
+  if (idx === -1) currentCategories.value.push(id)
+  else currentCategories.value.splice(idx, 1)
+}
 
 async function searchBySku() {
   if (!skuQuery.value) return
   skuLoading.value  = true
   skuError.value    = ''
   foundProduct.value = null
+  editImgFile.value = null
+  previewEditUrl.value = null
 
   try {
     const res = await $fetch<FoundProduct>(`/api/admin/search-product?sku=${encodeURIComponent(skuQuery.value)}`)
     foundProduct.value = res
     currentStock.value = res.stock_quantity
     currentPrice.value = res.regular_price
+    currentDescription.value = res.description
+    currentName.value = res.name
+    currentCategories.value = [...res.categories]
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
     skuError.value = e?.statusMessage || 'Producto no encontrado.'
@@ -646,17 +780,42 @@ async function saveProductChanges() {
   if (!foundProduct.value) return
   saveLoading.value = true
   try {
+    let image_id = foundProduct.value.image_id
+
+    // Si hay una nueva imagen seleccionada, subirla primero
+    if (editImgFile.value) {
+      const fd = new FormData()
+      fd.append('file', editImgFile.value, editImgFile.value.name)
+      const uploaded = await $fetch<{ id: number; src: string }>('/api/admin/upload-image', {
+        method: 'POST',
+        body: fd,
+      })
+      image_id = uploaded.id
+      foundProduct.value.image = uploaded.src // Actualizar la vista local con la nueva URL
+    }
+
     await $fetch('/api/admin/update-product', {
       method: 'PUT',
       body: {
         id: foundProduct.value.id,
         stock_quantity: currentStock.value,
         regular_price: currentPrice.value,
+        name: currentName.value,
+        description: currentDescription.value,
+        categories: currentCategories.value,
+        image_id: image_id !== foundProduct.value.image_id ? image_id : undefined, // Enviar si cambió
       },
     })
+    
     foundProduct.value.stock_quantity = currentStock.value
     foundProduct.value.regular_price = currentPrice.value
-    success(`Producto actualizado: ${currentStock.value} unidades y $${currentPrice.value}.`)
+    foundProduct.value.name = currentName.value
+    foundProduct.value.description = currentDescription.value
+    foundProduct.value.categories = [...currentCategories.value]
+    foundProduct.value.image_id = image_id
+    editImgFile.value = null // resetear archivo
+
+    success(`Producto actualizado correctamente.`)
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
     notifyError(`Error al guardar: ${e?.statusMessage}`)
@@ -793,6 +952,41 @@ async function runExport() {
 // ════════════════════════════════════════════════
 const adsConfig = ref<any>(null)
 const adsSaving = ref(false)
+
+const genericMediaInput = ref<HTMLInputElement | null>(null)
+let mediaTargetObj: any = null
+let mediaTargetProp: string = ''
+
+function triggerMediaUpload(obj: any, prop: string) {
+  mediaTargetObj = obj
+  mediaTargetProp = prop
+  genericMediaInput.value?.click()
+}
+
+async function handleGenericMediaChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  
+  // reset input
+  if (genericMediaInput.value) genericMediaInput.value.value = ''
+
+  try {
+    const fd = new FormData()
+    fd.append('file', file, file.name)
+    const uploaded = await $fetch<{ id: number; src: string }>('/api/admin/upload-image', {
+      method: 'POST',
+      body: fd,
+    })
+    
+    if (mediaTargetObj && mediaTargetProp) {
+      mediaTargetObj[mediaTargetProp] = uploaded.src
+      success('Archivo subido correctamente')
+    }
+  } catch (err: unknown) {
+    const error = err as { statusMessage?: string }
+    notifyError(`Error al subir archivo: ${error?.statusMessage}`)
+  }
+}
 
 async function loadAdsConfig() {
   try {

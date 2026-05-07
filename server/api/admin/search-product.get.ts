@@ -25,6 +25,9 @@ export default defineEventHandler(async (event) => {
     stock_quantity: p.stock_quantity ?? 0,
     regular_price: p.regular_price ?? p.price ?? '0',
     image: p.images?.[0]?.src ?? null,
+    image_id: p.images?.[0]?.id ?? null,
+    description: p.description ?? '',
+    categories: (p.categories || []).map((c: any) => c.id),
     status: p.status,
   }
 })

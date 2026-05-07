@@ -137,6 +137,31 @@
       </div>
     </section>
 
+    <!-- Video Section (Admin Editable) -->
+    <section ref="videoSectionRef" v-if="adsConfig?.videoSection?.enabled" class="max-w-[1440px] mx-auto px-6 md:px-8 mb-16">
+      <div :class="`relative rounded-3xl overflow-hidden shadow-xl bg-${adsConfig.videoSection.backgroundColor} flex flex-col md:flex-row items-center group min-h-[400px]`">
+        <div class="w-full md:w-1/2 p-10 md:p-16 text-white flex flex-col justify-center min-h-[300px]">
+          <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4 min-h-[3rem] md:min-h-[4rem] flex items-center">
+            {{ animatedTitle }}<span v-if="isTypingTitle" class="ml-1 w-1 h-[1em] bg-white animate-pulse"></span>
+          </h2>
+          <p class="text-xl md:text-3xl font-light leading-relaxed min-h-[6rem] md:min-h-[8rem]">
+            {{ animatedSubtitle }}<span v-if="isTypingSubtitle" class="ml-1 w-1 h-[1em] bg-white animate-pulse inline-block align-middle"></span>
+          </p>
+        </div>
+        <div class="w-full md:w-1/2 relative min-h-[300px] md:min-h-[500px] bg-black/50 overflow-hidden flex-shrink-0">
+          <video 
+            v-if="adsConfig.videoSection.videoUrl"
+            :src="adsConfig.videoSection.videoUrl" 
+            controls 
+            autoplay 
+            muted 
+            loop 
+            class="absolute inset-0 w-full h-full object-cover"
+          ></video>
+        </div>
+      </div>
+    </section>
+
     <!-- Categorías Superiores -->
     <section class="max-w-[1440px] mx-auto px-6 md:px-8 py-10">
       <div class="flex items-end justify-between mb-8">
@@ -233,7 +258,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
 
 useSeoMeta({
@@ -243,6 +268,48 @@ useSeoMeta({
 
 // === Fetch Publicidad / Banners (Data configurada en el Admin) ===
 const { data: adsConfig } = await useFetch<any>('/api/config')
+
+// === Animación Video Section ===
+const videoSectionRef = ref<HTMLElement | null>(null)
+const animatedTitle = ref('')
+const animatedSubtitle = ref('')
+const isTypingTitle = ref(false)
+const isTypingSubtitle = ref(false)
+let animationTriggered = false
+let videoObserver: IntersectionObserver | null = null
+
+watch(videoSectionRef, (el) => {
+  if (el && !animationTriggered) {
+    videoObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && !animationTriggered) {
+        animationTriggered = true
+        let title = adsConfig.value?.videoSection?.title || ''
+        let sub = adsConfig.value?.videoSection?.subtitle || ''
+        let i = 0
+        isTypingTitle.value = true
+        const tId = setInterval(() => {
+          animatedTitle.value += title[i] || ''
+          i++
+          if (i >= title.length) {
+            clearInterval(tId)
+            isTypingTitle.value = false
+            let j = 0
+            isTypingSubtitle.value = true
+            const sId = setInterval(() => {
+              animatedSubtitle.value += sub[j] || ''
+              j++
+              if (j >= sub.length) {
+                clearInterval(sId)
+                isTypingSubtitle.value = false
+              }
+            }, 30)
+          }
+        }, 50)
+      }
+    }, { threshold: 0.3 })
+    videoObserver.observe(el)
+  }
+})
 
 // === Carrusel ===
 const activeSlide = ref(0)
