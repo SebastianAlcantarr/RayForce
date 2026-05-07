@@ -19,13 +19,24 @@ export default defineEventHandler(async (event) => {
       quantity: parseInt(item.quantity) || 1
     }))
 
+
     const orderBody = {
-      customer_id: body.customer_id || 0,  // ← Usa el que viene en la request, o 0 si no existe
+      customer_id: body.customer_id,
       status: 'pending',
       set_paid: false,
-      line_items: lineItems,
+
       billing: body.billing,
-      shipping: body.shipping
+      shipping: body.shipping,
+
+      line_items: lineItems,
+
+      shipping_lines: [
+        {
+          method_id: 'flat_rate',
+          method_title: 'Envío',
+          total: '100'
+        }
+      ]
     }
 
     const order = await $fetch<any>(`${config.wooUrl}/wp-json/wc/v3/orders`, {

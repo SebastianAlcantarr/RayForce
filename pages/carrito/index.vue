@@ -14,10 +14,10 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
       <div class="lg:col-span-8 space-y-12">
         <div class="hidden md:grid grid-cols-6 pb-6 border-b border-outline-variant/15 text-[10px] font-inter uppercase tracking-widest text-outline">
-          <div class="col-span-3">Detalles</div>
-          <div class="text-center">Precio</div>
-          <div class="text-center">Cantidad</div>
-          <div class="text-right">Total</div>
+          <div class="col-span-3 text-black">Detalles</div>
+          <div class="text-center text-black">Precio</div>
+          <div class="text-center text-black ">Cantidad</div>
+          <div class="text-right text-black ">Total</div>
         </div>
 
         <div v-for="item in cartItems" :key="item.id" class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center">
@@ -61,21 +61,9 @@
              <p class="text-sm">Tu carrito está vacío</p>
            </div>
            <div v-else class="space-y-4">
-             <div class="flex justify-between items-center py-2">
-               <span class="text-xs font-inter uppercase tracking-widest text-outline">Subtotal</span>
-               <span class="font-bold text-on-surface">${{ subtotal.toFixed(2) }}</span>
-             </div>
-             <div class="flex justify-between items-center py-2">
-               <span class="text-xs font-inter uppercase tracking-widest text-outline">Costo de envio</span>
-               <span class="font-bold text-on-surface">$45.00</span>
-             </div>
-             <div class="flex justify-between items-center py-2">
-               <span class="text-xs font-inter uppercase tracking-widest text-outline">Impuestos</span>
-               <span class="font-bold text-on-surface">${{ ((subtotal + 45) * 0.08).toFixed(2) }}</span>
-             </div>
              <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
                <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span>
-               <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ (subtotal + 45 + ((subtotal + 45) * 0.08)).toFixed(2) }}</span>
+               <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ subtotal.toFixed(2)}}</span>
              </div>
            </div>
            <div v-if="cartItems.length > 0" class="space-y-4 pt-4">
@@ -86,12 +74,12 @@
                Proceder a checkout
                <span class="material-symbols-outlined text-lg">arrow_forward</span>
              </NuxtLink>
-             <p class="text-[10px] text-center text-outline uppercase tracking-wider">Envio Seguro </p>
+             <p class="text-[15px] text-center text-black uppercase tracking-wider">Precio total sin contar el Envio</p>
            </div>
            <div v-if="cartItems.length > 0" class="pt-8 mt-8 border-t border-outline-variant/10">
-             <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Promotional Code</label>
+             <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Codigo Promocional</label>
              <div class="flex gap-2">
-               <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="ENTER CODE" type="text" />
+               <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="INGRESAR CODIGO" type="text" />
                <button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button">
                  Apply
                </button>
