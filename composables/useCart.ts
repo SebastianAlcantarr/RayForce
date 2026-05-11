@@ -8,8 +8,17 @@ export interface CartItem {
   slug?: string
 }
 
+export interface AppliedCoupon {
+  id: number
+  code: string
+  discount_type: string
+  amount: string
+  discountValue: number
+}
+
 export interface Cart {
   items: CartItem[]
+  coupon?: AppliedCoupon | null
 }
 
 const STORAGE_KEY = 'rayforce_cart'
@@ -24,11 +33,11 @@ export const useCart = () => {
           return JSON.parse(stored)
         } catch (e) {
           console.error('Error loading cart:', e)
-          return { items: [] }
+          return { items: [], coupon: null }
         }
       }
     }
-    return { items: [] }
+    return { items: [], coupon: null }
   })
 
   const isCartHydrated = useState<boolean>('rayforce-cart-hydrated', () => false)
@@ -40,7 +49,10 @@ export const useCart = () => {
     if (stored) {
       try {
         const parsed = JSON.parse(stored)
-        cart.value = { items: Array.isArray(parsed?.items) ? parsed.items : [] }
+        cart.value = {
+          items: Array.isArray(parsed?.items) ? parsed.items : [],
+          coupon: parsed?.coupon || null,
+        }
       } catch (e) {
         console.error('Error loading cart:', e)
       }
@@ -78,7 +90,7 @@ export const useCart = () => {
     }
     
     // Forzar reactividad
-    cart.value = { items: [...cart.value.items] }
+    cart.value = { ...cart.value, items: [...cart.value.items] }
     saveCart()
   }
 
@@ -86,7 +98,7 @@ export const useCart = () => {
   const removeFromCart = (productId: string) => {
     cart.value.items = cart.value.items.filter(item => item.id !== productId)
     // Forzar reactividad
-    cart.value = { items: [...cart.value.items] }
+    cart.value = { ...cart.value, items: [...cart.value.items] }
     saveCart()
   }
 
@@ -99,7 +111,7 @@ export const useCart = () => {
         removeFromCart(productId)
       } else {
         item.quantity = validQuantity
-        cart.value = { items: [...cart.value.items] }
+        cart.value = { ...cart.value, items: [...cart.value.items] }
         saveCart()
       }
     }
@@ -110,7 +122,7 @@ export const useCart = () => {
     const item = cart.value.items.find(i => i.id === productId)
     if (item) {
       item.quantity += 1
-      cart.value = { items: [...cart.value.items] }
+      cart.value = { ...cart.value, items: [...cart.value.items] }
       saveCart()
     }
   }
@@ -121,7 +133,7 @@ export const useCart = () => {
     if (item) {
       if (item.quantity > 1) {
         item.quantity -= 1
-        cart.value = { items: [...cart.value.items] }
+        cart.value = { ...cart.value, items: [...cart.value.items] }
         saveCart()
       } else {
         removeFromCart(productId)
@@ -131,13 +143,33 @@ export const useCart = () => {
 
   // Vaciar carrito
   const clearCart = () => {
-    cart.value = { items: [] }
+    cart.value = { items: [], coupon: null }
+    saveCart()
+  }
+
+  // Aplicar cupón
+  const applyCoupon = (coupon: AppliedCoupon) => {
+    cart.value = { ...cart.value, coupon }
+    saveCart()
+  }
+
+  // Quitar cupón
+  const removeCoupon = () => {
+    cart.value = { ...cart.value, coupon: null }
     saveCart()
   }
 
   // Calcular totales
   const subtotal = computed(() => {
     return cart.value.items.reduce((total, item) => total + (item.price * item.quantity), 0)
+  })
+
+  const discountAmount = computed(() => {
+    return cart.value.coupon?.discountValue ?? 0
+  })
+
+  const total = computed(() => {
+    return Math.max(0, subtotal.value - discountAmount.value)
   })
 
   const itemCount = computed(() => {
@@ -147,13 +179,18 @@ export const useCart = () => {
   return {
     cart: readonly(cart),
     cartItems: computed(() => cart.value.items),
+    appliedCoupon: computed(() => cart.value.coupon ?? null),
     addToCart,
     removeFromCart,
     updateQuantity,
     incrementQuantity,
     decrementQuantity,
     clearCart,
+    applyCoupon,
+    removeCoupon,
     subtotal,
+    discountAmount,
+    total,
     itemCount,
     saveCart,
     loadCartFromStorage,

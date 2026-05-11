@@ -61,11 +61,33 @@
              <p class="text-sm">Tu carrito está vacío</p>
            </div>
            <div v-else class="space-y-4">
+             <!-- Subtotal -->
+             <div class="flex justify-between items-baseline text-sm">
+               <span class="text-on-surface-variant">Subtotal</span>
+               <span class="font-semibold text-on-surface">${{ subtotal.toFixed(2) }}</span>
+             </div>
+
+             <!-- Cupón aplicado -->
+             <div v-if="appliedCoupon" class="flex justify-between items-center py-2 px-3 bg-green-950/40 border border-green-800/40 rounded-lg">
+               <div class="flex items-center gap-2">
+                 <span class="text-green-400 text-xs font-bold font-mono">{{ appliedCoupon.code }}</span>
+                 <span class="text-xs text-green-600">
+                   ({{ appliedCoupon.discount_type === 'percent' ? `${appliedCoupon.amount}%` : `$${appliedCoupon.amount}` }} off)
+                 </span>
+               </div>
+               <div class="flex items-center gap-3">
+                 <span class="text-green-400 font-semibold text-sm">−${{ discountAmount.toFixed(2) }}</span>
+                 <button @click="removeCoupon()" class="text-outline-variant hover:text-error transition-colors text-xs" type="button">✕</button>
+               </div>
+             </div>
+
+             <!-- Total -->
              <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
                <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span>
-               <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ subtotal.toFixed(2)}}</span>
+               <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ total.toFixed(2)}}</span>
              </div>
            </div>
+
            <div v-if="cartItems.length > 0" class="space-y-4 pt-4">
              <NuxtLink
                to="/checkout"
@@ -76,14 +98,31 @@
              </NuxtLink>
              <p class="text-[15px] text-center text-black uppercase tracking-wider">Precio total sin contar el Envio</p>
            </div>
+
+           <!-- Código Promocional -->
            <div v-if="cartItems.length > 0" class="pt-8 mt-8 border-t border-outline-variant/10">
              <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Codigo Promocional</label>
              <div class="flex gap-2">
-               <input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="INGRESAR CODIGO" type="text" />
-               <button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button">
-                 Apply
+               <input
+                 v-model="couponCode"
+                 class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10 uppercase"
+                 placeholder="INGRESAR CODIGO"
+                 type="text"
+                 :disabled="!!appliedCoupon || couponLoading"
+                 @keyup.enter="validateCoupon"
+               />
+               <button
+                 v-if="!appliedCoupon"
+                 class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors disabled:opacity-40"
+                 type="button"
+                 :disabled="!couponCode || couponLoading"
+                 @click="validateCoupon"
+               >
+                 <span v-if="couponLoading" class="inline-block w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" />
+                 <span v-else>Aplicar</span>
                </button>
              </div>
+             <p v-if="couponError" class="mt-2 text-xs text-red-400">{{ couponError }}</p>
            </div>
          </div>
 
@@ -101,11 +140,41 @@ useSeoMeta({
 const {
   cartItems,
   subtotal,
+  discountAmount,
+  total,
+  appliedCoupon,
   removeFromCart,
   incrementQuantity,
   decrementQuantity,
+  applyCoupon,
+  removeCoupon,
 } = useCart()
+
+// ── Lógica de cupón ────────────────────────────
+const couponCode = ref('')
+const couponLoading = ref(false)
+const couponError = ref('')
+
+async function validateCoupon() {
+  if (!couponCode.value.trim()) return
+  couponLoading.value = true
+  couponError.value = ''
+
+  try {
+    const result = await $fetch('/api/validate-coupon', {
+      method: 'POST',
+      body: {
+        code: couponCode.value.trim(),
+        subtotal: subtotal.value,
+      },
+    })
+    applyCoupon(result)
+    couponCode.value = ''
+  } catch (err) {
+    couponError.value = err?.data?.message || err?.statusMessage || 'Código de cupón inválido.'
+  } finally {
+    couponLoading.value = false
+  }
+}
 </script>
-
-
 

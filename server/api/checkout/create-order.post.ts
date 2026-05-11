@@ -30,6 +30,9 @@ export default defineEventHandler(async (event) => {
 
       line_items: lineItems,
 
+      // Cupón de descuento (opcional)
+      ...(body.coupon_code ? { coupon_lines: [{ code: body.coupon_code }] } : {}),
+
       shipping_lines: [
         {
           method_id: 'flat_rate',
