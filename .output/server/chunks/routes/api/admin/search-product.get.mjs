@@ -1,4 +1,4 @@
-import { c as defineEventHandler, g as getQuery, e as createError } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, g as getQuery, c as createError } from '../../../nitro/nitro.mjs';
 import { w as wooFetch } from '../../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';
@@ -11,7 +11,7 @@ import 'node:url';
 import 'buffer';
 
 const searchProduct_get = defineEventHandler(async (event) => {
-  var _a, _b, _c, _d, _e, _f;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
   const query = getQuery(event);
   const sku = String(query.sku || "").trim();
   if (!sku) {
@@ -31,6 +31,9 @@ const searchProduct_get = defineEventHandler(async (event) => {
     stock_quantity: (_a = p.stock_quantity) != null ? _a : 0,
     regular_price: (_c = (_b = p.regular_price) != null ? _b : p.price) != null ? _c : "0",
     image: (_f = (_e = (_d = p.images) == null ? void 0 : _d[0]) == null ? void 0 : _e.src) != null ? _f : null,
+    image_id: (_i = (_h = (_g = p.images) == null ? void 0 : _g[0]) == null ? void 0 : _h.id) != null ? _i : null,
+    description: (_j = p.description) != null ? _j : "",
+    categories: (p.categories || []).map((c) => c.id),
     status: p.status
   };
 });

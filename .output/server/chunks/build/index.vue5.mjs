@@ -1,9 +1,8 @@
-import { ref, computed, mergeProps, unref, useSSRContext } from 'vue';
-import { ssrRenderAttrs, ssrIncludeBooleanAttr, ssrLooseEqual, ssrRenderList, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
-import { u as useCart } from './useCart.mjs';
+import { ssrRenderAttrs, ssrRenderAttr, ssrRenderList, ssrInterpolate, ssrRenderClass, ssrRenderComponent } from 'vue/server-renderer';
+import { ref, mergeProps, unref, useSSRContext } from 'vue';
+import { _ as _export_sfc } from './server.mjs';
 import { a as useSeoMeta } from './v3.mjs';
-import './server.mjs';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -20,38 +19,169 @@ import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
 
+const _sfc_main$4 = {
+  __name: "SupportHero",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const searchQuery = ref("");
+    const popularTags = ["Wiring Schematics", "API Documentation", "Safety Protocols"];
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "relative px-8 py-24 md:py-32 overflow-hidden" }, _attrs))}><div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row items-center gap-16"><div class="w-full md:w-3/5 z-10"><span class="text-xs uppercase tracking-[0.2em] text-primary mb-6 block font-semibold"> Knowledge Base </span><h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight mb-8"> Precision Support for <br><span class="text-outline-variant italic font-light">Engineered Systems.</span></h1><div class="relative group max-w-2xl"><div class="absolute inset-y-0 left-6 flex items-center pointer-events-none"><span class="material-symbols-outlined text-outline">search</span></div><input${ssrRenderAttr("value", unref(searchQuery))} type="text" placeholder="Search technical documentation, diagrams, or FAQs..." class="w-full pl-16 pr-8 py-6 bg-surface-container-high border-none rounded-xl focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60 text-lg outline-none"></div><div class="mt-6 flex flex-wrap gap-3 items-center"><span class="text-xs text-on-surface-variant">Popular:</span><!--[-->`);
+      ssrRenderList(popularTags, (tag) => {
+        _push(`<a href="#" class="text-xs font-semibold text-primary hover:underline underline-offset-4">${ssrInterpolate(tag)}</a>`);
+      });
+      _push(`<!--]--></div></div><div class="w-full md:w-2/5 hidden md:block"><div class="aspect-square bg-surface-container-highest rounded-full flex items-center justify-center p-12 relative"><div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-full"></div><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzjIF_pCrapjmfK1fQDzk_GITKv7GcSWC_01Q_eFHu5sY-b8Uw15mY9ohwPqEFNhi2RCjAjqDsDCu-S34uVNUo3WH4724yzHRihu2aK0ykJNH_WeOkjs8SjJj2cydMHDU2RXGlNgTqhJHdvnFTcSW5XRxs6blfkmmLrtN2RRq6Uol1MSTY9VqDSjY-d8xBY6AwO6RSS98n9bAYAJ0XlTnuoLdJeyk2sae42F-uBHTNpWoNH6y7auRvKLIrpOO-c1HaPaui7IdpSUPz" alt="Technical Engineering" class="w-full h-full object-cover rounded-full mix-blend-multiply opacity-80"></div></div></div></section>`);
+    };
+  }
+};
+const _sfc_setup$4 = _sfc_main$4.setup;
+_sfc_main$4.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("componentes_principal/SupportHero.vue");
+  return _sfc_setup$4 ? _sfc_setup$4(props, ctx) : void 0;
+};
+
+const _sfc_main$3 = {
+  __name: "SupportPortals",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const smallCards = [
+      {
+        title: "Garantías",
+        description: "Policy details and automated claim processing for industrial equipment.",
+        icon: "verified"
+      },
+      {
+        title: "Estado de Pedido",
+        description: "Real-time logistics tracking and shipping synchronization.",
+        icon: "local_shipping"
+      }
+    ];
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "bg-surface-container-low py-24 px-8" }, _attrs))}><div class="max-w-screen-2xl mx-auto"><div class="flex justify-between items-end mb-16"><h2 class="text-3xl font-bold tracking-tight">Support Portals</h2><p class="text-on-surface-variant max-w-xs text-right text-sm"> Select your specialized area of inquiry to access curated technical resources. </p></div><div class="grid grid-cols-1 md:grid-cols-4 gap-6"><div class="md:col-span-2 group cursor-pointer bg-surface-container-lowest p-10 rounded-xl hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col justify-between min-h-[320px]"><div><div class="w-12 h-12 bg-primary-container rounded-lg flex items-center justify-center mb-8 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-primary">description</span></div><h3 class="text-2xl font-bold mb-4">Documentación Técnica</h3><p class="text-on-surface-variant leading-relaxed"> Access full spec sheets, CAD models, and installation manuals for every Rayforce component. </p></div><div class="flex items-center text-primary font-bold gap-2 mt-8 group-hover:translate-x-2 transition-transform"><span>Browse Library</span><span class="material-symbols-outlined">arrow_forward</span></div></div><!--[-->`);
+      ssrRenderList(smallCards, (card) => {
+        _push(`<div class="group cursor-pointer bg-surface-container-lowest p-10 rounded-xl hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 flex flex-col justify-between"><div><div class="w-12 h-12 bg-surface-container-high rounded-lg flex items-center justify-center mb-8 group-hover:bg-primary-container transition-colors"><span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary">${ssrInterpolate(card.icon)}</span></div><h3 class="text-xl font-bold mb-4">${ssrInterpolate(card.title)}</h3><p class="text-sm text-on-surface-variant">${ssrInterpolate(card.description)}</p></div><span class="material-symbols-outlined text-outline-variant self-end">north_east</span></div>`);
+      });
+      _push(`<!--]--><div class="md:col-span-4 group cursor-pointer bg-primary p-12 rounded-xl overflow-hidden relative flex flex-col md:flex-row items-center gap-12"><div class="relative z-10 flex-1"><h3 class="text-white text-3xl font-bold mb-6">Soporte Post-Venta</h3><p class="text-white/70 leading-relaxed max-w-xl mb-8"> Personalized assistance for deployed systems. Our engineers are available for diagnostics, maintenance scheduling, and optimization consulting. </p><button class="bg-white text-primary px-8 py-4 font-bold rounded-md hover:bg-primary-container transition-colors uppercase text-xs tracking-widest"> Connect with Engineer </button></div><div class="w-full md:w-1/3 aspect-video bg-white/10 rounded-lg overflow-hidden relative"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC40iNP5YWUwUVEWztwjoTbgp4TfSQCyk2yDVNuanMZhze224YdhUv8_NBR2ng6YsD16RkWxNfoW2cOSSFdJfR9nkLkg6dixBbChnMHqe5ZLJc6SopsHgCEcZt0ftWLt_LeL0wexV_jcYNV0mTyfzUIaG30cDBwAiwRtTNrxRP7wSn5UZfe621tvPDmW5j7Ky2yQbWBg0reaNGqhTmd8Au-EBzGHwYbOH177cG4UQ_NoaO98qI1lI6ePGO_l4RzX0SWp9P6JKym3v41" alt="Technical Advisor" class="w-full h-full object-cover mix-blend-overlay opacity-60"></div></div></div></div></section>`);
+    };
+  }
+};
+const _sfc_setup$3 = _sfc_main$3.setup;
+_sfc_main$3.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("componentes_principal/SupportPortals.vue");
+  return _sfc_setup$3 ? _sfc_setup$3(props, ctx) : void 0;
+};
+
+const _sfc_main$2 = {
+  __name: "SupportContact",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const contactCards = [
+      {
+        eyebrow: "Complex Issues",
+        title: "Submit a Technical Ticket",
+        description: "Our engineering response team typically replies within 4 business hours. Provide detailed logs or photos for faster resolution.",
+        cta: "Open Support Request",
+        icon: "mail",
+        primary: true,
+        bordered: false
+      },
+      {
+        eyebrow: "Immediate Assistance",
+        title: "Technical Live Chat",
+        description: "Connect directly with a system specialist for real-time troubleshooting and operational guidance.",
+        cta: "Start Session Now",
+        icon: "forum",
+        primary: false,
+        bordered: true
+      }
+    ];
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "py-32 px-8 bg-surface-container-highest/30" }, _attrs))}><div class="max-w-screen-2xl mx-auto flex flex-col md:flex-row gap-12 items-stretch"><!--[-->`);
+      ssrRenderList(contactCards, (card) => {
+        _push(`<div class="${ssrRenderClass([card.bordered ? "border border-primary/10" : "", "flex-1 bg-surface-container-lowest p-12 rounded-xl flex flex-col"])}"><span class="text-xs font-bold text-primary mb-2 uppercase tracking-widest">${ssrInterpolate(card.eyebrow)}</span><h3 class="text-3xl font-extrabold mb-6 tracking-tight">${ssrInterpolate(card.title)}</h3><p class="text-on-surface-variant mb-12 flex-grow">${ssrInterpolate(card.description)}</p><button class="${ssrRenderClass([card.primary ? "bg-primary text-white hover:bg-primary-dim" : "bg-surface-container-high text-primary hover:bg-primary-container", "py-4 px-8 font-bold flex items-center justify-center gap-3 group transition-all"])}">${ssrInterpolate(card.cta)} <span class="${ssrRenderClass([card.primary ? "group-hover:translate-x-1" : "group-hover:scale-110", "material-symbols-outlined transition-transform"])}">${ssrInterpolate(card.icon)}</span></button></div>`);
+      });
+      _push(`<!--]--></div></section>`);
+    };
+  }
+};
+const _sfc_setup$2 = _sfc_main$2.setup;
+_sfc_main$2.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("componentes_principal/SupportContact.vue");
+  return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
+};
+
+const _sfc_main$1 = {
+  __name: "SupportFaq",
+  __ssrInlineRender: true,
+  setup(__props) {
+    const openIndex = ref(0);
+    const faqs = [
+      {
+        question: "How do I synchronize my Rayforce Controller with the central grid?",
+        answer: "Our controllers use the proprietary RF-Sync protocol. Ensure your firmware is updated to version 4.2 or higher, then navigate to System > Network > Grid Sync in your dashboard."
+      },
+      {
+        question: "Where can I find ISO 9001 compliance certification for Rayforce componentes_principal?",
+        answer: null
+        // No answer yet — add when available
+      },
+      {
+        question: "What is the standard turnaround for warranty replacements?",
+        answer: null
+      },
+      {
+        question: "Do you offer remote diagnostic services?",
+        answer: null
+      }
+    ];
+    return (_ctx, _push, _parent, _attrs) => {
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "py-32 px-8 bg-surface" }, _attrs))} data-v-74134828><div class="max-w-3xl mx-auto" data-v-74134828><div class="text-center mb-20" data-v-74134828><h2 class="text-4xl font-extrabold tracking-tight mb-4" data-v-74134828>Common Inquiries</h2><div class="h-1 w-20 bg-primary mx-auto" data-v-74134828></div></div><div class="space-y-4" data-v-74134828><!--[-->`);
+      ssrRenderList(faqs, (item, index) => {
+        _push(`<div class="${ssrRenderClass([index > 0 ? "pt-6" : "", "border-b border-outline-variant/20 pb-6 cursor-pointer"])}" data-v-74134828><div class="${ssrRenderClass([unref(openIndex) === index ? "text-primary" : "hover:text-primary", "flex justify-between items-center transition-colors"])}" data-v-74134828><h4 class="text-lg font-bold pr-4" data-v-74134828>${ssrInterpolate(item.question)}</h4><span class="${ssrRenderClass([unref(openIndex) === index ? "rotate-45" : "", "material-symbols-outlined text-primary transition-transform flex-shrink-0"])}" data-v-74134828> add </span></div>`);
+        if (unref(openIndex) === index && item.answer) {
+          _push(`<div class="mt-4 text-on-surface-variant leading-relaxed" data-v-74134828>${ssrInterpolate(item.answer)}</div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div>`);
+      });
+      _push(`<!--]--></div><div class="mt-16 text-center" data-v-74134828><button class="text-primary font-bold flex items-center gap-2 mx-auto hover:underline underline-offset-8" data-v-74134828> View All Technical Documentation <span class="material-symbols-outlined text-sm" data-v-74134828>open_in_new</span></button></div></div></section>`);
+    };
+  }
+};
+const _sfc_setup$1 = _sfc_main$1.setup;
+_sfc_main$1.setup = (props, ctx) => {
+  const ssrContext = useSSRContext();
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("componentes_principal/SupportFaq.vue");
+  return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
+};
+const SupportFaq = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-74134828"]]);
+
 const _sfc_main = {
   __name: "index",
   __ssrInlineRender: true,
   setup(__props) {
     useSeoMeta({
-      title: "Rayforce | Checkout",
-      description: "Checkout seguro para pedidos industriales Rayforce."
+      title: "Rayforce | Technical Support & Help Center",
+      description: "Precision support for engineered systems. Access documentation, warranties, order status, and connect with our engineering team."
     });
-    const { cartItems, subtotal } = useCart();
-    const shippingCost = ref("12");
-    const shippingCostNumber = computed(() => Number(shippingCost.value));
-    const iva = computed(() => (subtotal.value + shippingCostNumber.value) * 0.16);
-    const total = computed(() => subtotal.value + shippingCostNumber.value + iva.value);
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "grid grid-cols-1 lg:grid-cols-12 gap-16" }, _attrs))}><div class="lg:col-span-7 space-y-16"><section><div class="flex items-center gap-4 mb-8"><span class="text-xs font-bold font-inter bg-primary text-white w-6 h-6 flex items-center justify-center rounded-full">01</span><h2 class="text-2xl font-extrabold tracking-tight uppercase">Información de Facturación / Envío</h2></div><div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10"><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Nombre</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="Escribe tu nombre" type="text"></div><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Apellido</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="Escribe tu apellido" type="text"></div><div class="md:col-span-2 flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Dirección Física</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="Calle, número, colonia, empresa" type="text"></div><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Ciudad</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="Ciudad" type="text"></div><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Código Postal</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="Código Postal" type="text"></div></div></section><section><div class="flex items-center gap-4 mb-8"><span class="text-xs font-bold font-inter bg-primary text-white w-6 h-6 flex items-center justify-center rounded-full">02</span><h2 class="text-2xl font-extrabold tracking-tight uppercase">Método de Envío</h2></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><label class="relative group cursor-pointer"><input checked class="peer sr-only" name="shipping" type="radio" value="12"${ssrIncludeBooleanAttr(ssrLooseEqual(shippingCost.value, "12")) ? " checked" : ""}><div class="p-6 border border-outline-variant/20 bg-surface-container-low peer-checked:bg-primary-container peer-checked:border-primary transition-all rounded-lg flex justify-between items-start"><div class="space-y-1"><p class="font-bold text-sm uppercase tracking-tight">Logística Estándar</p><p class="text-[11px] text-on-surface-variant font-inter uppercase">3-5 Días Hábiles</p></div><span class="text-sm font-bold">$12.00</span></div></label><label class="relative group cursor-pointer"><input class="peer sr-only" name="shipping" type="radio" value="45"${ssrIncludeBooleanAttr(ssrLooseEqual(shippingCost.value, "45")) ? " checked" : ""}><div class="p-6 border border-outline-variant/20 bg-surface-container-low peer-checked:bg-primary-container peer-checked:border-primary transition-all rounded-lg flex justify-between items-start"><div class="space-y-1"><p class="font-bold text-sm uppercase tracking-tight">Express Premium</p><p class="text-[11px] text-on-surface-variant font-inter uppercase">Envío Día Siguiente</p></div><span class="text-sm font-bold">$45.00</span></div></label></div></section><section><div class="flex items-center gap-4 mb-8"><span class="text-xs font-bold font-inter bg-primary text-white w-6 h-6 flex items-center justify-center rounded-full">03</span><h2 class="text-2xl font-extrabold tracking-tight uppercase">Método de Pago</h2></div><div class="space-y-6"><div class="grid grid-cols-3 gap-4"><label class="cursor-pointer"><input checked class="peer sr-only" name="payment" type="radio"><div class="py-4 border border-outline-variant/20 bg-surface-container-low peer-checked:bg-primary-container peer-checked:border-primary text-center rounded-lg transition-all"><span class="material-symbols-outlined text-2xl">credit_card</span><p class="text-[10px] font-bold uppercase mt-1">Tarjeta</p></div></label><label class="cursor-pointer"><input class="peer sr-only" name="payment" type="radio"><div class="py-4 border border-outline-variant/20 bg-surface-container-low peer-checked:bg-primary-container peer-checked:border-primary text-center rounded-lg transition-all"><span class="material-symbols-outlined text-2xl">account_balance</span><p class="text-[10px] font-bold uppercase mt-1">Transferencia</p></div></label><label class="cursor-pointer"><input class="peer sr-only" name="payment" type="radio"><div class="py-4 border border-outline-variant/20 bg-surface-container-low peer-checked:bg-primary-container peer-checked:border-primary text-center rounded-lg transition-all"><span class="material-symbols-outlined text-2xl">account_balance_wallet</span><p class="text-[10px] font-bold uppercase mt-1">MercadoPago</p></div></label></div><div class="bg-surface-container-low p-8 rounded-xl space-y-6"><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Número de Tarjeta</label><div class="relative"><input class="w-full bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all pr-10" placeholder="0000 0000 0000 0000" type="text"><span class="material-symbols-outlined absolute right-0 top-3 text-outline-variant">lock</span></div></div><div class="grid grid-cols-2 gap-8"><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">Expiración</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="MM/YY" type="text"></div><div class="flex flex-col gap-2"><label class="font-inter text-[11px] uppercase tracking-wider text-on-surface-variant">CVV</label><input class="bg-surface-container-high border-none border-b border-outline-variant/30 px-0 py-3 text-sm focus:ring-0 transition-all" placeholder="123" type="text"></div></div></div></div></section><div class="pt-8 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-outline-variant/10"><div class="flex items-start gap-4"><span class="material-symbols-outlined text-primary text-3xl">verified</span><div><h4 class="font-bold text-xs uppercase">Garantía Industrial</h4><p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Cada componente está respaldado por nuestra garantía de rendimiento a largo plazo.</p></div></div><div class="flex items-start gap-4"><span class="material-symbols-outlined text-primary text-3xl">shield</span><div><h4 class="font-bold text-xs uppercase">Transacción Segura</h4><p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Protocolos de encriptación AES-256 bits protegen tus datos de compra.</p></div></div></div></div><div class="lg:col-span-5"><div class="sticky top-32 space-y-6"><div class="bg-surface-container-lowest shadow-[0_40px_40px_-15px_rgba(45,51,56,0.06)] p-10 rounded-xl border border-outline-variant/5"><h3 class="text-xl font-extrabold tracking-tight uppercase mb-8">Resumen de Orden</h3><div class="space-y-6 mb-8 max-h-64 overflow-y-auto pr-2">`);
-      if (unref(cartItems).length === 0) {
-        _push(`<div class="text-xs text-on-surface-variant py-4">No hay productos en tu carrito.</div>`);
-      } else {
-        _push(`<!---->`);
-      }
-      _push(`<!--[-->`);
-      ssrRenderList(unref(cartItems), (item) => {
-        _push(`<div class="flex gap-4"><div class="w-20 h-20 bg-surface-container-highest rounded overflow-hidden flex-shrink-0 p-1"><img class="w-full h-full object-contain"${ssrRenderAttr("alt", item.name)}${ssrRenderAttr("src", item.image)}></div><div class="flex-grow flex flex-col justify-between py-1"><div><p class="text-xs font-bold uppercase line-clamp-2">${ssrInterpolate(item.name)}</p><p class="text-[10px] text-on-surface-variant font-inter uppercase">SKU: ${ssrInterpolate(item.sku)}</p></div><div class="flex justify-between items-center"><span class="text-[10px] font-inter">CANTIDAD: ${ssrInterpolate(item.quantity)}</span><span class="text-sm font-bold">$${ssrInterpolate((item.price * item.quantity).toFixed(2))}</span></div></div></div>`);
-      });
-      _push(`<!--]--></div><div class="space-y-3 pt-8 border-t border-outline-variant/10 font-inter"><div class="flex justify-between text-[11px] uppercase tracking-wider text-on-surface-variant"><span>Subtotal</span><span>$${ssrInterpolate(unref(subtotal).toFixed(2))}</span></div><div class="flex justify-between text-[11px] uppercase tracking-wider text-on-surface-variant"><span>Envío Estimado</span><span>$${ssrInterpolate(shippingCostNumber.value.toFixed(2))}</span></div><div class="flex justify-between text-[11px] uppercase tracking-wider text-on-surface-variant"><span>Impuestos (IVA 16%)</span><span>$${ssrInterpolate(iva.value.toFixed(2))}</span></div><div class="flex justify-between text-lg font-black uppercase pt-4 border-t border-outline-variant/10"><span>Total a Pagar</span><span class="text-primary">$${ssrInterpolate(total.value.toFixed(2))}</span></div></div><button class="w-full mt-10 bg-primary hover:bg-primary-dim text-on-primary py-5 rounded-md font-extrabold uppercase tracking-[0.15em] text-sm transition-all active:scale-95 shadow-lg shadow-primary/20" type="button"> Completar Compra </button><div class="mt-8 flex justify-center gap-6 opacity-30"><span class="material-symbols-outlined text-2xl">payments</span><span class="material-symbols-outlined text-2xl">universal_currency</span><span class="material-symbols-outlined text-2xl">qr_code_2</span></div></div><div class="bg-surface-container-low p-6 rounded-lg text-center"><p class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant leading-relaxed"> Al realizar esta orden confirmas que has leído nuestros <a class="underline text-on-surface font-bold" href="#">Términos y Condiciones.</a></p></div></div></div></div>`);
+      _push(`<div${ssrRenderAttrs(_attrs)}>`);
+      _push(ssrRenderComponent(_sfc_main$4, null, null, _parent));
+      _push(ssrRenderComponent(_sfc_main$3, null, null, _parent));
+      _push(ssrRenderComponent(SupportFaq, null, null, _parent));
+      _push(ssrRenderComponent(_sfc_main$2, null, null, _parent));
+      _push(`</div>`);
     };
   }
 };
 const _sfc_setup = _sfc_main.setup;
 _sfc_main.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
-  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/checkout/index.vue");
+  (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/soporte/index.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
 

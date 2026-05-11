@@ -1,37 +1,14 @@
-import { toRef, isRef, computed, readonly } from 'vue';
-import { b as useNuxtApp } from './server.mjs';
-
-const useStateKeyPrefix = "$s";
-function useState(...args) {
-  const autoKey = typeof args[args.length - 1] === "string" ? args.pop() : void 0;
-  if (typeof args[0] !== "string") {
-    args.unshift(autoKey);
-  }
-  const [_key, init] = args;
-  if (!_key || typeof _key !== "string") {
-    throw new TypeError("[nuxt] [useState] key must be a string: " + _key);
-  }
-  if (init !== void 0 && typeof init !== "function") {
-    throw new Error("[nuxt] [useState] init must be a function: " + init);
-  }
-  const key = useStateKeyPrefix + _key;
-  const nuxtApp = useNuxtApp();
-  const state = toRef(nuxtApp.payload.state, key);
-  if (state.value === void 0 && init) {
-    const initialValue = init();
-    if (isRef(initialValue)) {
-      nuxtApp.payload.state[key] = initialValue;
-      return initialValue;
-    }
-    state.value = initialValue;
-  }
-  return state;
-}
+import { u as useState } from './state.mjs';
+import { computed, readonly } from 'vue';
 
 const useCart = () => {
   const cart = useState("rayforce-cart", () => {
     return { items: [] };
   });
+  useState("rayforce-cart-hydrated", () => false);
+  const loadCartFromStorage = () => {
+    return;
+  };
   const saveCart = () => {
   };
   const addToCart = (product) => {
@@ -100,7 +77,8 @@ const useCart = () => {
     clearCart,
     subtotal,
     itemCount,
-    saveCart
+    saveCart,
+    loadCartFromStorage
   };
 };
 

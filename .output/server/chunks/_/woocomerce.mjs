@@ -1,4 +1,4 @@
-import { e as createError, u as useRuntimeConfig } from './nitro.mjs';
+import { c as createError, u as useRuntimeConfig } from '../nitro/nitro.mjs';
 import { Buffer } from 'buffer';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -127,6 +127,22 @@ async function getProductsList(page = 1, perPage = 20, search = "", categoryId) 
     order: "desc"
   };
   if (search) {
+    if (!search.includes(" ")) {
+      try {
+        const productsBySku = await getProducts({ sku: search.trim() });
+        if (productsBySku.length > 0) {
+          return {
+            items: productsBySku,
+            total: productsBySku.length,
+            totalPages: 1,
+            page: 1,
+            perPage
+          };
+        }
+      } catch (e) {
+        console.error("Error buscando por SKU:", e);
+      }
+    }
     params.search = search;
   }
   if (categoryId) {
@@ -145,5 +161,5 @@ async function getCategories() {
   });
 }
 
-export { getWooAuth as a, getProductBySlug as b, getProductVariations as c, getProductsList as d, getCategories as g, wooFetch as w };
+export { getWooAuth as a, getProductBySlug as b, getProductVariations as c, getProductsList as d, getProducts as e, getCategories as g, wooFetch as w };
 //# sourceMappingURL=woocomerce.mjs.map

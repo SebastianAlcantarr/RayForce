@@ -1,10 +1,10 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { defineComponent, withAsyncContext, ref, computed, mergeProps, unref, withCtx, createTextVNode, toDisplayString, createVNode, openBlock, createBlock, createCommentVNode, useSSRContext } from 'vue';
+import { defineComponent, withAsyncContext, ref, watch, computed, mergeProps, unref, withCtx, createTextVNode, toDisplayString, createVNode, openBlock, createBlock, createCommentVNode, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderClass, ssrRenderComponent, ssrInterpolate, ssrRenderStyle, ssrRenderList, ssrRenderAttr } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
 import { u as useFetch } from './fetch.mjs';
 import { _ as _export_sfc } from './server.mjs';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -19,7 +19,13 @@ import 'unhead/server';
 import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
+import './ssr.mjs';
 import 'vue-router';
+
+const intervalError = "[nuxt] `setInterval` should not be used on the server. Consider wrapping it with an `onNuxtReady`, `onBeforeMount` or `onMounted` lifecycle hook, or ensure you only call it in the browser by checking `false`.";
+const setInterval = () => {
+  console.error(intervalError);
+};
 
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "index",
@@ -31,6 +37,28 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       description: "Venta de materiales eléctricos, ferretería general, e infraestructura para corporativos."
     });
     const { data: adsConfig } = ([__temp, __restore] = withAsyncContext(() => useFetch("/api/config", "$77hSeXQoip")), __temp = await __temp, __restore(), __temp);
+    const videoSectionRef = ref(null);
+    const animatedTitle = ref("");
+    const animatedSubtitle = ref("");
+    const isTypingTitle = ref(false);
+    const isTypingSubtitle = ref(false);
+    let animationTriggered = false;
+    let videoObserver = null;
+    watch(videoSectionRef, (el) => {
+      if (el && !animationTriggered) {
+        videoObserver = new IntersectionObserver((entries) => {
+          var _a, _b, _c, _d;
+          if (entries[0].isIntersecting && !animationTriggered) {
+            animationTriggered = true;
+            ((_b = (_a = adsConfig.value) == null ? void 0 : _a.videoSection) == null ? void 0 : _b.title) || "";
+            ((_d = (_c = adsConfig.value) == null ? void 0 : _c.videoSection) == null ? void 0 : _d.subtitle) || "";
+            isTypingTitle.value = true;
+            setInterval();
+          }
+        }, { threshold: 0.3 });
+        videoObserver.observe(el);
+      }
+    });
     const activeSlide = ref(0);
     const slides = [
       {
@@ -83,11 +111,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       { title: "Soporte 24/7", description: "Consultas vía WhatsApp", icon: "support_agent" }
     ];
     return (_ctx, _push, _parent, _attrs) => {
-      var _a, _b, _c, _d;
+      var _a, _b, _c, _d, _e, _f;
       const _component_NuxtLink = __nuxt_component_0;
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "bg-[#f9f9fb] min-h-screen pb-20" }, _attrs))} data-v-40010905>`);
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "bg-[#f9f9fb] min-h-screen pb-20" }, _attrs))} data-v-533745e6>`);
       if ((_b = (_a = unref(adsConfig)) == null ? void 0 : _a.topBanner) == null ? void 0 : _b.enabled) {
-        _push(`<div class="${ssrRenderClass([`bg-${unref(adsConfig).topBanner.color || "primary"} text-white text-center py-2.5 px-4 text-[11px] uppercase tracking-widest font-bold font-inter relative z-30`])}" data-v-40010905>`);
+        _push(`<div class="${ssrRenderClass([`bg-${unref(adsConfig).topBanner.color || "primary"} text-white text-center py-2.5 px-4 text-[11px] uppercase tracking-widest font-bold font-inter relative z-30`])}" data-v-533745e6>`);
         if (unref(adsConfig).topBanner.link) {
           _push(ssrRenderComponent(_component_NuxtLink, {
             to: unref(adsConfig).topBanner.link,
@@ -95,7 +123,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           }, {
             default: withCtx((_, _push2, _parent2, _scopeId) => {
               if (_push2) {
-                _push2(`${ssrInterpolate(unref(adsConfig).topBanner.text)} <span class="material-symbols-outlined text-sm" data-v-40010905${_scopeId}>arrow_forward</span>`);
+                _push2(`${ssrInterpolate(unref(adsConfig).topBanner.text)} <span class="material-symbols-outlined text-sm" data-v-533745e6${_scopeId}>arrow_forward</span>`);
               } else {
                 return [
                   createTextVNode(toDisplayString(unref(adsConfig).topBanner.text) + " ", 1),
@@ -106,22 +134,22 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             _: 1
           }, _parent));
         } else {
-          _push(`<span data-v-40010905>${ssrInterpolate(unref(adsConfig).topBanner.text)}</span>`);
+          _push(`<span data-v-533745e6>${ssrInterpolate(unref(adsConfig).topBanner.text)}</span>`);
         }
         _push(`</div>`);
       } else {
         _push(`<!---->`);
       }
-      _push(`<section class="max-w-[1440px] mx-auto px-6 md:px-8 pt-8 pb-12" data-v-40010905><div class="grid grid-cols-1 lg:grid-cols-4 gap-6" data-v-40010905><div class="lg:col-span-3 relative rounded-3xl overflow-hidden bg-surface-container shadow-2xl min-h-[480px] group" data-v-40010905><div class="flex transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] h-full absolute inset-0 w-full" style="${ssrRenderStyle({ transform: `translateX(-${activeSlide.value * 100}%)` })}" data-v-40010905><!--[-->`);
+      _push(`<section class="max-w-[1440px] mx-auto px-4 md:px-8 pt-8 pb-12" data-v-533745e6><div class="grid grid-cols-1 lg:grid-cols-4 gap-6" data-v-533745e6><div class="lg:col-span-3 relative rounded-3xl overflow-hidden bg-surface-container shadow-2xl min-h-[480px] group" data-v-533745e6><div class="flex transition-transform duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] h-full absolute inset-0 w-full" style="${ssrRenderStyle({ transform: `translateX(-${activeSlide.value * 100}%)` })}" data-v-533745e6><!--[-->`);
       ssrRenderList(slides, (slide, index) => {
         var _a2, _b2;
-        _push(`<div class="${ssrRenderClass([slide.bgClass, "w-full flex-shrink-0 h-full relative flex items-center justify-start overflow-hidden"])}" data-v-40010905>`);
+        _push(`<div class="${ssrRenderClass([slide.bgClass, "w-full flex-shrink-0 h-full relative flex items-center justify-start overflow-hidden"])}" data-v-533745e6>`);
         if ((_b2 = (_a2 = unref(adsConfig)) == null ? void 0 : _a2.carousel) == null ? void 0 : _b2[`slide${index + 1}Url`]) {
-          _push(`<img${ssrRenderAttr("src", unref(adsConfig).carousel[`slide${index + 1}Url`])} class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay" data-v-40010905>`);
+          _push(`<img${ssrRenderAttr("src", unref(adsConfig).carousel[`slide${index + 1}Url`])} class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay" data-v-533745e6>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<div class="p-10 md:p-16 z-20 flex flex-col gap-6 relative w-full lg:w-3/4" data-v-40010905><span class="inline-block px-4 py-1.5 bg-white/20 text-white backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest w-fit border border-white/30" data-v-40010905>${ssrInterpolate(slide.badge)}</span><h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-white" data-v-40010905>${ssrInterpolate(slide.title)}</h1><p class="text-lg md:text-xl text-white/80 font-light max-w-lg mb-4" data-v-40010905>${ssrInterpolate(slide.desc)}</p><div class="flex flex-wrap gap-4" data-v-40010905>`);
+        _push(`<div class="p-6 md:p-16 z-20 flex flex-col gap-6 relative w-full lg:w-3/4" data-v-533745e6><span class="inline-block px-4 py-1.5 bg-white/20 text-white backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest w-fit border border-white/30" data-v-533745e6>${ssrInterpolate(slide.badge)}</span><h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] text-white" data-v-533745e6>${ssrInterpolate(slide.title)}</h1><p class="text-lg md:text-xl text-white/80 font-light max-w-lg mb-4" data-v-533745e6>${ssrInterpolate(slide.desc)}</p><div class="flex flex-wrap gap-4" data-v-533745e6>`);
         _push(ssrRenderComponent(_component_NuxtLink, {
           to: slide.btn1Link,
           class: "px-8 py-4 bg-white text-slate-800 font-extrabold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm uppercase tracking-wider"
@@ -137,11 +165,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           }),
           _: 2
         }, _parent));
-        _push(`</div></div><div class="absolute right-[-10%] top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-30 pointer-events-none mix-blend-overlay" data-v-40010905><span class="material-symbols-outlined text-[30rem] text-white" data-v-40010905>${ssrInterpolate(slide.icon)}</span></div></div>`);
+        _push(`</div></div><div class="absolute right-[-10%] top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-30 pointer-events-none mix-blend-overlay" data-v-533745e6><span class="material-symbols-outlined text-[30rem] text-white" data-v-533745e6>${ssrInterpolate(slide.icon)}</span></div></div>`);
       });
-      _push(`<!--]--></div><div class="absolute inset-y-0 left-4 flex items-center z-30 opacity-0 group-hover:opacity-100 transition-opacity" data-v-40010905><button class="w-12 h-12 rounded-full bg-white/10 hover:bg-white text-white hover:text-primary transition-all flex items-center justify-center backdrop-blur shadow-lg active:scale-95" data-v-40010905><span class="material-symbols-outlined text-2xl" data-v-40010905>chevron_left</span></button></div><div class="absolute inset-y-0 right-4 flex items-center z-30 opacity-0 group-hover:opacity-100 transition-opacity" data-v-40010905><button class="w-12 h-12 rounded-full bg-white/10 hover:bg-white text-white hover:text-primary transition-all flex items-center justify-center backdrop-blur shadow-lg active:scale-95" data-v-40010905><span class="material-symbols-outlined text-2xl" data-v-40010905>chevron_right</span></button></div><div class="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-30" data-v-40010905><!--[-->`);
+      _push(`<!--]--></div><div class="absolute inset-y-0 left-4 flex items-center z-30 opacity-0 group-hover:opacity-100 transition-opacity" data-v-533745e6><button class="w-12 h-12 rounded-full bg-white/10 hover:bg-white text-white hover:text-primary transition-all flex items-center justify-center backdrop-blur shadow-lg active:scale-95" data-v-533745e6><span class="material-symbols-outlined text-2xl" data-v-533745e6>chevron_left</span></button></div><div class="absolute inset-y-0 right-4 flex items-center z-30 opacity-0 group-hover:opacity-100 transition-opacity" data-v-533745e6><button class="w-12 h-12 rounded-full bg-white/10 hover:bg-white text-white hover:text-primary transition-all flex items-center justify-center backdrop-blur shadow-lg active:scale-95" data-v-533745e6><span class="material-symbols-outlined text-2xl" data-v-533745e6>chevron_right</span></button></div><div class="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-30" data-v-533745e6><!--[-->`);
       ssrRenderList(slides, (slide, index) => {
-        _push(`<button class="${ssrRenderClass([activeSlide.value === index ? "w-8 bg-white" : "w-2 bg-white/30 hover:bg-white/50", "h-1.5 rounded-full transition-all duration-300"])}" data-v-40010905></button>`);
+        _push(`<button class="${ssrRenderClass([activeSlide.value === index ? "w-8 bg-white" : "w-2 bg-white/30 hover:bg-white/50", "h-1.5 rounded-full transition-all duration-300"])}" data-v-533745e6></button>`);
       });
       _push(`<!--]--></div></div>`);
       _push(ssrRenderComponent(_component_NuxtLink, {
@@ -152,11 +180,11 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           var _a2, _b2, _c2, _d2;
           if (_push2) {
             if ((_b2 = (_a2 = unref(adsConfig)) == null ? void 0 : _a2.sideBanner) == null ? void 0 : _b2.imageUrl) {
-              _push2(`<img${ssrRenderAttr("src", unref(adsConfig).sideBanner.imageUrl)} class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60 group-hover:scale-105 transition-transform duration-700" data-v-40010905${_scopeId}>`);
+              _push2(`<img${ssrRenderAttr("src", unref(adsConfig).sideBanner.imageUrl)} class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60 group-hover:scale-105 transition-transform duration-700" data-v-533745e6${_scopeId}>`);
             } else {
               _push2(`<!---->`);
             }
-            _push2(`<div class="absolute -right-10 -top-10 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/40 transition-colors duration-700" data-v-40010905${_scopeId}></div><span class="material-symbols-outlined text-6xl text-primary mb-4 relative z-10 group-hover:scale-110 transition-transform" data-v-40010905${_scopeId}>verified_user</span><h3 class="text-2xl font-bold mb-2 relative z-10 leading-tight" data-v-40010905${_scopeId}>Garantía Directa en Proyectos</h3><p class="text-slate-400 font-light text-sm relative z-10 mb-6" data-v-40010905${_scopeId}>Expertos en proveeduría industrial. Distribuidores oficiales.</p><div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest relative z-10" data-v-40010905${_scopeId}> Conoce más <span class="material-symbols-outlined text-base" data-v-40010905${_scopeId}>arrow_forward</span></div>`);
+            _push2(`<div class="absolute -right-10 -top-10 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/40 transition-colors duration-700" data-v-533745e6${_scopeId}></div><span class="material-symbols-outlined text-6xl text-primary mb-4 relative z-10 group-hover:scale-110 transition-transform" data-v-533745e6${_scopeId}>verified_user</span><h3 class="text-2xl font-bold mb-2 relative z-10 leading-tight" data-v-533745e6${_scopeId}>Garantía Directa en Proyectos</h3><p class="text-slate-400 font-light text-sm relative z-10 mb-6" data-v-533745e6${_scopeId}>Expertos en proveeduría industrial. Distribuidores oficiales.</p><div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest relative z-10" data-v-533745e6${_scopeId}> Conoce más <span class="material-symbols-outlined text-base" data-v-533745e6${_scopeId}>arrow_forward</span></div>`);
           } else {
             return [
               ((_d2 = (_c2 = unref(adsConfig)) == null ? void 0 : _c2.sideBanner) == null ? void 0 : _d2.imageUrl) ? (openBlock(), createBlock("img", {
@@ -177,19 +205,19 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`</div></section><section class="max-w-[1440px] mx-auto px-6 md:px-8 mb-16" data-v-40010905><div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-2 border-b-4 border-b-primary" data-v-40010905><div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-outline-variant/20" data-v-40010905><!--[-->`);
+      _push(`</div></section><section class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16" data-v-533745e6><div class="bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-2 border-b-4 border-b-primary" data-v-533745e6><div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-outline-variant/20" data-v-533745e6><!--[-->`);
       ssrRenderList(trustItems, (feature) => {
-        _push(`<div class="px-6 py-4 flex items-center gap-4" data-v-40010905><div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0" data-v-40010905><span class="material-symbols-outlined text-xl" data-v-40010905>${ssrInterpolate(feature.icon)}</span></div><div data-v-40010905><p class="font-bold text-xs uppercase text-slate-800" data-v-40010905>${ssrInterpolate(feature.title)}</p><p class="text-[10px] text-slate-500" data-v-40010905>${ssrInterpolate(feature.description)}</p></div></div>`);
+        _push(`<div class="px-6 py-4 flex items-center gap-4" data-v-533745e6><div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0" data-v-533745e6><span class="material-symbols-outlined text-xl" data-v-533745e6>${ssrInterpolate(feature.icon)}</span></div><div data-v-533745e6><p class="font-bold text-xs uppercase text-slate-800" data-v-533745e6>${ssrInterpolate(feature.title)}</p><p class="text-[10px] text-slate-500" data-v-533745e6>${ssrInterpolate(feature.description)}</p></div></div>`);
       });
       _push(`<!--]--></div></div></section>`);
       if ((_d = (_c = unref(adsConfig)) == null ? void 0 : _c.midBanner) == null ? void 0 : _d.enabled) {
-        _push(`<section class="max-w-[1440px] mx-auto px-6 md:px-8 mb-16" data-v-40010905><div class="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 h-[300px] md:h-[400px] flex items-center group" data-v-40010905>`);
+        _push(`<section class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16" data-v-533745e6><div class="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 h-[300px] md:h-[400px] flex items-center group" data-v-533745e6>`);
         if (unref(adsConfig).midBanner.imageUrl) {
-          _push(`<img${ssrRenderAttr("src", unref(adsConfig).midBanner.imageUrl)} alt="Promoción" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000" data-v-40010905>`);
+          _push(`<img${ssrRenderAttr("src", unref(adsConfig).midBanner.imageUrl)} alt="Promoción" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000" data-v-533745e6>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<div class="relative z-20 px-10 md:px-20 text-white max-w-3xl" data-v-40010905><span class="inline-block px-3 py-1 bg-red-600 text-white rounded font-bold uppercase tracking-widest text-[10px] mb-4 shadow-lg shadow-red-600/30" data-v-40010905>Promoción Especial</span><h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4" data-v-40010905>${ssrInterpolate(unref(adsConfig).midBanner.title)}</h2><p class="text-lg text-slate-300 font-light mb-8" data-v-40010905>${ssrInterpolate(unref(adsConfig).midBanner.subtitle)}</p>`);
+        _push(`<div class="relative z-20 px-6 md:px-20 text-white max-w-3xl" data-v-533745e6><span class="inline-block px-3 py-1 bg-red-600 text-white rounded font-bold uppercase tracking-widest text-[10px] mb-4 shadow-lg shadow-red-600/30" data-v-533745e6>Promoción Especial</span><h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4" data-v-533745e6>${ssrInterpolate(unref(adsConfig).midBanner.title)}</h2><p class="text-lg text-slate-300 font-light mb-8" data-v-533745e6>${ssrInterpolate(unref(adsConfig).midBanner.subtitle)}</p>`);
         _push(ssrRenderComponent(_component_NuxtLink, {
           to: unref(adsConfig).midBanner.link,
           class: "px-8 py-4 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl transition-colors inline-block uppercase text-xs tracking-widest shadow-lg shadow-primary/30"
@@ -209,7 +237,30 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       } else {
         _push(`<!---->`);
       }
-      _push(`<section class="max-w-[1440px] mx-auto px-6 md:px-8 py-10" data-v-40010905><div class="flex items-end justify-between mb-8" data-v-40010905><h2 class="text-3xl font-black text-slate-800 tracking-tight" data-v-40010905>Buscar por Categoría</h2></div><div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4" data-v-40010905><!--[-->`);
+      if ((_f = (_e = unref(adsConfig)) == null ? void 0 : _e.videoSection) == null ? void 0 : _f.enabled) {
+        _push(`<section class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16" data-v-533745e6><div class="${ssrRenderClass(`relative rounded-3xl overflow-hidden shadow-xl bg-${unref(adsConfig).videoSection.backgroundColor} flex flex-col md:flex-row items-center group min-h-[400px]`)}" data-v-533745e6><div class="w-full md:w-1/2 p-6 md:p-16 text-white flex flex-col justify-center min-h-[300px]" data-v-533745e6><h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4 min-h-[3rem] md:min-h-[4rem] flex items-center" data-v-533745e6>${ssrInterpolate(animatedTitle.value)}`);
+        if (isTypingTitle.value) {
+          _push(`<span class="ml-1 w-1 h-[1em] bg-white animate-pulse" data-v-533745e6></span>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</h2><p class="text-xl md:text-3xl font-light leading-relaxed min-h-[6rem] md:min-h-[8rem]" data-v-533745e6>${ssrInterpolate(animatedSubtitle.value)}`);
+        if (isTypingSubtitle.value) {
+          _push(`<span class="ml-1 w-1 h-[1em] bg-white animate-pulse inline-block align-middle" data-v-533745e6></span>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</p></div><div class="w-full md:w-1/2 relative min-h-[300px] md:min-h-[500px] bg-black/50 overflow-hidden flex-shrink-0" data-v-533745e6>`);
+        if (unref(adsConfig).videoSection.videoUrl) {
+          _push(`<video${ssrRenderAttr("src", unref(adsConfig).videoSection.videoUrl)} controls autoplay muted loop class="absolute inset-0 w-full h-full object-cover" data-v-533745e6></video>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div></div></section>`);
+      } else {
+        _push(`<!---->`);
+      }
+      _push(`<section class="max-w-[1440px] mx-auto px-4 md:px-8 py-10" data-v-533745e6><div class="flex items-end justify-between mb-8" data-v-533745e6><h2 class="text-3xl font-black text-slate-800 tracking-tight" data-v-533745e6>Buscar por Categoría</h2></div><div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4" data-v-533745e6><!--[-->`);
       ssrRenderList(categories, (cat) => {
         _push(ssrRenderComponent(_component_NuxtLink, {
           key: cat.title,
@@ -218,7 +269,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }, {
           default: withCtx((_, _push2, _parent2, _scopeId) => {
             if (_push2) {
-              _push2(`<div class="w-14 h-14 rounded-full bg-[#f9f9fb] group-hover:bg-primary group-hover:text-white text-slate-500 font-light flex items-center justify-center transition-colors" data-v-40010905${_scopeId}><span class="material-symbols-outlined text-2xl" data-v-40010905${_scopeId}>${ssrInterpolate(cat.icon)}</span></div><p class="text-[11px] font-bold uppercase tracking-wider text-slate-700 group-hover:text-primary transition-colors leading-tight" data-v-40010905${_scopeId}>${ssrInterpolate(cat.title)}</p>`);
+              _push2(`<div class="w-14 h-14 rounded-full bg-[#f9f9fb] group-hover:bg-primary group-hover:text-white text-slate-500 font-light flex items-center justify-center transition-colors" data-v-533745e6${_scopeId}><span class="material-symbols-outlined text-2xl" data-v-533745e6${_scopeId}>${ssrInterpolate(cat.icon)}</span></div><p class="text-[11px] font-bold uppercase tracking-wider text-slate-700 group-hover:text-primary transition-colors leading-tight" data-v-533745e6${_scopeId}>${ssrInterpolate(cat.title)}</p>`);
             } else {
               return [
                 createVNode("div", { class: "w-14 h-14 rounded-full bg-[#f9f9fb] group-hover:bg-primary group-hover:text-white text-slate-500 font-light flex items-center justify-center transition-colors" }, [
@@ -231,14 +282,14 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
           _: 2
         }, _parent));
       });
-      _push(`<!--]--></div></section><section class="max-w-[1440px] mx-auto px-6 md:px-8 py-16" data-v-40010905><div class="flex items-end justify-between mb-10 pb-4 border-b border-outline-variant/20" data-v-40010905><div data-v-40010905><span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block" data-v-40010905>Novedades</span><h2 class="text-3xl lg:text-4xl font-extrabold text-slate-800 tracking-tight" data-v-40010905>Productos de Alta Demanda</h2></div>`);
+      _push(`<!--]--></div></section><section class="max-w-[1440px] mx-auto px-4 md:px-8 py-16" data-v-533745e6><div class="flex items-end justify-between mb-10 pb-4 border-b border-outline-variant/20" data-v-533745e6><div data-v-533745e6><span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block" data-v-533745e6>Novedades</span><h2 class="text-3xl lg:text-4xl font-extrabold text-slate-800 tracking-tight" data-v-533745e6>Productos de Alta Demanda</h2></div>`);
       _push(ssrRenderComponent(_component_NuxtLink, {
         to: "/tienda",
         class: "hidden md:flex items-center gap-1 font-bold text-sm text-primary hover:text-blue-800 transition-colors"
       }, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(` Ver todo el catálogo <span class="material-symbols-outlined text-sm" data-v-40010905${_scopeId}>arrow_forward</span>`);
+            _push2(` Ver todo el catálogo <span class="material-symbols-outlined text-sm" data-v-533745e6${_scopeId}>arrow_forward</span>`);
           } else {
             return [
               createTextVNode(" Ver todo el catálogo "),
@@ -250,15 +301,15 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
       }, _parent));
       _push(`</div>`);
       if (unref(productsPending)) {
-        _push(`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-v-40010905><!--[-->`);
+        _push(`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" data-v-533745e6><!--[-->`);
         ssrRenderList(4, (i) => {
-          _push(`<div class="animate-pulse bg-white rounded-2xl p-6 border border-outline-variant/10" data-v-40010905><div class="bg-slate-200 aspect-[4/5] rounded-xl mb-4" data-v-40010905></div><div class="h-4 bg-slate-200 rounded w-3/4 mb-2" data-v-40010905></div><div class="h-4 bg-slate-200 rounded w-1/2 mb-6" data-v-40010905></div><div class="h-6 bg-slate-200 rounded w-1/4" data-v-40010905></div></div>`);
+          _push(`<div class="animate-pulse bg-white rounded-2xl p-6 border border-outline-variant/10" data-v-533745e6><div class="bg-slate-200 aspect-[4/5] rounded-xl mb-4" data-v-533745e6></div><div class="h-4 bg-slate-200 rounded w-3/4 mb-2" data-v-533745e6></div><div class="h-4 bg-slate-200 rounded w-1/2 mb-6" data-v-533745e6></div><div class="h-6 bg-slate-200 rounded w-1/4" data-v-533745e6></div></div>`);
         });
         _push(`<!--]--></div>`);
       } else if (unref(productsError)) {
-        _push(`<div class="text-red-500 text-center py-10 bg-red-50 rounded-xl" data-v-40010905> Ocurrió un error al cargar los productos de WooCommerce. </div>`);
+        _push(`<div class="text-red-500 text-center py-10 bg-red-50 rounded-xl" data-v-533745e6> Ocurrió un error al cargar los productos de WooCommerce. </div>`);
       } else {
-        _push(`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8" data-v-40010905><!--[-->`);
+        _push(`<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8" data-v-533745e6><!--[-->`);
         ssrRenderList(unref(homeProducts), (product) => {
           _push(ssrRenderComponent(_component_NuxtLink, {
             key: product.id,
@@ -266,20 +317,25 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             class: "group bg-white rounded-2xl p-5 border border-outline-variant/30 hover:border-primary shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative"
           }, {
             default: withCtx((_, _push2, _parent2, _scopeId) => {
-              var _a2, _b2, _c2, _d2, _e, _f, _g, _h;
+              var _a2, _b2, _c2, _d2, _e2, _f2, _g, _h;
               if (_push2) {
                 if (product.sale_price) {
-                  _push2(`<span class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10" data-v-40010905${_scopeId}>OFERTA</span>`);
+                  _push2(`<span class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10" data-v-533745e6${_scopeId}>OFERTA</span>`);
                 } else {
                   _push2(`<!---->`);
                 }
-                _push2(`<div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5" data-v-40010905${_scopeId}><img${ssrRenderAttr("src", ((_b2 = (_a2 = product.images) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.src) || "/placeholder.jpg")}${ssrRenderAttr("alt", product.name)} class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" data-v-40010905${_scopeId}></div><div class="flex-1 flex flex-col" data-v-40010905${_scopeId}><span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 line-clamp-1 block" data-v-40010905${_scopeId}>${ssrInterpolate(product.sku || "SIN SKU")} · ${ssrInterpolate(((_d2 = (_c2 = product.categories) == null ? void 0 : _c2[0]) == null ? void 0 : _d2.name) || "Equipos")}</span><h3 class="font-bold text-base text-slate-800 leading-tight mb-4 group-hover:text-primary transition-colors line-clamp-2" data-v-40010905${_scopeId}>${ssrInterpolate(product.name)}</h3><div class="mt-auto flex items-end justify-between" data-v-40010905${_scopeId}><div data-v-40010905${_scopeId}>`);
+                _push2(`<div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5" data-v-533745e6${_scopeId}><img${ssrRenderAttr("src", ((_b2 = (_a2 = product.images) == null ? void 0 : _a2[0]) == null ? void 0 : _b2.src) || "/placeholder.jpg")}${ssrRenderAttr("alt", product.name)} class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500" data-v-533745e6${_scopeId}></div><div class="flex-1 flex flex-col" data-v-533745e6${_scopeId}><span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 line-clamp-1 block" data-v-533745e6${_scopeId}>${ssrInterpolate(product.sku || "SIN SKU")} · ${ssrInterpolate(((_d2 = (_c2 = product.categories) == null ? void 0 : _c2[0]) == null ? void 0 : _d2.name) || "Equipos")}</span><h3 class="font-bold text-base text-slate-800 leading-tight mb-4 group-hover:text-primary transition-colors line-clamp-2" data-v-533745e6${_scopeId}>${ssrInterpolate(product.name)}</h3><div class="mt-auto flex items-end justify-between" data-v-533745e6${_scopeId}><div data-v-533745e6${_scopeId}>`);
                 if (product.sale_price) {
-                  _push2(`<span class="text-[10px] text-slate-400 line-through block mb-0.5" data-v-40010905${_scopeId}>$${ssrInterpolate(product.regular_price)}</span>`);
+                  _push2(`<span class="text-[10px] text-slate-400 line-through block mb-0.5" data-v-533745e6${_scopeId}>$${ssrInterpolate(product.regular_price)}</span>`);
                 } else {
                   _push2(`<!---->`);
                 }
-                _push2(`<p class="text-primary font-black text-xl" data-v-40010905${_scopeId}>$${ssrInterpolate(product.price)}</p></div><div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors" data-v-40010905${_scopeId}><span class="material-symbols-outlined text-xl" data-v-40010905${_scopeId}>shopping_cart</span></div></div></div>`);
+                if (product.type === "variable") {
+                  _push2(`<span class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full" data-v-533745e6${_scopeId}>Opciones</span>`);
+                } else {
+                  _push2(`<p class="text-primary font-black text-xl" data-v-533745e6${_scopeId}>$${ssrInterpolate(product.price)}</p>`);
+                }
+                _push2(`</div><div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors" data-v-533745e6${_scopeId}><span class="material-symbols-outlined text-xl" data-v-533745e6${_scopeId}>shopping_cart</span></div></div></div>`);
               } else {
                 return [
                   product.sale_price ? (openBlock(), createBlock("span", {
@@ -288,7 +344,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                   }, "OFERTA")) : createCommentVNode("", true),
                   createVNode("div", { class: "aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5" }, [
                     createVNode("img", {
-                      src: ((_f = (_e = product.images) == null ? void 0 : _e[0]) == null ? void 0 : _f.src) || "/placeholder.jpg",
+                      src: ((_f2 = (_e2 = product.images) == null ? void 0 : _e2[0]) == null ? void 0 : _f2.src) || "/placeholder.jpg",
                       alt: product.name,
                       class: "w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
                     }, null, 8, ["src", "alt"])
@@ -302,7 +358,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
                           key: 0,
                           class: "text-[10px] text-slate-400 line-through block mb-0.5"
                         }, "$" + toDisplayString(product.regular_price), 1)) : createCommentVNode("", true),
-                        createVNode("p", { class: "text-primary font-black text-xl" }, "$" + toDisplayString(product.price), 1)
+                        product.type === "variable" ? (openBlock(), createBlock("span", {
+                          key: 1,
+                          class: "text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full"
+                        }, "Opciones")) : (openBlock(), createBlock("p", {
+                          key: 2,
+                          class: "text-primary font-black text-xl"
+                        }, "$" + toDisplayString(product.price), 1))
                       ]),
                       createVNode("div", { class: "w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors" }, [
                         createVNode("span", { class: "material-symbols-outlined text-xl" }, "shopping_cart")
@@ -317,7 +379,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         });
         _push(`<!--]--></div>`);
       }
-      _push(`<div class="md:hidden mt-8 text-center" data-v-40010905>`);
+      _push(`<div class="md:hidden mt-8 text-center" data-v-533745e6>`);
       _push(ssrRenderComponent(_component_NuxtLink, {
         to: "/tienda",
         class: "inline-flex items-center justify-center gap-2 font-bold text-sm bg-surface-container text-slate-800 px-6 py-3 rounded-xl w-full"
@@ -344,7 +406,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/index.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-40010905"]]);
+const index = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-533745e6"]]);
 
 export { index as default };
 //# sourceMappingURL=index.vue.mjs.map

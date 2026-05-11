@@ -231,9 +231,9 @@ const handleLogin = async () => {
     setTimeout(() => {
       router.push('/tienda')
     }, 1500)
-  } catch (err) {
+  } catch (err: any) {
     console.error('Error en login:', err)
-    error.value = 'Usuario o contraseña incorrectos. Intenta de nuevo.'
+    error.value = err?.data?.message || err?.statusMessage || 'Usuario o contraseña incorrectos. Intenta de nuevo.'
     showNotification('Error en inicio de sesión', 'error')
   } finally {
     isLoading.value = false
@@ -263,18 +263,16 @@ const handleRegister = async () => {
   const auth = useAuth()
 
   try {
-    await auth.register(fullName.value, email.value, registerPassword.value)
-    showNotification('¡Cuenta creada exitosamente!', 'success')
+    const response = await auth.register(fullName.value, email.value, registerPassword.value)
+    showNotification('Revisa tu correo para verificar tu cuenta.', 'success')
     fullName.value = ''
     email.value = ''
     registerPassword.value = ''
 
-    setTimeout(() => {
-      router.push('/tienda')
-    }, 1500)
-  } catch (err) {
+    isLogin.value = true
+  } catch (err: any) {
     console.error('Error en registro:', err)
-    error.value = err.data?.message || 'Error al crear la cuenta. Intenta de nuevo.'
+    error.value = err?.data?.message || err?.statusMessage || 'Error al crear la cuenta. Intenta de nuevo.'
     showNotification('Error en registro', 'error')
   } finally {
     isLoading.value = false

@@ -1,11 +1,11 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { defineComponent, computed, withAsyncContext, ref, mergeProps, withCtx, createTextVNode, unref, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
-import { ssrRenderAttrs, ssrRenderComponent, ssrRenderClass, ssrRenderList, ssrInterpolate, ssrRenderAttr, ssrIncludeBooleanAttr } from 'vue/server-renderer';
+import { defineComponent, ref, computed, withAsyncContext, mergeProps, withCtx, createTextVNode, unref, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderComponent, ssrInterpolate, ssrRenderClass, ssrRenderList, ssrRenderAttr, ssrIncludeBooleanAttr } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
-import { u as useRoute, a as useRouter } from './server.mjs';
+import { g as useRoute, u as useRouter } from './server.mjs';
 import { u as useFetch } from './fetch.mjs';
 import { u as useCart } from './useCart.mjs';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -21,6 +21,8 @@ import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
 import 'vue-router';
+import './ssr.mjs';
+import './state.mjs';
 
 const perPage = 20;
 const _sfc_main = /* @__PURE__ */ defineComponent({
@@ -34,6 +36,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     });
     const route = useRoute();
     const router = useRouter();
+    const showMobileFilters = ref(false);
     const currentPage = computed(() => {
       const value = Number(route.query.page || 1);
       return Number.isFinite(value) && value > 0 ? Math.floor(value) : 1;
@@ -80,7 +83,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     };
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0;
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "pt-8 pb-20 px-8 max-w-[1440px] mx-auto" }, _attrs))}><header class="mb-16"><nav class="mb-6 flex gap-3 text-[10px] uppercase tracking-[0.1em] font-inter text-outline">`);
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "pt-8 pb-20 px-4 md:px-8 max-w-[1440px] mx-auto" }, _attrs))}><header class="mb-16"><nav class="mb-6 flex gap-3 text-[10px] uppercase tracking-[0.1em] font-inter text-outline">`);
       _push(ssrRenderComponent(_component_NuxtLink, {
         class: "hover:text-primary transition-colors",
         to: "/"
@@ -96,7 +99,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`<span>/</span><span class="text-on-surface">Tienda</span></nav><div class="flex flex-col md:flex-row md:items-end justify-between gap-8"><h1 class="text-5xl md:text-6xl font-extrabold tracking-tight max-w-2xl leading-[1.1]"> Herramientas Industriales y <span class="text-primary italic font-light">Equipo Eléctrico</span></h1><p class="font-inter text-xs text-outline-variant max-w-xs leading-relaxed uppercase tracking-wider"> Catálogo diseñado para entornos de alta exigencia y mantenimiento de precisión. </p></div></header><div class="flex flex-col md:flex-row gap-16"><aside class="w-full md:w-64 flex-shrink-0"><div class="sticky top-40 space-y-12"><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3><ul class="space-y-4 text-sm font-medium"><li><button class="${ssrRenderClass([!unref(currentCategoryFilter) ? "text-primary" : "text-outline hover:text-on-surface", "flex justify-between items-center group w-full text-left transition-colors"])}"> Todas </button></li><!--[-->`);
+      _push(`<span>/</span><span class="text-on-surface">Tienda</span></nav><div class="flex flex-col md:flex-row md:items-end justify-between gap-8"><h1 class="text-5xl md:text-6xl font-extrabold tracking-tight max-w-2xl leading-[1.1]"> Herramientas Industriales y <span class="text-primary italic font-light">Equipo Eléctrico</span></h1><p class="font-inter text-xs text-outline-variant max-w-xs leading-relaxed uppercase tracking-wider"> Catálogo diseñado para entornos de alta exigencia y mantenimiento de precisión. </p></div></header><div class="md:hidden mb-6 flex justify-between items-center bg-surface-container rounded-lg p-4"><span class="font-bold text-on-surface">Filtros y Categorías</span><button class="flex items-center gap-2 text-primary font-bold text-sm bg-white px-4 py-2 rounded shadow-sm border border-outline-variant/20"><span class="material-symbols-outlined text-xl">${ssrInterpolate(unref(showMobileFilters) ? "close" : "tune")}</span> ${ssrInterpolate(unref(showMobileFilters) ? "Ocultar" : "Filtrar")}</button></div><div class="flex flex-col md:flex-row gap-8 md:gap-16"><aside class="${ssrRenderClass([unref(showMobileFilters) ? "block mb-8" : "hidden md:block", "w-full md:w-64 flex-shrink-0"])}"><div class="md:sticky md:top-40 space-y-12"><section><h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Categorías</h3><ul class="space-y-4 text-sm font-medium"><li><button class="${ssrRenderClass([!unref(currentCategoryFilter) ? "text-primary" : "text-outline hover:text-on-surface", "flex justify-between items-center group w-full text-left transition-colors"])}"> Todas </button></li><!--[-->`);
       ssrRenderList(unref(categoriesList), (category) => {
         _push(`<li><button class="${ssrRenderClass([unref(currentCategoryFilter) === category.id ? "text-primary" : "text-outline hover:text-on-surface", "flex justify-between items-center group w-full text-left transition-colors"])}">${ssrInterpolate(category.name)} `);
         if (category.count > 0) {
@@ -169,7 +172,13 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
             }),
             _: 2
           }, _parent));
-          _push(`</div><span class="text-lg font-light text-primary">$${ssrInterpolate(parseFloat(product.price || "0").toFixed(2))}</span></div><div class="flex gap-2"><!--[-->`);
+          _push(`</div>`);
+          if (product.type === "variable") {
+            _push(`<span class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full mt-1">Opciones</span>`);
+          } else {
+            _push(`<span class="text-lg font-light text-primary">$${ssrInterpolate(parseFloat(product.price || "0").toFixed(2))}</span>`);
+          }
+          _push(`</div><div class="flex gap-2"><!--[-->`);
           ssrRenderList(product.categories || [], (category) => {
             _push(`<span class="font-inter text-[8px] border border-outline-variant/30 px-1.5 py-0.5 rounded text-outline-variant">${ssrInterpolate(category.name)}</span>`);
           });

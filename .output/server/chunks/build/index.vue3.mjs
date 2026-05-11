@@ -3,7 +3,7 @@ import { mergeProps, withCtx, createVNode, createTextVNode, unref, useSSRContext
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
 import { u as useCart } from './useCart.mjs';
-import '../_/nitro.mjs';
+import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -20,6 +20,7 @@ import 'unhead/server';
 import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
+import './state.mjs';
 
 const _sfc_main = {
   __name: "index",
@@ -52,7 +53,7 @@ const _sfc_main = {
         }),
         _: 1
       }, _parent));
-      _push(`</div><div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start"><div class="lg:col-span-8 space-y-12"><div class="hidden md:grid grid-cols-6 pb-6 border-b border-outline-variant/15 text-[10px] font-inter uppercase tracking-widest text-outline"><div class="col-span-3">Detalles</div><div class="text-center">Precio</div><div class="text-center">Cantidad</div><div class="text-right">Total</div></div><!--[-->`);
+      _push(`</div><div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start"><div class="lg:col-span-8 space-y-12"><div class="hidden md:grid grid-cols-6 pb-6 border-b border-outline-variant/15 text-[10px] font-inter uppercase tracking-widest text-outline"><div class="col-span-3 text-black">Detalles</div><div class="text-center text-black">Precio</div><div class="text-center text-black">Cantidad</div><div class="text-right text-black">Total</div></div><!--[-->`);
       ssrRenderList(unref(cartItems), (item) => {
         _push(`<div class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center"><div class="col-span-3 flex items-center gap-8 w-full"><div class="w-32 h-32 bg-surface-container-highest flex-shrink-0 relative overflow-hidden group"><img class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500"${ssrRenderAttr("alt", item.name)}${ssrRenderAttr("src", item.image)}></div><div class="space-y-1"><h3 class="text-xl font-bold tracking-tight text-on-surface">${ssrInterpolate(item.name)}</h3><p class="text-xs font-inter text-outline uppercase tracking-wider">SKU: ${ssrInterpolate(item.sku)}</p><button class="text-[10px] font-inter text-error tracking-widest mt-2 flex items-center gap-1 hover:opacity-70 transition-opacity" type="button"><span class="material-symbols-outlined text-sm">delete</span> Remover </button></div></div><div class="text-center font-manrope font-semibold text-on-surface-variant">$${ssrInterpolate(item.price.toFixed(2))}</div><div class="flex justify-center"><div class="flex items-center border border-outline-variant/30 rounded-full overflow-hidden h-10 bg-surface-container-low"><button class="px-3 hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-sm">remove</span></button><span class="px-4 text-sm font-bold w-12 text-center">${ssrInterpolate(String(item.quantity).padStart(2, "0"))}</span><button class="px-3 hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-sm">add</span></button></div></div><div class="text-right font-manrope font-bold text-lg text-on-surface">$${ssrInterpolate((item.price * item.quantity).toFixed(2))}</div></div>`);
       });
@@ -60,7 +61,7 @@ const _sfc_main = {
       if (unref(cartItems).length === 0) {
         _push(`<div class="text-center py-8 text-outline-variant"><p class="text-sm">Tu carrito está vacío</p></div>`);
       } else {
-        _push(`<div class="space-y-4"><div class="flex justify-between items-center py-2"><span class="text-xs font-inter uppercase tracking-widest text-outline">Subtotal</span><span class="font-bold text-on-surface">$${ssrInterpolate(unref(subtotal).toFixed(2))}</span></div><div class="flex justify-between items-center py-2"><span class="text-xs font-inter uppercase tracking-widest text-outline">Costo de envio</span><span class="font-bold text-on-surface">$45.00</span></div><div class="flex justify-between items-center py-2"><span class="text-xs font-inter uppercase tracking-widest text-outline">Impuestos</span><span class="font-bold text-on-surface">$${ssrInterpolate(((unref(subtotal) + 45) * 0.08).toFixed(2))}</span></div><div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline"><span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span><span class="text-3xl font-extrabold text-primary tracking-tighter">$${ssrInterpolate((unref(subtotal) + 45 + (unref(subtotal) + 45) * 0.08).toFixed(2))}</span></div></div>`);
+        _push(`<div class="space-y-4"><div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline"><span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span><span class="text-3xl font-extrabold text-primary tracking-tighter">$${ssrInterpolate(unref(subtotal).toFixed(2))}</span></div></div>`);
       }
       if (unref(cartItems).length > 0) {
         _push(`<div class="space-y-4 pt-4">`);
@@ -80,12 +81,12 @@ const _sfc_main = {
           }),
           _: 1
         }, _parent));
-        _push(`<p class="text-[10px] text-center text-outline uppercase tracking-wider">Envio Seguro </p></div>`);
+        _push(`<p class="text-[15px] text-center text-black uppercase tracking-wider">Precio total sin contar el Envio</p></div>`);
       } else {
         _push(`<!---->`);
       }
       if (unref(cartItems).length > 0) {
-        _push(`<div class="pt-8 mt-8 border-t border-outline-variant/10"><label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Promotional Code</label><div class="flex gap-2"><input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="ENTER CODE" type="text"><button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button"> Apply </button></div></div>`);
+        _push(`<div class="pt-8 mt-8 border-t border-outline-variant/10"><label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Codigo Promocional</label><div class="flex gap-2"><input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="INGRESAR CODIGO" type="text"><button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button"> Apply </button></div></div>`);
       } else {
         _push(`<!---->`);
       }

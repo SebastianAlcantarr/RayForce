@@ -1,4 +1,4 @@
-import { c as defineEventHandler, r as readBody, e as createError } from '../../../_/nitro.mjs';
+import { d as defineEventHandler, r as readBody, c as createError } from '../../../nitro/nitro.mjs';
 import { w as wooFetch } from '../../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';
@@ -12,17 +12,29 @@ import 'buffer';
 
 const updateProduct_put = defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { id, regular_price, stock_quantity } = body || {};
+  const { id, name, regular_price, stock_quantity, description, categories, image_id } = body || {};
   if (!id) {
     throw createError({ statusCode: 400, statusMessage: "ID de producto requerido" });
   }
   const payload = {};
+  if (name !== void 0 && name !== null) {
+    payload.name = String(name);
+  }
   if (regular_price !== void 0 && regular_price !== null) {
     payload.regular_price = String(regular_price);
   }
   if (stock_quantity !== void 0 && stock_quantity !== null) {
     payload.stock_quantity = Number(stock_quantity);
     payload.manage_stock = true;
+  }
+  if (description !== void 0 && description !== null) {
+    payload.description = String(description);
+  }
+  if (categories && Array.isArray(categories)) {
+    payload.categories = categories.map((catId) => ({ id: catId }));
+  }
+  if (image_id !== void 0 && image_id !== null) {
+    payload.images = [{ id: image_id }];
   }
   try {
     const updated = await wooFetch(`/products/${id}`, {

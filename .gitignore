@@ -1,20 +1,44 @@
+# Default ignored files (project-wide additions for Nuxt/Node)
+# JetBrains / IDE
+.idea/
+*.iml
+
+# Node modules
 node_modules/
-.nuxt/
-.output/
-dist/
+
+# Environment files
 .env
 .env.*
-*.log
-.DS_Store
 
-# Migration & Data Clutter
-_migration/
-*.csv
-*.xlsx
-*.xls
-*.py
-*.txt
-*.json
-!package.json
-!package-lock.json
-!tsconfig.json
+# Nuxt / build outputs
+.nuxt/
+.output/
+.nuxt-dist/
+
+# Public build assets
+/public/_nuxt/
+/.output/public/_nuxt/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor-based HTTP Client requests
+/httpRequests/
+
+# Other local config
+/shelf/
+/workspace.xml
+
+# Datasource local storage ignored files
+/queries/
+/dataSources/
+/dataSources.local.xml
+
+# Optional: VSCode
+.vscode/

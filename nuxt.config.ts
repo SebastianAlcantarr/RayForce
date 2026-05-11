@@ -28,6 +28,8 @@ runtimeConfig: {
   wooSecret: process.env.WOO_SECRET,
   adminPassword: process.env.ADMIN_PASSWORD,
   jwtSecret: process.env.JWT_SECRET,
+  resendApiKey: process.env.RESEND_API_KEY,
+  resendFrom: process.env.RESEND_FROM,
   public: {}
 },
 

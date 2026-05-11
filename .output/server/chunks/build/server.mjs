@@ -1,5 +1,5 @@
 import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance, toRef, inject, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, defineAsyncComponent, defineComponent, computed, unref, ref, h, Suspense, nextTick, mergeProps, provide, Fragment, useSSRContext, withCtx, createVNode, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, createApp } from 'vue';
-import { n as createHooks, o as getContext, e as createError$1, p as toRouteMatcher, q as createRouter, v as defu, w as withQuery, x as hasProtocol, y as isScriptProtocol, z as joinURL, A as sanitizeStatusCode, B as executeAsync } from '../_/nitro.mjs';
+import { o as createHooks, p as getContext, c as createError$1, t as toRouteMatcher, q as createRouter, v as defu, w as withQuery, x as hasProtocol, y as isScriptProtocol, z as joinURL, A as sanitizeStatusCode, B as executeAsync } from '../nitro/nitro.mjs';
 import { START_LOCATION, createMemoryHistory, createRouter as createRouter$1, useRoute as useRoute$1, RouterView } from 'vue-router';
 import { ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
 
@@ -372,6 +372,10 @@ function encodeURL(location2, isExternalHost = false) {
   return url.toString();
 }
 
+const __nuxt_page_meta$3 = {
+  middleware: "auth"
+};
+
 const __nuxt_page_meta$2 = {
   layout: false
 };
@@ -394,10 +398,26 @@ const _routes = [
     component: () => import('./index.vue.mjs')
   },
   {
+    name: "login",
+    path: "/login",
+    component: () => import('./login.vue.mjs')
+  },
+  {
+    name: "perfil",
+    path: "/perfil",
+    meta: __nuxt_page_meta$3 || {},
+    component: () => import('./perfil.vue.mjs')
+  },
+  {
+    name: "verificar",
+    path: "/verificar",
+    component: () => import('./verificar.vue.mjs')
+  },
+  {
     name: "admin-login",
     path: "/admin/login",
     meta: __nuxt_page_meta$2 || {},
-    component: () => import('./login.vue.mjs')
+    component: () => import('./login.vue2.mjs')
   },
   {
     name: "tienda",
@@ -415,6 +435,11 @@ const _routes = [
     component: () => import('./index.vue4.mjs')
   },
   {
+    name: "soporte",
+    path: "/soporte",
+    component: () => import('./index.vue5.mjs')
+  },
+  {
     name: "tienda-slug",
     path: "/tienda/:slug()",
     component: () => import('./_slug_.vue.mjs')
@@ -423,22 +448,22 @@ const _routes = [
     name: "checkout",
     path: "/checkout",
     meta: __nuxt_page_meta$1 || {},
-    component: () => import('./index.vue5.mjs')
+    component: () => import('./index.vue6.mjs')
   },
   {
     name: "contacto",
     path: "/contacto",
-    component: () => import('./index.vue6.mjs')
+    component: () => import('./index.vue7.mjs')
   },
   {
     name: "nosotros",
     path: "/nosotros",
-    component: () => import('./index.vue7.mjs')
+    component: () => import('./index.vue8.mjs')
   },
   {
     name: "servicios",
     path: "/servicios",
-    component: () => import('./index.vue8.mjs')
+    component: () => import('./index.vue9.mjs')
   },
   {
     name: "admin-inventario",
@@ -586,7 +611,8 @@ const globalMiddleware = [
   manifest_45route_45rule
 ];
 const namedMiddleware = {
-  "admin-auth": () => import('./admin-auth.mjs')
+  "admin-auth": () => import('./admin-auth.mjs'),
+  auth: () => import('./auth.mjs')
 };
 
 const plugin = defineNuxtPlugin({
@@ -1162,5 +1188,5 @@ const server = /*#__PURE__*/Object.freeze({
   default: entry_default
 });
 
-export { _export_sfc as _, useRouter as a, useNuxtApp as b, asyncDataDefaults as c, createError as d, useRuntimeConfig as e, fetchDefaults as f, nuxtLinkDefaults as g, defineNuxtRouteMiddleware as h, navigateTo as n, resolveRouteObject as r, server as s, tryUseNuxtApp as t, useRoute as u };
+export { _export_sfc as _, useNuxtApp as a, useRuntimeConfig as b, nuxtLinkDefaults as c, asyncDataDefaults as d, createError as e, fetchDefaults as f, useRoute as g, defineNuxtRouteMiddleware as h, navigateTo as n, resolveRouteObject as r, server as s, tryUseNuxtApp as t, useRouter as u };
 //# sourceMappingURL=server.mjs.map

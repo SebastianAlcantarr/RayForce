@@ -156,26 +156,11 @@ export const useAuth = () => {
 
       console.log('Respuesta de registro:', response)
 
-      if (response.success && response.token) {
-        // Guardar token temporalmente
-        token.value = response.token
-
-        // Obtener datos del usuario
-        try {
-          console.log('Obteniendo perfil del usuario...')
-          const userData = await fetchProfile()
-          console.log('Perfil del usuario:', userData)
-          saveAuth(userData, response.token)
-          return { success: true, user: userData }
-        } catch (userError) {
-          // Si falla obtener el usuario pero el token es válido, hacer un logout
-          console.error('Error fetching user data:', userError)
-          logout()
-          return Promise.reject(new Error('No se pudo obtener los datos del usuario. Por favor, intenta de nuevo.'))
-        }
-      } else {
-        return Promise.reject(new Error('La respuesta del registro es inválida'))
+      if (response.success) {
+        return response
       }
+
+      return Promise.reject(new Error('La respuesta del registro es inválida'))
     } catch (error) {
       console.error('Error en registro:', error)
       throw error
