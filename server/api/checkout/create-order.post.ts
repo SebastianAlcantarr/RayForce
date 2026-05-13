@@ -1,5 +1,3 @@
-import jwt from 'jsonwebtoken'
-
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const body = await readBody(event)
@@ -18,7 +16,6 @@ export default defineEventHandler(async (event) => {
       product_id: parseInt(item.product_id) || parseInt(item.id),
       quantity: parseInt(item.quantity) || 1
     }))
-
 
     const orderBody = {
       customer_id: body.customer_id,
@@ -51,21 +48,16 @@ export default defineEventHandler(async (event) => {
       body: orderBody
     })
 
+    // Usar la URL de pago que WooCommerce genera automáticamente
+    // Esta URL ya incluye el order_key y funciona sin necesidad de estar logueado en WordPress
+    const redirectUrl = order.payment_url
 
-    const token = jwt.sign(
-        {
-          user_id: body.customer_id,
-          email: body.billing.email
-        },
-        config.jwtSecret,
-        { expiresIn: '15m' }
-    )
-
-    const redirectUrl = `${config.wooUrl}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}&auth_token=${token}`
+    console.log(`Orden #${order.id} creada. Payment URL: ${redirectUrl}`)
 
     return {
       success: true,
-      redirectUrl
+      redirectUrl,
+      orderId: order.id
     }
   } catch (error: any) {
     console.error('Error al crear orden:', error.message)
