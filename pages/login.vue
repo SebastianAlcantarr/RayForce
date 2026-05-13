@@ -74,6 +74,16 @@
             </div>
           </div>
 
+          <!-- Forgot Password Link -->
+          <div class="text-right">
+            <NuxtLink
+              to="/recuperar-contrasena"
+              class="text-sm text-primary hover:underline font-semibold"
+            >
+              ¿Olvidaste tu contraseña?
+            </NuxtLink>
+          </div>
+
           <div v-if="error" class="p-4 bg-error/10 border border-error rounded-lg">
             <p class="text-sm text-error font-medium">{{ error }}</p>
           </div>

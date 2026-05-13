@@ -1,6 +1,6 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { defineComponent, ref, mergeProps, unref, withCtx, createVNode, createTextVNode, useSSRContext } from 'vue';
-import { ssrRenderAttrs, ssrInterpolate, ssrRenderClass, ssrRenderAttr, ssrRenderDynamicModel, ssrIncludeBooleanAttr, ssrRenderComponent } from 'vue/server-renderer';
+import { defineComponent, ref, mergeProps, unref, withCtx, createTextVNode, createVNode, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrInterpolate, ssrRenderClass, ssrRenderAttr, ssrRenderDynamicModel, ssrRenderComponent, ssrIncludeBooleanAttr } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
 import { u as useRouter, _ as _export_sfc } from './server.mjs';
 import '../nitro/nitro.mjs';
@@ -41,50 +41,66 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
     const showRegisterPassword = ref(false);
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0;
-      _push(`<div${ssrRenderAttrs(mergeProps({ class: "min-h-screen pt-32 pb-20 px-8" }, _attrs))} data-v-e768e806><div class="max-w-md mx-auto" data-v-e768e806><div class="mb-12 text-center" data-v-e768e806><h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3" data-v-e768e806><span class="text-on-surface" data-v-e768e806>Bienvenido a </span><span class="text-primary font-rayforce" data-v-e768e806>Rayforce</span></h1><p class="text-on-surface-variant text-sm mt-20" data-v-e768e806>${ssrInterpolate(unref(isLogin) ? "Accede a tu cuenta" : "Crea una cuenta nueva")}</p></div><div class="bg-surface-container-lowest border border-outline-variant/15 p-8 rounded-xl space-y-6" data-v-e768e806><div class="flex gap-2 bg-surface-container rounded-lg p-1" data-v-e768e806><button class="${ssrRenderClass([
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "min-h-screen pt-32 pb-20 px-8" }, _attrs))} data-v-3da3753c><div class="max-w-md mx-auto" data-v-3da3753c><div class="mb-12 text-center" data-v-3da3753c><h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-3" data-v-3da3753c><span class="text-on-surface" data-v-3da3753c>Bienvenido a </span><span class="text-primary font-rayforce" data-v-3da3753c>Rayforce</span></h1><p class="text-on-surface-variant text-sm mt-20" data-v-3da3753c>${ssrInterpolate(unref(isLogin) ? "Accede a tu cuenta" : "Crea una cuenta nueva")}</p></div><div class="bg-surface-container-lowest border border-outline-variant/15 p-8 rounded-xl space-y-6" data-v-3da3753c><div class="flex gap-2 bg-surface-container rounded-lg p-1" data-v-3da3753c><button class="${ssrRenderClass([
         "flex-1 py-2 px-4 rounded font-bold text-sm uppercase tracking-widest transition-all",
         unref(isLogin) ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-on-surface"
-      ])}" type="button" data-v-e768e806> Iniciar Sesión </button><button class="${ssrRenderClass([
+      ])}" type="button" data-v-3da3753c> Iniciar Sesión </button><button class="${ssrRenderClass([
         "flex-1 py-2 px-4 rounded font-bold text-sm uppercase tracking-widest transition-all",
         !unref(isLogin) ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-on-surface"
-      ])}" type="button" data-v-e768e806> Crear Cuenta </button></div>`);
+      ])}" type="button" data-v-3da3753c> Crear Cuenta </button></div>`);
       if (unref(isLogin)) {
-        _push(`<form class="space-y-6" data-v-e768e806><div class="space-y-2" data-v-e768e806><label class="block text-sm font-bold text-on-surface" data-v-e768e806>Usuario</label><input${ssrRenderAttr("value", unref(username))} type="text" placeholder="Nombre de Usuario o Correo electronico" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-e768e806></div><div class="space-y-2" data-v-e768e806><label class="block text-sm font-bold text-on-surface" data-v-e768e806>Contraseña</label><div class="relative" data-v-e768e806><input${ssrRenderDynamicModel(unref(showPassword) ? "text" : "password", unref(password), null)}${ssrRenderAttr("type", unref(showPassword) ? "text" : "password")} placeholder="Tu contraseña" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-e768e806><button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"${ssrRenderAttr("aria-label", unref(showPassword) ? "Ocultar contraseña" : "Mostrar contraseña")} data-v-e768e806><span class="material-symbols-outlined text-xl" data-v-e768e806>${ssrInterpolate(unref(showPassword) ? "visibility" : "visibility_off")}</span></button></div></div>`);
+        _push(`<form class="space-y-6" data-v-3da3753c><div class="space-y-2" data-v-3da3753c><label class="block text-sm font-bold text-on-surface" data-v-3da3753c>Usuario</label><input${ssrRenderAttr("value", unref(username))} type="text" placeholder="Nombre de Usuario o Correo electronico" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-3da3753c></div><div class="space-y-2" data-v-3da3753c><label class="block text-sm font-bold text-on-surface" data-v-3da3753c>Contraseña</label><div class="relative" data-v-3da3753c><input${ssrRenderDynamicModel(unref(showPassword) ? "text" : "password", unref(password), null)}${ssrRenderAttr("type", unref(showPassword) ? "text" : "password")} placeholder="Tu contraseña" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-3da3753c><button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"${ssrRenderAttr("aria-label", unref(showPassword) ? "Ocultar contraseña" : "Mostrar contraseña")} data-v-3da3753c><span class="material-symbols-outlined text-xl" data-v-3da3753c>${ssrInterpolate(unref(showPassword) ? "visibility" : "visibility_off")}</span></button></div></div><div class="text-right" data-v-3da3753c>`);
+        _push(ssrRenderComponent(_component_NuxtLink, {
+          to: "/recuperar-contrasena",
+          class: "text-sm text-primary hover:underline font-semibold"
+        }, {
+          default: withCtx((_, _push2, _parent2, _scopeId) => {
+            if (_push2) {
+              _push2(` ¿Olvidaste tu contraseña? `);
+            } else {
+              return [
+                createTextVNode(" ¿Olvidaste tu contraseña? ")
+              ];
+            }
+          }),
+          _: 1
+        }, _parent));
+        _push(`</div>`);
         if (unref(error)) {
-          _push(`<div class="p-4 bg-error/10 border border-error rounded-lg" data-v-e768e806><p class="text-sm text-error font-medium" data-v-e768e806>${ssrInterpolate(unref(error))}</p></div>`);
+          _push(`<div class="p-4 bg-error/10 border border-error rounded-lg" data-v-3da3753c><p class="text-sm text-error font-medium" data-v-3da3753c>${ssrInterpolate(unref(error))}</p></div>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<button type="submit"${ssrIncludeBooleanAttr(unref(isLoading)) ? " disabled" : ""} class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3" data-v-e768e806>`);
+        _push(`<button type="submit"${ssrIncludeBooleanAttr(unref(isLoading)) ? " disabled" : ""} class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3" data-v-3da3753c>`);
         if (unref(isLoading)) {
-          _push(`<span class="material-symbols-outlined animate-spin" data-v-e768e806>progress_activity</span>`);
+          _push(`<span class="material-symbols-outlined animate-spin" data-v-3da3753c>progress_activity</span>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<span data-v-e768e806>${ssrInterpolate(unref(isLoading) ? "Ingresando..." : "Ingresar")}</span></button></form>`);
+        _push(`<span data-v-3da3753c>${ssrInterpolate(unref(isLoading) ? "Ingresando..." : "Ingresar")}</span></button></form>`);
       } else {
-        _push(`<form class="space-y-6" data-v-e768e806><div class="space-y-2" data-v-e768e806><label class="block text-sm font-bold text-on-surface" data-v-e768e806>Nombre Completo</label><input${ssrRenderAttr("value", unref(fullName))} type="text" placeholder="Tu nombre completo" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-e768e806></div><div class="space-y-2" data-v-e768e806><label class="block text-sm font-bold text-on-surface" data-v-e768e806>Correo Electrónico</label><input${ssrRenderAttr("value", unref(email))} type="email" placeholder="tu@correo.com" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-e768e806></div><div class="space-y-2" data-v-e768e806><label class="block text-sm font-bold text-on-surface" data-v-e768e806>Contraseña</label><div class="relative" data-v-e768e806><input${ssrRenderDynamicModel(unref(showRegisterPassword) ? "text" : "password", unref(registerPassword), null)}${ssrRenderAttr("type", unref(showRegisterPassword) ? "text" : "password")} placeholder="Mínimo 8 caracteres" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-e768e806><button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"${ssrRenderAttr("aria-label", unref(showRegisterPassword) ? "Ocultar contraseña" : "Mostrar contraseña")} data-v-e768e806><span class="material-symbols-outlined text-xl" data-v-e768e806>${ssrInterpolate(unref(showRegisterPassword) ? "visibility" : "visibility_off")}</span></button></div></div>`);
+        _push(`<form class="space-y-6" data-v-3da3753c><div class="space-y-2" data-v-3da3753c><label class="block text-sm font-bold text-on-surface" data-v-3da3753c>Nombre Completo</label><input${ssrRenderAttr("value", unref(fullName))} type="text" placeholder="Tu nombre completo" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-3da3753c></div><div class="space-y-2" data-v-3da3753c><label class="block text-sm font-bold text-on-surface" data-v-3da3753c>Correo Electrónico</label><input${ssrRenderAttr("value", unref(email))} type="email" placeholder="tu@correo.com" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-3da3753c></div><div class="space-y-2" data-v-3da3753c><label class="block text-sm font-bold text-on-surface" data-v-3da3753c>Contraseña</label><div class="relative" data-v-3da3753c><input${ssrRenderDynamicModel(unref(showRegisterPassword) ? "text" : "password", unref(registerPassword), null)}${ssrRenderAttr("type", unref(showRegisterPassword) ? "text" : "password")} placeholder="Mínimo 8 caracteres" class="w-full px-4 py-3 bg-surface-container border border-outline-variant/30 rounded-lg text-on-surface placeholder-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary transition-all" required data-v-3da3753c><button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface transition-colors"${ssrRenderAttr("aria-label", unref(showRegisterPassword) ? "Ocultar contraseña" : "Mostrar contraseña")} data-v-3da3753c><span class="material-symbols-outlined text-xl" data-v-3da3753c>${ssrInterpolate(unref(showRegisterPassword) ? "visibility" : "visibility_off")}</span></button></div></div>`);
         if (unref(error)) {
-          _push(`<div class="p-4 bg-error/10 border border-error rounded-lg" data-v-e768e806><p class="text-sm text-error font-medium" data-v-e768e806>${ssrInterpolate(unref(error))}</p></div>`);
+          _push(`<div class="p-4 bg-error/10 border border-error rounded-lg" data-v-3da3753c><p class="text-sm text-error font-medium" data-v-3da3753c>${ssrInterpolate(unref(error))}</p></div>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<button type="submit"${ssrIncludeBooleanAttr(unref(isLoading)) ? " disabled" : ""} class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3" data-v-e768e806>`);
+        _push(`<button type="submit"${ssrIncludeBooleanAttr(unref(isLoading)) ? " disabled" : ""} class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold uppercase tracking-widest hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3" data-v-3da3753c>`);
         if (unref(isLoading)) {
-          _push(`<span class="material-symbols-outlined animate-spin" data-v-e768e806>progress_activity</span>`);
+          _push(`<span class="material-symbols-outlined animate-spin" data-v-3da3753c>progress_activity</span>`);
         } else {
           _push(`<!---->`);
         }
-        _push(`<span data-v-e768e806>${ssrInterpolate(unref(isLoading) ? "Creando..." : "Crear Cuenta")}</span></button></form>`);
+        _push(`<span data-v-3da3753c>${ssrInterpolate(unref(isLoading) ? "Creando..." : "Crear Cuenta")}</span></button></form>`);
       }
-      _push(`<div class="relative" data-v-e768e806><div class="absolute inset-0 flex items-center" data-v-e768e806><div class="w-full border-t border-outline-variant/20" data-v-e768e806></div></div><div class="relative flex justify-center text-sm" data-v-e768e806><span class="px-2 bg-surface-container-lowest text-on-surface-variant" data-v-e768e806>${ssrInterpolate(unref(isLogin) ? "O inicia con" : "O crea con")}</span></div></div><button type="button" class="w-full border-2 border-outline-variant/30 text-on-surface py-3 rounded-lg font-bold uppercase tracking-widest hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-3" data-v-e768e806><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-v-e768e806><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" data-v-e768e806></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" data-v-e768e806></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" data-v-e768e806></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" data-v-e768e806></path></svg> Continuar con Google </button>`);
+      _push(`<div class="relative" data-v-3da3753c><div class="absolute inset-0 flex items-center" data-v-3da3753c><div class="w-full border-t border-outline-variant/20" data-v-3da3753c></div></div><div class="relative flex justify-center text-sm" data-v-3da3753c><span class="px-2 bg-surface-container-lowest text-on-surface-variant" data-v-3da3753c>${ssrInterpolate(unref(isLogin) ? "O inicia con" : "O crea con")}</span></div></div><button type="button" class="w-full border-2 border-outline-variant/30 text-on-surface py-3 rounded-lg font-bold uppercase tracking-widest hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-3" data-v-3da3753c><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-v-3da3753c><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" data-v-3da3753c></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" data-v-3da3753c></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" data-v-3da3753c></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" data-v-3da3753c></path></svg> Continuar con Google </button>`);
       _push(ssrRenderComponent(_component_NuxtLink, {
         to: "/tienda",
         class: "w-full border-2 border-primary text-primary py-3 rounded-lg font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center gap-2"
       }, {
         default: withCtx((_, _push2, _parent2, _scopeId) => {
           if (_push2) {
-            _push2(`<span class="material-symbols-outlined" data-v-e768e806${_scopeId}>storefront</span> Ir a la Tienda `);
+            _push2(`<span class="material-symbols-outlined" data-v-3da3753c${_scopeId}>storefront</span> Ir a la Tienda `);
           } else {
             return [
               createVNode("span", { class: "material-symbols-outlined" }, "storefront"),
@@ -94,7 +110,7 @@ const _sfc_main = /* @__PURE__ */ defineComponent({
         }),
         _: 1
       }, _parent));
-      _push(`</div><div class="mt-8 text-center" data-v-e768e806><p class="text-on-surface-variant text-sm" data-v-e768e806> ¿Problemas para acceder? `);
+      _push(`</div><div class="mt-8 text-center" data-v-3da3753c><p class="text-on-surface-variant text-sm" data-v-3da3753c> ¿Problemas para acceder? `);
       _push(ssrRenderComponent(_component_NuxtLink, {
         to: "/soporte",
         class: "text-primary hover:underline font-bold"
@@ -121,7 +137,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/login.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const login = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-e768e806"]]);
+const login = /* @__PURE__ */ _export_sfc(_sfc_main, [["__scopeId", "data-v-3da3753c"]]);
 
 export { login as default };
 //# sourceMappingURL=login.vue.mjs.map

@@ -470,6 +470,11 @@ const _routes = [
     path: "/admin/inventario",
     meta: __nuxt_page_meta || {},
     component: () => import('./inventario.vue.mjs')
+  },
+  {
+    name: "recuperar-contrasena",
+    path: "/recuperar-contrasena",
+    component: () => import('./recuperar-contrasena.vue.mjs')
   }
 ];
 
