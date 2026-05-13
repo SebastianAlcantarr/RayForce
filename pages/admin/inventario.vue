@@ -600,6 +600,154 @@
       </div>
       <div v-else class="text-center py-10 opacity-50">Cargando configuración de Ads...</div>
     </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- MÓDULO 6: Cupones de Descuento          -->
+    <!-- ═══════════════════════════════════════ -->
+    <div v-show="activeTab === 'cupones'" class="module-card">
+      <div class="module-header flex justify-between items-center">
+        <div>
+          <div class="module-title">🎟️ Cupones de Descuento</div>
+          <div class="module-sub">Crea y gestiona códigos de descuento. Se sincronizan directamente con WooCommerce.</div>
+        </div>
+        <button class="btn-primary" @click="openCouponModal()">
+          + Nuevo Cupón
+        </button>
+      </div>
+
+      <!-- Estado de carga -->
+      <div v-if="couponsLoading" class="text-center py-12 text-slate-500">Cargando cupones...</div>
+
+      <!-- Tabla de cupones -->
+      <div v-else-if="coupons.length > 0" class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Tipo</th>
+              <th>Descuento</th>
+              <th>Usos</th>
+              <th>Expira</th>
+              <th>Estado</th>
+              <th style="text-align:right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="coupon in coupons" :key="coupon.id">
+              <td>
+                <span class="coupon-code" @click="copyCouponCode(coupon.code)">{{ coupon.code }}</span>
+              </td>
+              <td>
+                <span class="coupon-type-badge" :class="`coupon-type--${coupon.discount_type}`">
+                  {{ coupon.discount_type === 'percent' ? 'Porcentaje' : coupon.discount_type === 'fixed_cart' ? 'Monto Fijo' : coupon.discount_type }}
+                </span>
+              </td>
+              <td class="coupon-amount">
+                <span v-if="coupon.discount_type === 'percent'">{{ coupon.amount }}%</span>
+                <span v-else>${{ coupon.amount }} MXN</span>
+              </td>
+              <td class="coupon-uses">
+                {{ coupon.usage_count }}<span v-if="coupon.usage_limit"> / {{ coupon.usage_limit }}</span>
+              </td>
+              <td class="coupon-expiry">
+                <span v-if="coupon.date_expires" :class="{ 'text-red-400': coupon.expired }">
+                  {{ new Date(coupon.date_expires).toLocaleDateString('es-MX') }}
+                  <span v-if="coupon.expired" class="ml-1 text-xs">(Expirado)</span>
+                </span>
+                <span v-else class="text-slate-500">Sin vencimiento</span>
+              </td>
+              <td>
+                <span class="status-badge" :class="coupon.expired ? 'status--expired' : 'status--active'">
+                  {{ coupon.expired ? 'Expirado' : 'Activo' }}
+                </span>
+              </td>
+              <td>
+                <div class="coupon-actions">
+                  <button class="action-btn action-btn--edit" @click="openCouponModal(coupon)" title="Editar">✏️</button>
+                  <button class="action-btn action-btn--delete" @click="deleteCoupon(coupon.id, coupon.code)" title="Eliminar">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Estado vacío -->
+      <div v-else class="empty-state">
+        <span>🎟️</span>
+        <p>No hay cupones creados aún.</p>
+        <button class="btn-primary mt-4" @click="openCouponModal()">Crear el primer cupón</button>
+      </div>
+
+      <!-- Modal de Cupón -->
+      <div v-if="couponModalOpen" class="coupon-modal-overlay">
+        <div class="coupon-modal">
+          <div class="coupon-modal-header">
+            <h3>{{ editingCoupon ? 'Editar Cupón' : 'Nuevo Cupón' }}</h3>
+            <button class="modal-close-btn" @click="closeCouponModal">✕</button>
+          </div>
+          <div class="coupon-modal-body">
+            <div class="form-grid">
+              <div class="form-field">
+                <label class="f-label">Código *</label>
+                <div class="flex gap-2">
+                  <input v-model="couponForm.code" type="text" class="f-input flex-1 uppercase" placeholder="EJ: VERANO10" />
+                  <button type="button" class="btn-ghost px-3" @click="generateCouponCode" title="Generar código aleatorio">⚙️</button>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="f-label">Tipo de Descuento *</label>
+                <select v-model="couponForm.discount_type" class="f-input" style="height:42px">
+                  <option value="percent">Porcentaje (%)</option>
+                  <option value="fixed_cart">Monto Fijo ($)</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label class="f-label">Valor del Descuento *</label>
+                <div class="price-input-wrapper">
+                  <span class="price-symbol">{{ couponForm.discount_type === 'percent' ? '%' : '$' }}</span>
+                  <input v-model="couponForm.amount" type="number" step="0.01" min="0" class="price-input-small" placeholder="10" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="f-label">Monto Mínimo de Compra</label>
+                <div class="price-input-wrapper">
+                  <span class="price-symbol">$</span>
+                  <input v-model="couponForm.minimum_amount" type="number" step="0.01" min="0" class="price-input-small" placeholder="0 = sin mínimo" />
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="f-label">Límite de Usos Totales</label>
+                <input v-model="couponForm.usage_limit" type="number" min="0" class="f-input" placeholder="Vacío = ilimitado" />
+              </div>
+              <div class="form-field">
+                <label class="f-label">Usos por Cliente</label>
+                <input v-model="couponForm.usage_limit_per_user" type="number" min="0" class="f-input" placeholder="Vacío = ilimitado" />
+              </div>
+              <div class="form-field">
+                <label class="f-label">Fecha de Expiración</label>
+                <input v-model="couponForm.date_expires" type="date" class="f-input" />
+              </div>
+              <div class="form-field">
+                <label class="f-label">Descripción interna</label>
+                <input v-model="couponForm.description" type="text" class="f-input" placeholder="Ej: Campaña de Mayo 2025" />
+              </div>
+              <div class="form-field form-field--full">
+                <label class="f-label">Emails permitidos <span class="text-slate-500 font-normal">(separados por coma — dejar vacío para todos)</span></label>
+                <input v-model="couponForm.email_restrictions_raw" type="text" class="f-input" placeholder="cliente@ejemplo.com, otro@empresa.com" />
+              </div>
+            </div>
+          </div>
+          <div class="coupon-modal-footer">
+            <button class="btn-ghost" @click="closeCouponModal">Cancelar</button>
+            <button class="btn-primary" :disabled="couponSaving" @click="saveCoupon">
+              <span v-if="couponSaving" class="spinner-sm" />
+              <span v-else>{{ editingCoupon ? '💾 Guardar Cambios' : '✅ Crear Cupón' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -619,6 +767,7 @@ const tabs = [
   { id: 'creador',   icon: '✨', label: 'Creador de Productos' },
   { id: 'exportador',icon: '📊', label: 'Exportador CONTPAQi' },
   { id: 'publicidad',icon: '📢', label: 'Publicidad (Banners)' },
+  { id: 'cupones',   icon: '🎟️', label: 'Cupones de Descuento' },
 ]
 const activeTab = ref<string>('buzon')
 
@@ -1011,10 +1160,157 @@ async function saveAdsConfig() {
   }
 }
 
+// ════════════════════════════════════════════════
+// MÓDULO 6: Cupones de Descuento
+// ════════════════════════════════════════════════
+interface Coupon {
+  id: number
+  code: string
+  discount_type: string
+  amount: string
+  date_expires: string | null
+  usage_count: number
+  usage_limit: number | null
+  usage_limit_per_user: number | null
+  email_restrictions: string[]
+  description: string
+  expired: boolean
+}
+
+const coupons = ref<Coupon[]>([])
+const couponsLoading = ref(false)
+const couponModalOpen = ref(false)
+const couponSaving = ref(false)
+const editingCoupon = ref<Coupon | null>(null)
+
+const couponForm = reactive({
+  code: '',
+  discount_type: 'percent',
+  amount: '',
+  minimum_amount: '',
+  usage_limit: '',
+  usage_limit_per_user: '',
+  date_expires: '',
+  description: '',
+  email_restrictions_raw: '',
+})
+
+async function loadCoupons() {
+  couponsLoading.value = true
+  try {
+    coupons.value = await $fetch<Coupon[]>('/api/admin/coupons')
+  } catch (err: unknown) {
+    const e = err as { statusMessage?: string }
+    notifyError(`Error cargando cupones: ${e?.statusMessage}`)
+  } finally {
+    couponsLoading.value = false
+  }
+}
+
+function openCouponModal(coupon?: Coupon) {
+  editingCoupon.value = coupon || null
+  if (coupon) {
+    couponForm.code = coupon.code
+    couponForm.discount_type = coupon.discount_type
+    couponForm.amount = coupon.amount
+    couponForm.minimum_amount = ''
+    couponForm.usage_limit = coupon.usage_limit ? String(coupon.usage_limit) : ''
+    couponForm.usage_limit_per_user = coupon.usage_limit_per_user ? String(coupon.usage_limit_per_user) : ''
+    couponForm.date_expires = coupon.date_expires ? coupon.date_expires.substring(0, 10) : ''
+    couponForm.description = coupon.description
+    couponForm.email_restrictions_raw = (coupon.email_restrictions || []).join(', ')
+  } else {
+    couponForm.code = ''
+    couponForm.discount_type = 'percent'
+    couponForm.amount = ''
+    couponForm.minimum_amount = ''
+    couponForm.usage_limit = ''
+    couponForm.usage_limit_per_user = ''
+    couponForm.date_expires = ''
+    couponForm.description = ''
+    couponForm.email_restrictions_raw = ''
+  }
+  couponModalOpen.value = true
+}
+
+function closeCouponModal() {
+  couponModalOpen.value = false
+  editingCoupon.value = null
+}
+
+function generateCouponCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  couponForm.code = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
+}
+
+async function saveCoupon() {
+  if (!couponForm.code || !couponForm.amount) {
+    notifyError('El código y el valor del descuento son requeridos.')
+    return
+  }
+  couponSaving.value = true
+  try {
+    const emailList = couponForm.email_restrictions_raw
+      ? couponForm.email_restrictions_raw.split(',').map((e: string) => e.trim()).filter(Boolean)
+      : []
+
+    const payload: Record<string, unknown> = {
+      code: couponForm.code,
+      discount_type: couponForm.discount_type,
+      amount: couponForm.amount,
+      description: couponForm.description,
+      date_expires: couponForm.date_expires || null,
+      usage_limit: couponForm.usage_limit || null,
+      usage_limit_per_user: couponForm.usage_limit_per_user || null,
+      minimum_amount: couponForm.minimum_amount || '0',
+      email_restrictions: emailList,
+    }
+
+    if (editingCoupon.value) {
+      payload.id = editingCoupon.value.id
+      await $fetch('/api/admin/update-coupon', { method: 'PUT', body: payload })
+      success(`Cupón "${couponForm.code}" actualizado correctamente.`)
+    } else {
+      await $fetch('/api/admin/create-coupon', { method: 'POST', body: payload })
+      success(`Cupón "${couponForm.code}" creado exitosamente.`)
+    }
+
+    closeCouponModal()
+    await loadCoupons()
+  } catch (err: unknown) {
+    const e = err as { statusMessage?: string }
+    notifyError(`Error al guardar cupón: ${e?.statusMessage}`)
+  } finally {
+    couponSaving.value = false
+  }
+}
+
+async function deleteCoupon(id: number, code: string) {
+  if (!confirm(`¿Eliminar el cupón "${code}"? Esta acción no se puede deshacer.`)) return
+  try {
+    await $fetch(`/api/admin/delete-coupon?id=${id}`, { method: 'DELETE' })
+    success(`Cupón "${code}" eliminado.`)
+    await loadCoupons()
+  } catch (err: unknown) {
+    const e = err as { statusMessage?: string }
+    notifyError(`Error al eliminar: ${e?.statusMessage}`)
+  }
+}
+
+async function copyCouponCode(code: string) {
+  try {
+    await navigator.clipboard.writeText(code)
+    success(`Código "${code}" copiado al portapapeles.`)
+  } catch {
+    notifyError('No se pudo copiar el código.')
+  }
+}
+
 // ── Inicialización ────────────────────────────
 onMounted(() => { 
   loadCategories() 
   loadAdsConfig()
+  loadCoupons()
 })
 </script>
 
@@ -1259,5 +1555,67 @@ onMounted(() => {
 .export-result {
   background: #14532d33; border: 1px solid #166534; border-radius: 8px;
   padding: 14px 18px; color: #86efac; font-size: 13px;
+}
+
+/* ── Coupons ───────────────────────────────── */
+.coupon-code {
+  font-family: monospace; font-size: 13px; font-weight: 700;
+  color: #93c5fd; background: rgba(147,197,253,0.1);
+  padding: 3px 8px; border-radius: 4px; cursor: pointer;
+  border: 1px solid rgba(147,197,253,0.2); letter-spacing: 0.05em;
+  transition: background 0.15s;
+}
+.coupon-code:hover { background: rgba(147,197,253,0.2); }
+.coupon-type-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+}
+.coupon-type--percent { background: rgba(139,92,246,0.2); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.3); }
+.coupon-type--fixed_cart { background: rgba(16,185,129,0.2); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+.coupon-amount { font-weight: 700; color: #f1f5f9; }
+.coupon-uses { color: #64748b; font-size: 13px; }
+.coupon-expiry { font-size: 13px; color: #94a3b8; }
+.status-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+}
+.status--active  { background: #14532d33; color: #86efac; border: 1px solid #166534; }
+.status--expired { background: #7f1d1d33; color: #fca5a5; border: 1px solid #991b1b; }
+.coupon-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.action-btn {
+  background: transparent; border: 1px solid #334155; border-radius: 6px;
+  padding: 5px 10px; cursor: pointer; font-size: 14px;
+  transition: all 0.15s; color: #64748b;
+}
+.action-btn:hover { border-color: #475569; background: #1e293b; }
+.action-btn--delete:hover { border-color: #991b1b; background: #7f1d1d22; }
+
+/* ── Coupon Modal ──────────────────────────── */
+.coupon-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+}
+.coupon-modal {
+  background: #1e293b; border: 1px solid #334155; border-radius: 16px;
+  width: 100%; max-width: 660px; max-height: 90vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+}
+.coupon-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid #334155;
+}
+.coupon-modal-header h3 { font-size: 17px; font-weight: 700; color: #f1f5f9; margin: 0; }
+.modal-close-btn {
+  background: transparent; border: none; color: #64748b;
+  font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.15s;
+}
+.modal-close-btn:hover { background: #334155; color: #f1f5f9; }
+.coupon-modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+.coupon-modal-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding: 16px 24px; border-top: 1px solid #334155;
+  background: #0f172a;
 }
 </style>
