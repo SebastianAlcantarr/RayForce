@@ -383,7 +383,7 @@
     <div v-show="activeTab === 'exportador'" class="module-card">
       <div class="module-header">
         <div class="module-title">📊 Exportador para CONTPAQi</div>
-        <div class="module-sub">Genera un archivo CSV con los pedidos recientes de WooCommerce, listo para abrir en Excel e importar en CONTPAQi.</div>
+        <div class="module-sub">Genera un archivo Excel (.xlsx) con los pedidos agrupados por cliente, listo para CONTPAQi.</div>
       </div>
 
       <div class="export-area">
@@ -392,18 +392,21 @@
           <div>
             <div class="export-title">Reporte de Pedidos</div>
             <div class="export-desc">
-              Columnas incluidas: Folio, Fecha, Cliente, Email, Código (SKU), Descripción, Cantidad, Precio Unitario, Importe, Total Pedido, Estatus.
+              Columnas incluidas: Producto, Almacén, Cantidad, Precio, Neto, Descuento 1, Descuento 2, Impuesto 1, Impuesto 2, Total, Folio.
             </div>
           </div>
         </div>
 
         <div class="export-controls">
           <div class="field-group-inline">
-            <label for="export-qty" class="f-label-sm">Nº de pedidos a exportar</label>
-            <select id="export-qty" v-model="exportQty" class="f-select-sm">
-              <option :value="25">Últimos 25</option>
-              <option :value="50">Últimos 50</option>
-              <option :value="100">Últimos 100</option>
+            <label for="export-date" class="f-label-sm">Rango de fechas</label>
+            <select id="export-date" v-model="exportDateRange" class="f-select-sm">
+              <option value="1">Últimas 24 horas</option>
+              <option value="2">Últimos 2 días</option>
+              <option value="3">Últimos 3 días</option>
+              <option value="7">Última semana (7 días)</option>
+              <option value="30">Último mes (30 días)</option>
+              <option value="all">Todos los recientes</option>
             </select>
           </div>
 
@@ -414,7 +417,7 @@
             @click="runExport"
           >
             <span v-if="exportLoading" class="spinner-sm" />
-            <span v-else>⬇️ Descargar CSV para CONTPAQi</span>
+            <span v-else>⬇️ Descargar Excel para CONTPAQi</span>
           </button>
         </div>
 
@@ -1063,7 +1066,7 @@ async function submitProduct() {
 // MÓDULO 4: Exportador CONTPAQi
 // ════════════════════════════════════════════════
 const exportLoading = ref(false)
-const exportQty     = ref(50)
+const exportDateRange = ref('7')
 const exportResult  = ref<{ filename: string; totalOrders: number; totalRows: number } | null>(null)
 
 async function runExport() {
@@ -1071,23 +1074,31 @@ async function runExport() {
   exportResult.value  = null
 
   try {
+    let query = ''
+    if (exportDateRange.value !== 'all') {
+      const days = parseInt(exportDateRange.value, 10)
+      const date = new Date()
+      date.setDate(date.getDate() - days)
+      query = `?after=${date.toISOString()}`
+    }
+
     const res = await $fetch<{
       filename: string; data: string
       totalOrders: number; totalRows: number; type: string
-    }>(`/api/admin/export-orders?per_page=${exportQty.value}`)
+    }>(`/api/admin/export-orders${query}`)
 
-    // Decodificar base64 → Blob CSV → Descarga
+    // Decodificar base64 → Blob Excel → Descarga
     const binary = atob(res.data)
     const bytes = new Uint8Array(binary.length)
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
-    const blob = new Blob([bytes], { type: 'text/csv;charset=utf-8;' })
+    const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href = url; a.download = res.filename; a.click()
     URL.revokeObjectURL(url)
 
     exportResult.value = { filename: res.filename, totalOrders: res.totalOrders, totalRows: res.totalRows }
-    success(`CSV generado: ${res.totalRows} líneas exportadas. Ábrelo en Excel.`)
+    success(`Excel generado: ${res.totalRows} líneas exportadas.`)
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
     notifyError(`Error al exportar: ${e?.statusMessage}`)
