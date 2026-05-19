@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
         payload.regular_price = String(item.price)
       }
       if (item.stock !== undefined && item.stock !== '') {
-        payload.stock_quantity = Number(item.stock)
+        payload.stock_quantity = Math.max(0, Math.floor(Number(item.stock)))
       }
 
       await wooFetch(`/products/${productId}`, {

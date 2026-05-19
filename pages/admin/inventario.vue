@@ -812,7 +812,18 @@ async function parseFile(file: File) {
   const XLSX = await import('xlsx')
   const wb = XLSX.read(arrayBuffer, { type: 'array' })
   const ws = wb.Sheets[wb.SheetNames[0]]
-  const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: '' })
+  // Buscar la fila que contiene los headers reales (CONTPAQi tiene cabeceras antes)
+  let headerRow = 0
+  const allRows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: '', header: 1 }) as string[][]
+  for (let i = 0; i < Math.min(10, allRows.length); i++) {
+    const row = allRows[i].map((c) => String(c ?? '').toUpperCase())
+    if (row.some((c) => c.includes('PRODUCT') || c.includes('CÓDIGO') || c.includes('CODIGO') || c.includes('SKU'))) {
+      headerRow = i
+      break
+    }
+  }
+
+  const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: '', range: headerRow })
 
   if (rows.length === 0) {
     notifyError('El archivo está vacío o no tiene el formato correcto.')
@@ -824,9 +835,9 @@ async function parseFile(file: File) {
 
   // Auto-detectar columnas comunes de CONTPAQi
   const headers = parsedHeaders.value.map((h) => h.toUpperCase())
-  colMap.sku   = parsedHeaders.value[headers.findIndex((h) => h.includes('CÓDIGO') || h.includes('CODIGO') || h.includes('SKU'))] ?? ''
+  colMap.sku   = parsedHeaders.value[headers.findIndex((h) => h.includes('PRODUCTO') || h.includes('CÓDIGO') || h.includes('CODIGO') || h.includes('SKU'))] ?? ''
   colMap.price = parsedHeaders.value[headers.findIndex((h) => h.includes('PRECIO') || h.includes('PRICE'))] ?? ''
-  colMap.stock = parsedHeaders.value[headers.findIndex((h) => h.includes('EXIST') || h.includes('STOCK') || h.includes('CANTIDAD'))] ?? ''
+  colMap.stock = parsedHeaders.value[headers.findIndex((h) => h.includes('INVENTARIO') || h.includes('EXIST') || h.includes('STOCK') || h.includes('CANTIDAD'))] ?? ''
 }
 
 function resetUpload() {
