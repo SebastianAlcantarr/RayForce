@@ -6,7 +6,7 @@ import { ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/serve
 const appLayoutTransition = false;
 const appPageTransition = false;
 const nuxtLinkDefaults = { "componentName": "NuxtLink" };
-const asyncDataDefaults = { "value": null, "errorValue": null, "deep": true };
+const asyncDataDefaults = { "deep": false };
 const fetchDefaults = {};
 const appId = "nuxt-app";
 
@@ -428,6 +428,11 @@ const _routes = [
     component: () => import('./login.vue2.mjs')
   },
   {
+    name: "devoluciones",
+    path: "/devoluciones",
+    component: () => import('./devoluciones.vue.mjs')
+  },
+  {
     name: "tienda",
     path: "/tienda",
     component: () => import('./index.vue2.mjs')
@@ -486,6 +491,11 @@ const _routes = [
     component: () => import('./inventario.vue.mjs')
   },
   {
+    name: "aviso-de-privacidad",
+    path: "/aviso-de-privacidad",
+    component: () => import('./aviso-de-privacidad.vue.mjs')
+  },
+  {
     name: "checkout-order_exito",
     path: "/checkout/order_exito",
     meta: __nuxt_page_meta || {},
@@ -495,6 +505,11 @@ const _routes = [
     name: "recuperar-contrasena",
     path: "/recuperar-contrasena",
     component: () => import('./recuperar-contrasena.vue.mjs')
+  },
+  {
+    name: "terminos-y-condiciones",
+    path: "/terminos-y-condiciones",
+    component: () => import('./terminos-y-condiciones.vue.mjs')
   }
 ];
 
@@ -841,6 +856,66 @@ const plugin = defineNuxtPlugin({
   }
 });
 
+const useStateKeyPrefix = "$s";
+function useState(...args) {
+  const autoKey = typeof args[args.length - 1] === "string" ? args.pop() : void 0;
+  if (typeof args[0] !== "string") {
+    args.unshift(autoKey);
+  }
+  const [_key, init] = args;
+  if (!_key || typeof _key !== "string") {
+    throw new TypeError("[nuxt] [useState] key must be a string: " + _key);
+  }
+  if (init !== void 0 && typeof init !== "function") {
+    throw new Error("[nuxt] [useState] init must be a function: " + init);
+  }
+  const key = useStateKeyPrefix + _key;
+  const nuxtApp = useNuxtApp();
+  const state = toRef(nuxtApp.payload.state, key);
+  if (state.value === void 0 && init) {
+    const initialValue = init();
+    if (isRef(initialValue)) {
+      nuxtApp.payload.state[key] = initialValue;
+      return initialValue;
+    }
+    state.value = initialValue;
+  }
+  return state;
+}
+
+function useRequestEvent(nuxtApp) {
+  var _a;
+  nuxtApp || (nuxtApp = useNuxtApp());
+  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
+}
+function useRequestFetch() {
+  var _a;
+  return ((_a = useRequestEvent()) == null ? void 0 : _a.$fetch) || globalThis.$fetch;
+}
+
+const _0_siteConfig_tU0SxKrPeVRXWcGu2sOnIfhNDbYiKNfDCvYZhRueG0Q = defineNuxtPlugin({
+  name: "nuxt-site-config:init",
+  enforce: "pre",
+  async setup(nuxtApp) {
+    var _a, _b;
+    const stack = (_b = (_a = useRequestEvent()) == null ? void 0 : _a.context) == null ? void 0 : _b.siteConfig;
+    const state = useState("site-config");
+    {
+      nuxtApp.hooks.hook("app:rendered", () => {
+        state.value = stack == null ? void 0 : stack.get({
+          debug: useRuntimeConfig()["nuxt-site-config"].debug,
+          resolveRefs: true
+        });
+      });
+    }
+    return {
+      provide: {
+        nuxtSiteConfig: stack
+      }
+    };
+  }
+});
+
 function definePayloadReducer(name, reduce) {
   {
     useNuxtApp().ssrContext._payloadReducers[name] = reduce;
@@ -872,6 +947,7 @@ const components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4 = defineNuxt
 const plugins = [
   unhead_k2P3m_ZDyjlr2mMYnoDPwavjsDN8hBlk9cFai0bbopU,
   plugin,
+  _0_siteConfig_tU0SxKrPeVRXWcGu2sOnIfhNDbYiKNfDCvYZhRueG0Q,
   revive_payload_server_MVtmlZaQpj6ApFmshWfUWl5PehCebzaBf2NuRMiIbms,
   components_plugin_z4hgvsiddfKkfXTP6M8M4zG5Cb7sGnDhcryKVM45Di4
 ];
@@ -1213,5 +1289,5 @@ const server = /*#__PURE__*/Object.freeze({
   default: entry_default
 });
 
-export { _export_sfc as _, useNuxtApp as a, useRuntimeConfig as b, nuxtLinkDefaults as c, asyncDataDefaults as d, createError as e, fetchDefaults as f, useRoute as g, defineNuxtRouteMiddleware as h, navigateTo as n, resolveRouteObject as r, server as s, tryUseNuxtApp as t, useRouter as u };
+export { _export_sfc as _, useNuxtApp as a, useRuntimeConfig as b, nuxtLinkDefaults as c, asyncDataDefaults as d, createError as e, fetchDefaults as f, useRequestFetch as g, useState as h, useRoute as i, defineNuxtRouteMiddleware as j, useRequestEvent as k, navigateTo as n, resolveRouteObject as r, server as s, useRouter as u };
 //# sourceMappingURL=server.mjs.map

@@ -817,7 +817,7 @@ async function parseFile(file: File) {
   const ws = wb.Sheets[wb.SheetNames[0]]
   // Buscar la fila que contiene los headers reales (CONTPAQi tiene cabeceras antes)
   let headerRow = 0
-  const allRows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: '', header: 1 }) as string[][]
+  const allRows = XLSX.utils.sheet_to_json(ws, { defval: '', header: 1 }) as unknown as string[][]
   for (let i = 0; i < Math.min(10, allRows.length); i++) {
     const row = allRows[i].map((c) => String(c ?? '').toUpperCase())
     if (row.some((c) => c.includes('PRODUCT') || c.includes('CÓDIGO') || c.includes('CODIGO') || c.includes('SKU'))) {

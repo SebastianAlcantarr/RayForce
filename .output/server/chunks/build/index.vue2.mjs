@@ -1,8 +1,8 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, ref, computed, withAsyncContext, mergeProps, withCtx, createTextVNode, unref, createVNode, withModifiers, toDisplayString, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrInterpolate, ssrRenderClass, ssrRenderList, ssrRenderAttr, ssrIncludeBooleanAttr } from 'vue/server-renderer';
-import { a as useSeoMeta } from './v3.mjs';
-import { g as useRoute, u as useRouter } from './server.mjs';
+import { a as useSeoMeta } from './v4.mjs';
+import { i as useRoute, u as useRouter } from './server.mjs';
 import { u as useFetch } from './fetch.mjs';
 import { u as useCart } from './useCart.mjs';
 import '../_/nitro.mjs';
@@ -14,6 +14,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
@@ -21,8 +23,6 @@ import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
 import 'vue-router';
-import './ssr.mjs';
-import './state.mjs';
 
 const perPage = 20;
 const _sfc_main = /* @__PURE__ */ defineComponent({

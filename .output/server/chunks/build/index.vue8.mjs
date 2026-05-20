@@ -1,7 +1,7 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { withCtx, createTextVNode, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderList, ssrInterpolate, ssrRenderComponent } from 'vue/server-renderer';
-import { a as useSeoMeta } from './v3.mjs';
+import { a as useSeoMeta } from './v4.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -11,6 +11,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import './server.mjs';
 import 'vue-router';
 import '../routes/renderer.mjs';

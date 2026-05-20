@@ -1,7 +1,7 @@
 import { useSSRContext, mergeProps } from 'vue';
 import { ssrRenderAttrs, ssrInterpolate } from 'vue/server-renderer';
 import { _ as _export_sfc } from './server.mjs';
-import { u as useHead } from './v3.mjs';
+import { u as useHead } from './v4.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -11,6 +11,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'vue-router';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';

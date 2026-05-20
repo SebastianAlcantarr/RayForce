@@ -6,7 +6,10 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'vue';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 
 const cert = process.env.NITRO_SSL_CERT;
 const key = process.env.NITRO_SSL_KEY;

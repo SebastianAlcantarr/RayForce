@@ -7,7 +7,10 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'vue';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'buffer';
 
 const bulkUpdate_post = defineEventHandler(async (event) => {
@@ -37,7 +40,7 @@ const bulkUpdate_post = defineEventHandler(async (event) => {
         payload.regular_price = String(item.price);
       }
       if (item.stock !== void 0 && item.stock !== "") {
-        payload.stock_quantity = Number(item.stock);
+        payload.stock_quantity = Math.max(0, Math.floor(Number(item.stock)));
       }
       await wooFetch(`/products/${productId}`, {
         method: "PUT",

@@ -1,7 +1,6 @@
 import { ref, shallowRef, toRef, getCurrentInstance, onServerPrefetch, unref, computed, toValue, reactive } from 'vue';
 import { J as hash } from '../_/nitro.mjs';
-import { u as useRequestFetch } from './ssr.mjs';
-import { a as useNuxtApp, d as asyncDataDefaults, e as createError, f as fetchDefaults } from './server.mjs';
+import { a as useNuxtApp, d as asyncDataDefaults, e as createError, f as fetchDefaults, g as useRequestFetch } from './server.mjs';
 
 const isDefer = (dedupe) => dedupe === "defer" || dedupe === false;
 function useAsyncData(...args) {
@@ -123,7 +122,7 @@ function clearNuxtDataByKey(nuxtApp, key) {
     nuxtApp.payload._errors[key] = asyncDataDefaults.errorValue;
   }
   if (nuxtApp._asyncData[key]) {
-    nuxtApp._asyncData[key].data.value = void 0;
+    nuxtApp._asyncData[key].data.value = unref(nuxtApp._asyncData[key]._default());
     nuxtApp._asyncData[key].error.value = asyncDataDefaults.errorValue;
     nuxtApp._asyncData[key].pending.value = false;
     nuxtApp._asyncData[key].status.value = "idle";

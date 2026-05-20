@@ -1,6 +1,6 @@
 import { c as defineEventHandler, e as createError, f as readMultipartFormData } from '../../../_/nitro.mjs';
 import { Buffer } from 'buffer';
-import { a as getWooAuth } from '../../../_/woocomerce.mjs';
+import { b as getWooAuth } from '../../../_/woocomerce.mjs';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import 'node:http';
@@ -8,7 +8,10 @@ import 'node:https';
 import 'node:events';
 import 'node:buffer';
 import 'node:crypto';
+import 'vue';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 
 function getWPCredentials() {
   let wpUser = process.env.WP_USER || "";

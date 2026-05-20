@@ -2,8 +2,8 @@ import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { defineComponent, computed, withAsyncContext, ref, watchEffect, watch, mergeProps, withCtx, createTextVNode, unref, toDisplayString, openBlock, createBlock, createCommentVNode, createVNode, withModifiers, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrInterpolate, ssrRenderAttr, ssrRenderList, ssrRenderClass, ssrIncludeBooleanAttr, ssrRenderStyle } from 'vue/server-renderer';
 import { u as useCart } from './useCart.mjs';
-import { a as useSeoMeta } from './v3.mjs';
-import { g as useRoute, u as useRouter, _ as _export_sfc } from './server.mjs';
+import { a as useSeoMeta } from './v4.mjs';
+import { i as useRoute, u as useRouter, _ as _export_sfc } from './server.mjs';
 import { u as useFetch } from './fetch.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
@@ -14,7 +14,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
-import './state.mjs';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
@@ -22,7 +23,6 @@ import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
 import 'vue-router';
-import './ssr.mjs';
 
 const _sfc_main = /* @__PURE__ */ defineComponent({
   __name: "[slug]",

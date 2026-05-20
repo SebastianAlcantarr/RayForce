@@ -6,7 +6,10 @@ import 'node:http';
 import 'node:https';
 import 'node:events';
 import 'node:crypto';
+import 'vue';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 
 function readEnvLocal(key1, key2) {
   try {

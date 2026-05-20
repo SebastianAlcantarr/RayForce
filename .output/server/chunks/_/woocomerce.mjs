@@ -161,5 +161,5 @@ async function getCategories() {
   });
 }
 
-export { getWooAuth as a, getProductBySlug as b, getProductVariations as c, getProductsList as d, getProducts as e, getCategories as g, wooFetch as w };
+export { getProductsPaginated as a, getWooAuth as b, getProductBySlug as c, getProductVariations as d, getProductsList as e, getProducts as f, getCategories as g, wooFetch as w };
 //# sourceMappingURL=woocomerce.mjs.map

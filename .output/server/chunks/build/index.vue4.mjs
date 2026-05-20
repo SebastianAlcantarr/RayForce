@@ -1,5 +1,5 @@
 import { ssrRenderAttrs, ssrRenderList, ssrInterpolate, ssrRenderClass } from 'vue/server-renderer';
-import { a as useSeoMeta } from './v3.mjs';
+import { a as useSeoMeta } from './v4.mjs';
 import { useSSRContext } from 'vue';
 import './server.mjs';
 import '../_/nitro.mjs';
@@ -11,6 +11,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'vue-router';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';

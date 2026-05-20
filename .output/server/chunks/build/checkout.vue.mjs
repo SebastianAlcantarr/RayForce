@@ -11,10 +11,11 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import './server.mjs';
 import 'vue-router';
 import './useCart.mjs';
-import './state.mjs';
 import './useAuth.mjs';
 
 const _sfc_main = /* @__PURE__ */ defineComponent({

@@ -1,4 +1,4 @@
-import { h as defineNuxtRouteMiddleware } from './server.mjs';
+import { j as defineNuxtRouteMiddleware } from './server.mjs';
 import 'vue';
 import '../_/nitro.mjs';
 import 'node:http';
@@ -9,6 +9,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'vue-router';
 import 'vue/server-renderer';
 

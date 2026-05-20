@@ -1,7 +1,7 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
 import { ref, mergeProps, withCtx, createVNode, createTextVNode, unref, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrRenderAttr, ssrInterpolate, ssrIncludeBooleanAttr } from 'vue/server-renderer';
-import { a as useSeoMeta } from './v3.mjs';
+import { a as useSeoMeta } from './v4.mjs';
 import { u as useCart } from './useCart.mjs';
 import '../_/nitro.mjs';
 import 'node:http';
@@ -12,6 +12,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import './server.mjs';
 import 'vue-router';
 import '../routes/renderer.mjs';
@@ -20,7 +22,6 @@ import 'unhead/server';
 import 'unhead/plugins';
 import 'unhead/utils';
 import 'devalue';
-import './state.mjs';
 
 const _sfc_main = {
   __name: "index",

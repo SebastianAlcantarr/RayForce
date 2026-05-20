@@ -1,5 +1,5 @@
 import { c as defineEventHandler, l as getRouterParam, e as createError } from '../../../_/nitro.mjs';
-import { b as getProductBySlug, c as getProductVariations } from '../../../_/woocomerce.mjs';
+import { c as getProductBySlug, d as getProductVariations } from '../../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -7,7 +7,10 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'vue';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'buffer';
 
 const _slug_ = defineEventHandler(async (event) => {

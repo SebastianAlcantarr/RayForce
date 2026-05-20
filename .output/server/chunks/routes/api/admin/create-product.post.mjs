@@ -7,7 +7,10 @@ import 'node:buffer';
 import 'node:fs';
 import 'node:path';
 import 'node:crypto';
+import 'vue';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'buffer';
 
 const createProduct_post = defineEventHandler(async (event) => {

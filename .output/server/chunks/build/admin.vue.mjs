@@ -11,6 +11,8 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'consola';
+import 'nuxtseo-shared/utils';
 import 'vue-router';
 
 const notifications = ref([]);

@@ -63,6 +63,7 @@ runtimeConfig: {
   // Fix Node 24 Windows ESM: xlsx usa require() interno con rutas C:\ absolutas
   // que no son válidas para el loader ESM. Lo excluimos del bundle del servidor
   // y solo lo usamos via import() dinámico en el cliente.
+  // @ts-ignore
   nitro: {
     externals: {
       external: ['xlsx'],
