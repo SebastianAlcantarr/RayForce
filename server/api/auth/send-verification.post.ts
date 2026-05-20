@@ -73,7 +73,7 @@ export default defineEventHandler(async (event) => {
         <td align="center">
 
             <!-- Main container -->
-            <table width="100%" style="max-width: 600px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); overflow: hidden;" cellpadding="0" cellspacing="0">
+            <table width="100%" style="max-width: 600px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); overflow: hidden; border: 2px solid #0057B8;" cellpadding="0" cellspacing="0">
 
                 <!-- Header Rayforce -->
                 <tr>

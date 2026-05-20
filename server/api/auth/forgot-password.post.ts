@@ -61,9 +61,8 @@ export default defineEventHandler(async (event) => {
   const baseUrl = `${requestUrl.protocol}//${requestUrl.host}`
   const resetUrl = `${baseUrl}/recuperar-contrasena?token=${encodeURIComponent(resetToken)}`
 
-  // HTML del correo de recuperación (mismo estilo que verificación)
-  const emailHtml = `<!DOCTYPE html>
-<html lang="es">
+  // Plantilla HTML nueva (suministrada por el usuario):
+  const emailHtml = `<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -81,14 +80,14 @@ export default defineEventHandler(async (event) => {
 
                 <!-- Header Rayforce -->
                 <tr>
-                    <td style="background-color: #0057B8; padding: 40px 32px; text-align: center;">
+                    <td style="background-color: #ffffff; padding: 20px 32px; text-align: center; border-block-color: #1d4ed8">
                         <div style="margin-bottom: 20px;">
-                            <img 
-                                src="https://springgreen-sparrow-647332.hostingersite.com/images/logo-rayforce.svg" 
-                                alt="Rayforce Logo" 
-                                width="200" 
-                                height="60"
-                                style="display: block; margin: 0 auto; max-width: 100%; height: auto;"
+                            <img
+                                    src="https://springgreen-sparrow-647332.hostingersite.com/wp-content/uploads/2026/05/1ed95f76-660c-488c-9a9e-70d25e46953e_991c69b6-4dfa-4351-8016-95f337094071-150x150.webp"
+                                    alt="Rayforce Logo"
+                                    width="200"
+                                    height="60"
+                                    style="display: block; margin: 0 auto; max-width: 100%; height: auto;"
                             />
                         </div>
                     </td>
@@ -111,8 +110,8 @@ export default defineEventHandler(async (event) => {
                         <!-- CTA Button -->
                         <div style="text-align: center; margin: 32px 0;">
                             <a
-                                href="${resetUrl}"
-                                style="display: inline-block; padding: 14px 40px; background-color: #0057B8; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; letter-spacing: 0.3px; box-shadow: 0 4px 12px rgba(0, 87, 184, 0.2);"
+                                    href="${resetUrl}"
+                                    style="display: inline-block; padding: 14px 40px; background-color: #0057B8; color: #FFFFFF; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; letter-spacing: 0.3px; box-shadow: 0 4px 12px rgba(0, 87, 184, 0.2);"
                             >
                                 Restablecer contraseña
                             </a>
@@ -138,7 +137,7 @@ export default defineEventHandler(async (event) => {
                 <tr>
                     <td style="background-color: #0F172A; padding: 32px; text-align: center;">
                         <p style="margin: 0 0 8px 0; font-size: 11px; color: #9CA3AF;">
-                             Rayforce
+                            Rayforce
                         </p>
                         <p style="margin: 0; font-size: 11px; color: #9CA3AF;">
                             Hermosillo, Sonora, México

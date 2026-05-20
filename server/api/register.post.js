@@ -85,7 +85,7 @@ export default defineEventHandler(async (event) => {
 <table style="width: 100%; background-color: #F8FAFC; padding: 40px 20px;">
     <tr>
         <td align="center">
-            <table style="width: 100%; max-width: 600px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); overflow: hidden;">
+            <table style="width: 100%; max-width: 600px; background: #FFFFFF; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); overflow: hidden; border: 2px solid #0057B8;" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="background-color: #0057B8; padding: 40px 32px; text-align: center;">
                         <div style="margin-bottom: 20px;">
