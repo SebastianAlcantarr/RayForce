@@ -1,4 +1,4 @@
-const index_vue_vue_type_style_index_0_scoped_533745e6_lang = "@keyframes fadeInUp-533745e6{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.animate-fade-in-up[data-v-533745e6]{animation:fadeInUp-533745e6 .8s cubic-bezier(.16,1,.3,1) both}";
+const index_vue_vue_type_style_index_0_scoped_0d974320_lang = ".custom-scrollbar[data-v-0d974320]::-webkit-scrollbar{width:4px}.custom-scrollbar[data-v-0d974320]::-webkit-scrollbar-track{background:transparent}.custom-scrollbar[data-v-0d974320]::-webkit-scrollbar-thumb{background-color:rgb(var(--color-outline-variant)/.3);border-radius:10px}";
 
-export { index_vue_vue_type_style_index_0_scoped_533745e6_lang as i };
+export { index_vue_vue_type_style_index_0_scoped_0d974320_lang as i };
 //# sourceMappingURL=index-styles-1.mjs.mjs.map

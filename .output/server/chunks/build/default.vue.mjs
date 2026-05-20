@@ -2,7 +2,7 @@ import { mergeProps, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrRenderSlot } from 'vue/server-renderer';
 import { T as TheNavbar, a as TheFooter, W as WhatsAppButton } from './WhatsAppButton.vue.mjs';
 import './nuxt-link.mjs';
-import '../nitro/nitro.mjs';
+import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

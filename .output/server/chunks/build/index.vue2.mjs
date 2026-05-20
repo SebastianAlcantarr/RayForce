@@ -5,7 +5,7 @@ import { a as useSeoMeta } from './v3.mjs';
 import { g as useRoute, u as useRouter } from './server.mjs';
 import { u as useFetch } from './fetch.mjs';
 import { u as useCart } from './useCart.mjs';
-import '../nitro/nitro.mjs';
+import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';

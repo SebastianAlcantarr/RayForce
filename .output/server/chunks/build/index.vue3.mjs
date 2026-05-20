@@ -1,9 +1,9 @@
 import { _ as __nuxt_component_0 } from './nuxt-link.mjs';
-import { mergeProps, withCtx, createVNode, createTextVNode, unref, useSSRContext } from 'vue';
-import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrRenderAttr, ssrInterpolate } from 'vue/server-renderer';
+import { ref, mergeProps, withCtx, createVNode, createTextVNode, unref, useSSRContext } from 'vue';
+import { ssrRenderAttrs, ssrRenderComponent, ssrRenderList, ssrRenderAttr, ssrInterpolate, ssrIncludeBooleanAttr } from 'vue/server-renderer';
 import { a as useSeoMeta } from './v3.mjs';
 import { u as useCart } from './useCart.mjs';
-import '../nitro/nitro.mjs';
+import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -32,8 +32,14 @@ const _sfc_main = {
     });
     const {
       cartItems,
-      subtotal
+      subtotal,
+      discountAmount,
+      total,
+      appliedCoupon
     } = useCart();
+    const couponCode = ref("");
+    const couponLoading = ref(false);
+    const couponError = ref("");
     return (_ctx, _push, _parent, _attrs) => {
       const _component_NuxtLink = __nuxt_component_0;
       _push(`<div${ssrRenderAttrs(mergeProps({ class: "flex-grow w-full max-w-screen-2xl mx-auto px-8 py-12 md:py-20" }, _attrs))}><div class="mb-16 md:mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8"><div class="max-w-2xl"><span class="font-inter text-[10px] uppercase tracking-widest text-primary font-semibold mb-4 block">Seleccion actual</span><h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-background leading-[0.9]">Tu Carrito</h1></div>`);
@@ -61,7 +67,13 @@ const _sfc_main = {
       if (unref(cartItems).length === 0) {
         _push(`<div class="text-center py-8 text-outline-variant"><p class="text-sm">Tu carrito está vacío</p></div>`);
       } else {
-        _push(`<div class="space-y-4"><div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline"><span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span><span class="text-3xl font-extrabold text-primary tracking-tighter">$${ssrInterpolate(unref(subtotal).toFixed(2))}</span></div></div>`);
+        _push(`<div class="space-y-4"><div class="flex justify-between items-baseline text-sm"><span class="text-on-surface-variant">Subtotal</span><span class="font-semibold text-on-surface">$${ssrInterpolate(unref(subtotal).toFixed(2))}</span></div>`);
+        if (unref(appliedCoupon)) {
+          _push(`<div class="flex justify-between items-center py-2 px-3 bg-green-950/40 border border-green-800/40 rounded-lg"><div class="flex items-center gap-2"><span class="text-green-400 text-xs font-bold font-mono">${ssrInterpolate(unref(appliedCoupon).code)}</span><span class="text-xs text-green-600"> (${ssrInterpolate(unref(appliedCoupon).discount_type === "percent" ? `${unref(appliedCoupon).amount}%` : `$${unref(appliedCoupon).amount}`)} off) </span></div><div class="flex items-center gap-3"><span class="text-green-400 font-semibold text-sm">−$${ssrInterpolate(unref(discountAmount).toFixed(2))}</span><button class="text-outline-variant hover:text-error transition-colors text-xs" type="button">✕</button></div></div>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`<div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline"><span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span><span class="text-3xl font-extrabold text-primary tracking-tighter">$${ssrInterpolate(unref(total).toFixed(2))}</span></div></div>`);
       }
       if (unref(cartItems).length > 0) {
         _push(`<div class="space-y-4 pt-4">`);
@@ -86,7 +98,25 @@ const _sfc_main = {
         _push(`<!---->`);
       }
       if (unref(cartItems).length > 0) {
-        _push(`<div class="pt-8 mt-8 border-t border-outline-variant/10"><label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Codigo Promocional</label><div class="flex gap-2"><input class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10" placeholder="INGRESAR CODIGO" type="text"><button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors" type="button"> Apply </button></div></div>`);
+        _push(`<div class="pt-8 mt-8 border-t border-outline-variant/10"><label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-3">Codigo Promocional</label><div class="flex gap-2"><input${ssrRenderAttr("value", unref(couponCode))} class="flex-grow bg-surface-container-high border-none text-xs font-inter tracking-widest px-4 focus:ring-1 focus:ring-primary rounded-sm h-10 uppercase" placeholder="INGRESAR CODIGO" type="text"${ssrIncludeBooleanAttr(!!unref(appliedCoupon) || unref(couponLoading)) ? " disabled" : ""}>`);
+        if (!unref(appliedCoupon)) {
+          _push(`<button class="px-6 h-10 border border-outline-variant/30 text-[10px] font-bold uppercase tracking-widest hover:bg-on-surface hover:text-white transition-colors disabled:opacity-40" type="button"${ssrIncludeBooleanAttr(!unref(couponCode) || unref(couponLoading)) ? " disabled" : ""}>`);
+          if (unref(couponLoading)) {
+            _push(`<span class="inline-block w-3 h-3 border border-current border-t-transparent rounded-full animate-spin"></span>`);
+          } else {
+            _push(`<span>Aplicar</span>`);
+          }
+          _push(`</button>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div>`);
+        if (unref(couponError)) {
+          _push(`<p class="mt-2 text-xs text-red-400">${ssrInterpolate(unref(couponError))}</p>`);
+        } else {
+          _push(`<!---->`);
+        }
+        _push(`</div>`);
       } else {
         _push(`<!---->`);
       }

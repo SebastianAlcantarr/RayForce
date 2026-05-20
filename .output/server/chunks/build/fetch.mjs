@@ -1,5 +1,5 @@
 import { ref, shallowRef, toRef, getCurrentInstance, onServerPrefetch, unref, computed, toValue, reactive } from 'vue';
-import { F as hash } from '../nitro/nitro.mjs';
+import { J as hash } from '../_/nitro.mjs';
 import { u as useRequestFetch } from './ssr.mjs';
 import { a as useNuxtApp, d as asyncDataDefaults, e as createError, f as fetchDefaults } from './server.mjs';
 

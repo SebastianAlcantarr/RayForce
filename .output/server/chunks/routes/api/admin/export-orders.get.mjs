@@ -1,6 +1,7 @@
-import { d as defineEventHandler, g as getQuery, c as createError } from '../../../nitro/nitro.mjs';
+import { c as defineEventHandler, g as getQuery, e as createError } from '../../../_/nitro.mjs';
 import { Buffer } from 'buffer';
 import { w as wooFetch } from '../../../_/woocomerce.mjs';
+import ExcelJS from 'exceljs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -10,57 +11,102 @@ import 'node:path';
 import 'node:crypto';
 import 'node:url';
 
-function csvCell(value) {
-  const str = String(value != null ? value : "");
-  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
-    return `"${str.replace(/"/g, '""')}"`;
-  }
-  return str;
-}
 const exportOrders_get = defineEventHandler(async (event) => {
-  var _a, _b, _c, _d, _e, _f, _g, _h;
   const query = getQuery(event);
-  const perPage = Math.min(Number(query.per_page) || 50, 100);
+  const after = query.after;
   try {
-    const orders = await wooFetch("/orders", {
-      params: {
-        per_page: perPage,
-        orderby: "date",
-        order: "desc"
-      }
-    });
-    const headers = ["Folio", "Fecha", "Cliente", "Email", "C\xF3digo", "Descripci\xF3n", "Cantidad", "Precio Unitario", "Importe", "Total Pedido", "Estatus"];
-    const csvRows = [headers.join(",")];
+    let formatDate = function(isoStr) {
+      if (!isoStr) return "Sin Fecha";
+      const datePart = isoStr.split("T")[0];
+      const [yyStr, mm, dd] = datePart.split("-");
+      if (!yyStr || !mm || !dd) return "Sin Fecha";
+      const yy = yyStr.slice(-2);
+      return `${dd}/${mm}/${yy}`;
+    };
+    const params = {
+      per_page: 100,
+      // Traer hasta 100 pedidos en el rango de fechas
+      orderby: "date",
+      order: "desc"
+    };
+    if (after) {
+      params.after = after;
+    }
+    const orders = await wooFetch("/orders", { params });
+    const ordersByDate = /* @__PURE__ */ new Map();
     for (const order of orders) {
-      const fecha = (_b = (_a = order.date_created) == null ? void 0 : _a.split("T")[0]) != null ? _b : "";
-      const cliente = `${(_d = (_c = order.billing) == null ? void 0 : _c.first_name) != null ? _d : ""} ${(_f = (_e = order.billing) == null ? void 0 : _e.last_name) != null ? _f : ""}`.trim();
-      const email = (_h = (_g = order.billing) == null ? void 0 : _g.email) != null ? _h : "";
-      for (const item of order.line_items || []) {
-        const precioUnitario = item.total && item.quantity ? (Number(item.total) / item.quantity).toFixed(2) : "0.00";
-        csvRows.push([
-          csvCell(`ORD-${order.number || order.id}`),
-          csvCell(fecha),
-          csvCell(cliente),
-          csvCell(email),
-          csvCell(item.sku || String(item.product_id)),
-          csvCell(item.name),
-          csvCell(item.quantity),
-          csvCell(precioUnitario),
-          csvCell(Number(item.total).toFixed(2)),
-          csvCell(Number(order.total).toFixed(2)),
-          csvCell(order.status)
-        ].join(","));
+      const dateStr = formatDate(order.date_created);
+      if (!ordersByDate.has(dateStr)) {
+        ordersByDate.set(dateStr, []);
+      }
+      ordersByDate.get(dateStr).push(order);
+    }
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Pedidos");
+    worksheet.columns = [
+      { header: "Producto", key: "Producto", width: 45 },
+      { header: "Almac\xE9n", key: "Almacen", width: 12 },
+      { header: "Cantidad", key: "Cantidad", width: 12 },
+      { header: "Precio", key: "Precio", width: 15 },
+      { header: "Neto", key: "Neto", width: 15 },
+      { header: "Descuento 1", key: "Descuento1", width: 15 },
+      { header: "Descuento 2", key: "Descuento2", width: 15 },
+      { header: "Impuesto 1", key: "Impuesto1", width: 15 },
+      { header: "Impuesto 2", key: "Impuesto2", width: 15 },
+      { header: "Total", key: "Total", width: 15 },
+      { header: "Folio", key: "Folio", width: 15 }
+    ];
+    worksheet.getRow(1).font = { bold: true, color: { argb: "FFFFFFFF" } };
+    worksheet.getRow(1).fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF1F4E78" } };
+    worksheet.getRow(1).alignment = { vertical: "middle", horizontal: "center" };
+    let rowCount = 0;
+    for (const [dateStr, dateOrders] of ordersByDate.entries()) {
+      const dateRow = worksheet.addRow({
+        Producto: `--- FECHA: ${dateStr} ---`
+      });
+      dateRow.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFC6E0B4" } };
+      dateRow.font = { bold: true };
+      dateRow.getCell("Producto").alignment = { vertical: "middle", horizontal: "center" };
+      rowCount++;
+      for (const order of dateOrders) {
+        for (const item of order.line_items || []) {
+          const qty = item.quantity || 1;
+          const totalLine = Number(item.total) || 0;
+          const precio = totalLine / qty;
+          const producto = item.sku && item.sku !== "0" ? item.sku : item.name;
+          const dataRow = worksheet.addRow({
+            Producto: producto,
+            Almacen: "1",
+            Cantidad: qty,
+            Precio: precio,
+            Neto: totalLine,
+            Descuento1: "",
+            Descuento2: "",
+            Impuesto1: "",
+            Impuesto2: "",
+            Total: totalLine,
+            Folio: order.number || order.id
+            // Folio global histórico del sistema
+          });
+          dataRow.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFFF2CC" } };
+          dataRow.getCell("Precio").numFmt = "#,##0.00";
+          dataRow.getCell("Neto").numFmt = "#,##0.00";
+          dataRow.getCell("Total").numFmt = "#,##0.00";
+          rowCount++;
+        }
+        const blankRow = worksheet.addRow({});
+        blankRow.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9E1F2" } };
       }
     }
-    const csvContent = csvRows.join("\r\n");
-    const filename = `rayforce-pedidos-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.csv`;
+    const buffer = await workbook.xlsx.writeBuffer();
+    const excelBuffer = Buffer.from(buffer);
+    const filename = `pedidos-contpaqi-${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)}.xlsx`;
     return {
       filename,
-      // BOM UTF-8 para que Excel lo abra correctamente en Windows
-      data: Buffer.from("\uFEFF" + csvContent, "utf-8").toString("base64"),
+      data: excelBuffer.toString("base64"),
       totalOrders: orders.length,
-      totalRows: csvRows.length - 1,
-      type: "csv"
+      totalRows: rowCount,
+      type: "xlsx"
     };
   } catch (err) {
     throw createError({

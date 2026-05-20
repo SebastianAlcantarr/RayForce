@@ -2,7 +2,7 @@ import { ssrRenderAttrs, ssrRenderAttr, ssrRenderList, ssrInterpolate, ssrRender
 import { ref, mergeProps, unref, useSSRContext } from 'vue';
 import { _ as _export_sfc } from './server.mjs';
 import { a as useSeoMeta } from './v3.mjs';
-import '../nitro/nitro.mjs';
+import '../_/nitro.mjs';
 import 'node:http';
 import 'node:https';
 import 'node:events';
@@ -138,17 +138,17 @@ const _sfc_main$1 = {
       }
     ];
     return (_ctx, _push, _parent, _attrs) => {
-      _push(`<section${ssrRenderAttrs(mergeProps({ class: "py-32 px-8 bg-surface" }, _attrs))} data-v-74134828><div class="max-w-3xl mx-auto" data-v-74134828><div class="text-center mb-20" data-v-74134828><h2 class="text-4xl font-extrabold tracking-tight mb-4" data-v-74134828>Common Inquiries</h2><div class="h-1 w-20 bg-primary mx-auto" data-v-74134828></div></div><div class="space-y-4" data-v-74134828><!--[-->`);
+      _push(`<section${ssrRenderAttrs(mergeProps({ class: "py-32 px-8 bg-surface" }, _attrs))} data-v-5e76ef86><div class="max-w-3xl mx-auto" data-v-5e76ef86><div class="text-center mb-20" data-v-5e76ef86><h2 class="text-4xl font-extrabold tracking-tight mb-4" data-v-5e76ef86>Common Inquiries</h2><div class="h-1 w-20 bg-primary mx-auto" data-v-5e76ef86></div></div><div class="space-y-4" data-v-5e76ef86><!--[-->`);
       ssrRenderList(faqs, (item, index) => {
-        _push(`<div class="${ssrRenderClass([index > 0 ? "pt-6" : "", "border-b border-outline-variant/20 pb-6 cursor-pointer"])}" data-v-74134828><div class="${ssrRenderClass([unref(openIndex) === index ? "text-primary" : "hover:text-primary", "flex justify-between items-center transition-colors"])}" data-v-74134828><h4 class="text-lg font-bold pr-4" data-v-74134828>${ssrInterpolate(item.question)}</h4><span class="${ssrRenderClass([unref(openIndex) === index ? "rotate-45" : "", "material-symbols-outlined text-primary transition-transform flex-shrink-0"])}" data-v-74134828> add </span></div>`);
+        _push(`<div class="${ssrRenderClass([index > 0 ? "pt-6" : "", "border-b border-outline-variant/20 pb-6 cursor-pointer"])}" data-v-5e76ef86><div class="${ssrRenderClass([unref(openIndex) === index ? "text-primary" : "hover:text-primary", "flex justify-between items-center transition-colors"])}" data-v-5e76ef86><h4 class="text-lg font-bold pr-4" data-v-5e76ef86>${ssrInterpolate(item.question)}</h4><span class="${ssrRenderClass([unref(openIndex) === index ? "rotate-45" : "", "material-symbols-outlined text-primary transition-transform flex-shrink-0"])}" data-v-5e76ef86> add </span></div>`);
         if (unref(openIndex) === index && item.answer) {
-          _push(`<div class="mt-4 text-on-surface-variant leading-relaxed" data-v-74134828>${ssrInterpolate(item.answer)}</div>`);
+          _push(`<div class="mt-4 text-on-surface-variant leading-relaxed" data-v-5e76ef86>${ssrInterpolate(item.answer)}</div>`);
         } else {
           _push(`<!---->`);
         }
         _push(`</div>`);
       });
-      _push(`<!--]--></div><div class="mt-16 text-center" data-v-74134828><button class="text-primary font-bold flex items-center gap-2 mx-auto hover:underline underline-offset-8" data-v-74134828> View All Technical Documentation <span class="material-symbols-outlined text-sm" data-v-74134828>open_in_new</span></button></div></div></section>`);
+      _push(`<!--]--></div><div class="mt-16 text-center" data-v-5e76ef86><button class="text-primary font-bold flex items-center gap-2 mx-auto hover:underline underline-offset-8" data-v-5e76ef86> View All Technical Documentation <span class="material-symbols-outlined text-sm" data-v-5e76ef86>open_in_new</span></button></div></div></section>`);
     };
   }
 };
@@ -158,7 +158,7 @@ _sfc_main$1.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("componentes_principal/SupportFaq.vue");
   return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
-const SupportFaq = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-74134828"]]);
+const SupportFaq = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-5e76ef86"]]);
 
 const _sfc_main = {
   __name: "index",
