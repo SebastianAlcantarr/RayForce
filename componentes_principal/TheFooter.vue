@@ -81,9 +81,9 @@
 
     <div class="max-w-screen-2xl mx-auto px-8 py-6 border-t border-outline-variant/15 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-on-surface-variant">
       <div class="flex gap-6">
-        <a class="hover:text-primary transition-colors" href="#">Aviso de Privacidad</a>
-        <a class="hover:text-primary transition-colors" href="#">Términos y Condiciones</a>
-        <a class="hover:text-primary transition-colors" href="#">Devoluciones</a>
+        <NuxtLink class="hover:text-primary transition-colors" to="/aviso-de-privacidad">Aviso de Privacidad</NuxtLink>
+        <NuxtLink class="hover:text-primary transition-colors" to="/terminos-y-condiciones">Términos y Condiciones</NuxtLink>
+        <NuxtLink class="hover:text-primary transition-colors" to="/devoluciones">Devoluciones</NuxtLink>
       </div>
     </div>
   </footer>

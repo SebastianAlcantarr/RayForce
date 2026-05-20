@@ -1,0 +1,204 @@
+======================================================================
+REPORTE COMPARACIÓN DE SKUs
+Lista oficial: Lista de precios de venta-categoria.xls  (2293 SKUs)
+CSV final    : woocommerce_FINAL.csv  (2477 SKUs)
+======================================================================
+
+COINCIDENCIAS: 2292 SKUs estan en ambos archivos
+
+EN LISTA PERO NO EN CSV (1 productos):
+   Estos productos existen en la lista oficial pero faltan en el CSV final:
+   SKU                  Nombre en lista
+   -------------------- ----------------------------------------
+   Se imprimieron 2292 Productos 
+
+EN CSV PERO NO EN LISTA (185 productos):
+   Estos SKUs están en el CSV pero NO aparecen en la lista oficial:
+   (pueden ser variaciones -BASE, o productos eliminados)
+   SKU                       Type         Nombre en CSV
+   ------------------------- ------------ -----------------------------------
+   101257-BASE               variable     Casco de Seguridad Ventilado, Ajuste de 
+   102189-BASE               variable     Broca para Metal Hss
+   10566-BASE                variable     Casco de Seguridad Ala Ancha, , Truper
+   10920-BASE                variable     Espuma Expansiva de Poliuretano, , Trupe
+   11206-BASE                variable     Broca para Concreto de X 6", Truper
+   11701-BASE                variable     Broca para Vidrio y Azulejo de , Truper
+   12061-BASE                variable     Pintura en Aerosol, Neón, Bote Esbelto
+   12500-BASE                variable     Cinta de Aislar de X 19 Mm, Negra, Trupe
+   12502-BASE                variable     Cinta de Aislar de X 19 Mm, , Truper
+   12520-BASE                variable     Cinta Sella Roscas X 7m, Uso General, Tr
+   12578-BASE                variable     Rollo de de Cinta Delimitadora "precauci
+   12579-BASE                variable     Rollo de de Cinta Delimitadora "prohibid
+   12585-BASE                variable     Rollo de de Cinta Delimitadora "peligro"
+   12939-BASE                variable     Estuche con 5 Dados Magnéticos de Largo 
+   13182-BASE                variable     Dado Largo de , 6 Puntas, Cuadro 1/4", T
+   13188-BASE                variable     Dado Largo de ', 6 Puntas, Cuadro 1/4', 
+   13204-BASE                variable     Dado Largo de , 6 Puntas, Cuadro 1/4', T
+   13214-BASE                variable     Matraca Cuadro Cabeza de Pera de Liberac
+   14623-BASE                variable     Cautín Tipo Lápiz para Trabajo Pesado, T
+   15086-BASE                variable     Broca Hss Trublack para Metal, Truper
+   17751-BASE                variable     Guía de Acero de para Cable, Truper
+   41052-BASE                variable     Niple Terminal de Latón de X 3/8", Foset
+   43425-BASE                variable     Blíster con 2 Candados de Latón de con G
+   44199-BASE                variable     Bolsa con 50 Taquetes de Plstico , Fiero
+   44970-BASE                variable     Grillete de Acero Forjado , Fiero
+   45551-BASE                variable     Codo 90° PPR, , Macho-hembra, Foset
+   45556-BASE                variable     Tuerca Unión PPR, Plástica, , Foset
+   46105-BASE                variable     Contacto Dplex, Tierra Aislada, , Lnea S
+   46553-BASE                variable     Extensión Reforzada Aterrizada 3x12 Awg,
+   46795-BASE                variable     Abrazadera PPR, , Tipo U, Foset
+   46930-BASE                variable     Conector Recto para Tubo Liquid Tight, V
+   46933-BASE                variable     Conector Curvo de para Tubo Liquid Tight
+   46970-BASE                variable     Condulet Conexión Tipo Lb, Volteck
+   46973-BASE                variable     Condulet Conexión Tipo Lr, Volteck
+   46976-BASE                variable     Condulet Conexión Tipo Ll, Volteck
+   46979-BASE                variable     Condulet Conexión Tipo T, Volteck
+   46982-BASE                variable     Condulet Conexión Tipo C, Volteck
+   46985-BASE                variable     Condulet Conexión Tipo Fs, Volteck
+   47340-BASE                variable     Conector Recto para Tubo Flexible Metáli
+   48000-BASE                variable     Extensión Eléctrica Doméstica Clavija Pl
+   5249S-BASE                variable     Matraca Rev Mgo Cto Qr
+   57016-BASE                variable     Jalador Base Acero Galvanizado de , con 
+   57056-BASE                variable     Trapeador Tipo Mechudo, con Bastón de 12
+   6910H-BASE                variable     Dado de Impacto 6 Puntas 5/16
+   ABCL0002-BASE             variable     Abrazadera Clip
+   ABOM0001-BASE             variable     Abrazadera Omega
+   ABPE0001-BASE             variable     Abrazadera Tipo Pera
+   ABUN0001-BASE             variable     Abrazadera Unicanal
+   ABUÃ0001                 variation    Abrazadera Ua - 1/2 pulg
+   ABUÃ0001-BASE            variable     Abrazadera Ua
+   ABUÃ0002                 variation    Abrazadera Ua - 3/4 pulg
+   ABUÃ0003                 simple       Abrazadera Ua 1"
+   ABUÃ0004                 variation    Abrazadera Ua - 1 1/4 pulg
+   ABUÃ0005                 variation    Abrazadera Ua - 1 1/2 pulg
+   ABUÃ0006                 simple       Abrazadera Ua 2"
+   ABUÃ0008                 simple       Abrazadera Ua 3"
+   ABUÃ0009                 simple       Abrazadera Ua 4
+   ABUÑ0005-BASE             variable     Abrazadera Uña
+   ARAC0006-BASE             variable     Arandela Acero Inoxidable Presion
+   ARAN0002-BASE             variable     Arandela Galv Plana
+   ARAN0015-BASE             variable     Arandela Cuadrada de
+   ARBR0003-BASE             variable     Arandela Plana Bronce Al Silicio
+   BALA0032-BASE             variable     Balastro Aditivo Metalico
+   BAMA0001-BASE             variable     Base para Mastil
+   BOOM0001-BASE             variable     Reflector Bco 6500k 100-240v Boomer
+   BQD3100-BASE              variable     Interruptor Bqd 3x 480v 14ka
+   CACU0001-BASE             variable     Cable Cobre Desnudo Cal
+   CAFS0004-BASE             variable     Caja Fsc
+   CCON0005-BASE             variable     Cable THW-LS Calibre 14
+   CCON0009-BASE             variable     Cable THW-LS Calibre 12
+   CCON0013-BASE             variable     Cable THW-LS Calibre 10
+   CCON0017-BASE             variable     Cable THW-LS Calibre 8
+   CCON0021-BASE             variable     Cable THW-LS Calibre 6
+   CDCR0001-BASE             variable     Codo con Rosca
+   CDPV0001-BASE             variable     Codo PVC T. Pesado
+   CDSR0001-BASE             variable     Codo sin Rosca
+   CEME0001-BASE             variable     Pegamento PVC Litro
+   CMEX001-BASE              variable     Cable THW-LS Calibre 14
+   CMEX009-BASE              variable     Cable THW-LS Calibre 10
+   CMEX013-BASE              variable     Cable THW-LS Calibre 8
+   COBI0004-BASE             variable     Conector Bipartido Bim Cal
+   COC0001-BASE              variable     Condulet C
+   COCR0001-BASE             variable     Cople con Rosca
+   COHE0001-BASE             variable     Cople Hexagonal
+   COLB0001-BASE             variable     Condulet Lb
+   COLL0001-BASE             variable     Condulet Ll
+   COLR0001-BASE             variable     Condulet Lr
+   CONT0001-BASE             variable     Contratuerca
+   COPV0001-BASE             variable     Cople PVC T. Pesado
+   COSR0001-BASE             variable     Cople con Tornillo
+   COT0001-BASE              variable     Condulet Ot
+   COWP0001-BASE             variable     Cople Wp
+   CTGL0001-BASE             variable     Conector Glandula Plastico
+   CTHU0001-BASE             variable     Conector Hub
+   CTLI0002-BASE             variable     Conector Recto Licutite
+   CTLI0016-BASE             variable     Conector Curvo Licutite
+   CTPV0001-BASE             variable     Conector PVC T. Pesado
+   CTSR0001-BASE             variable     Conector con Tornillo
+   CTUR0001-BASE             variable     Conector Uso Rudo
+   CTVCL10-BASE              variable     Conector Vcl
+   CTWP0001-BASE             variable     Conector Wp
+   CTZA0001-BASE             variable     Conector Zapa Recto
+   CTZA0016-BASE             variable     Conector Zapa Curvo
+   CXLPDRS012-BASE           variable     Cable Xlp Drs Al Sub (3+1) Cal
+   Código                    simple       Nombre(prod)
+   D416V-BASE                variable     Destornillador con Mango Dieléctrico , P
+   EDB14020-BASE             variable     Interruptor para nf 1x
+   EDB34020-BASE             variable     Interruptor para tablero Nf 3f
+   FA34040-BASE              variable     Interruptor Fa 3f para i Line
+   FAL36050-BASE             variable     Interruptor Fal 3f
+   FKSF1265-BASE             variable     Panel LED Sobrepuesto (6500k)
+   FKSNEO0001-BASE           variable     Manguera LED () Controlador y Pin
+   FKSPRO050-BASE            variable     Reflector LED
+   FKSS1265-BASE             variable     Panel LED Slim (6500k)
+   FKSTRI12-BASE             variable     Panel LED Slim Tricolor
+   FOAM0003-BASE             variable     Foco Aditivo Metalico
+   FULG0006-BASE             variable     Contacto Chino Colgante 2p, 3h, , 220v
+   FULM0001-BASE             variable     Fulminante Calibre 22 Ramset
+   HDL36050-BASE             variable     Interruptor Hdl 3f 600v
+   HDL36100-BASE             variable     Interruptor Hdl 3p 600v
+   HG36125-BASE              variable     Interruptor Hga 3p 600v
+   JDL36200-BASE             variable     Interruptor Jdl 3f
+   KAL36125-BASE             variable     Interruptor Kal 3f 600v
+   LAL36300-BASE             variable     Interruptor Lal 3p 600v
+   LEVI0004-BASE             variable     Contacto Doble 2p 15a 125v 5325w
+   LEVI0040-BASE             variable     Clavija Recta 2p 3h 125v L5-15p
+   LEVI0060-BASE             variable     Clavija China Metal 2p, 3h, , 127v
+   LUMI0011-BASE             variable     Luminaria Redonda Colgante LED Integrado
+   MONI0001-BASE             variable     Monitor
+   MORD0003-BASE             variable     Mordaza Acero x 3/8"
+   MR16LED6B-BASE            variable     Lámpara MR16 LED Luz Blanca
+   MUF0001-BASE              variable     Mufa
+   PCA38-BASE                variable     Punta de Caja de Poder con Imán en Pulga
+   PERR0005-BASE             variable     Perro Tipo Aleman
+   PIJA0011-BASE             variable     Pija Gota de Agua 8 X
+   PIPB0037-BASE             variable     Pija P. Broca Estrella Cab Red 8 X
+   POAN0001-BASE             variable     Poliducto Anillada con guia
+   POLI0001-BASE             variable     Poliducto Naranja
+   PROF0038-BASE             variable     Broca de Alta Velocidad
+   QO115-BASE                variable     Interruptor Qo 1x
+   QO2100-BASE               variable     Interruptor Qo 2x
+   QO24L70F-BASE             variable     Centro de Carga 2 Circuitos Empotrable
+   QO24L70S-BASE             variable     Centro de Carga 2 Circuitos Sobreponer
+   QO3100-BASE               variable     Interruptor Qo 3x
+   RAWE0002-BASE             variable     Tapa Aluminio Contacto Tr-0414 2t
+   REDU0001-BASE             variable     Reducción Aluminio 1/2
+   REDU0004-BASE             variable     Reducción Aluminio 1
+   SF058-BASE                variable     Kit Rondana Spud
+   SIME0006-BASE             variable     Interruptor de Caja Moldeada 3 Polos 600
+   TAQU0002-BASE             variable     Taquete Expansor Z
+   TAQU0028-BASE             variable     Taquete Arpon Aa X 2 3/4
+   TAQU0033-BASE             variable     Taquete Arpon Aa X 3 3/4
+   TAQU0072-BASE             variable     Taquete Garra Ag
+   TAQU0084-BASE             variable     Taquete Mariposa
+   TGCR0001-BASE             variable     Tubo Galvanizado con rosca y Cople
+   TGSR0001-BASE             variable     Tubo Galvanizado sin Rosca
+   TOBI0001-BASE             variable     Tope Caon Bimetalico Cal
+   TOBR0002-BASE             variable     Tornillo Bronce Al Silicio X 1
+   TOCC0007-BASE             variable     Tope Caon Corto Cal.
+   TOCL0007-BASE             variable     Tope Caon Largo Cal
+   TOHE0001-BASE             variable     Tornillo Cab Hexa X 3/4"
+   TOHE0002-BASE             variable     Tornillo Cab Hexa X 1"
+   TOHE0021-BASE             variable     Tornillo Cab Hexa X 2"
+   TPVC0001-BASE             variable     Tubo PVC T. Pesado
+   TUBR0006-BASE             variable     Tuerca Bronce Al Silicio
+   TUFL0014-BASE             variable     Tubo Fluorescente 6500k T5
+   TUHE0001-BASE             variable     Tuerca Hexagonal
+   TULI0002-BASE             variable     Tubo Licutite
+   TURE0001-BASE             variable     Tuerca Resorte
+   TUZA0001-BASE             variable     Tubo Zapa
+   VARO0001-BASE             variable     Varilla Roscada X 3mts
+   VARO0008-BASE             variable     Varilla Roscada X 1mts
+   YD360B-BASE               variable     Empotrador Dirigible Mr 16
+   ZAAM0001-BASE             variable     Zapata de Anillo Calibre 12 (Base)
+   ZABI0001-BASE             variable     Zapata Bimetálica 1 Barreno Calibre -3/8
+   ZABI0004-BASE             variable     Zapata Bimetálica 2 Barrenos Calibre -1/
+   ZACC0001-BASE             variable     Zapata Ponchable Cola Corta 1 Barreno Ca
+   ZACC0004-BASE             variable     Zapata Ponchable Cola Corta 1 Barreno Ca
+   ZACC0007-BASE             variable     Zapata Ponchable Cola Corta 1 Barreno Ca
+   ZACC0015-BASE             variable     Zapata Ponchable Cola Corta 1 Barreno Ca
+   ZACL0003-BASE             variable     Zapata Ponchable Cola Larga 1 Barreno Ca
+   ZACL0019-BASE             variable     Zapata Ponchable Cola Larga 1 Barreno Ca
+   ZACL0062-BASE             variable     Zapata Ponchable Cola Larga 2 Barrenos C
+   ZAME0001-BASE             variable     Zapata Mecánica de Bronce Calibre 4
+   ZASA0007-BASE             variable     Terminal de Ojo sin Aislar Cola Corta (B
