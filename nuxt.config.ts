@@ -2,7 +2,29 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/tailwindcss'],
+  site: {
+    url: 'https://rayforce.com.mx'
+  },
+
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/sitemap'
+  ],
+
+  sitemap: {
+    exclude: [
+      '/admin/**',
+      '/carrito/**',
+      '/checkout/**',
+      '/login',
+      '/perfil',
+      '/recuperar-contrasena',
+      '/verificar'
+    ],
+    sources: [
+      '/api/__sitemap__/urls'
+    ]
+  },
 
   css: ['~/assets/css/main.css'],
 
