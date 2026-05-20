@@ -16,21 +16,21 @@
         <span class="font-bold text-primary text-xs uppercase tracking-widest block">Navegación</span>
         <nav class="space-y-3 flex flex-col">
           <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/tienda">Tienda en Línea</NuxtLink>
-          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/soporte">Servicios</NuxtLink>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/servicios">Servicios</NuxtLink>
           <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/cotizar">Cotizar Proyecto</NuxtLink>
           <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/nosotros">Sobre Nosotros</NuxtLink>
-          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/soporte">Contacto</NuxtLink>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/contacto">Contacto</NuxtLink>
         </nav>
       </div>
 
       <div class="space-y-4">
         <span class="font-bold text-primary text-xs uppercase tracking-widest block">Categorías</span>
         <div class="space-y-3 flex flex-col">
-          <a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Material Eléctrico</a>
-          <a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Herramientas</a>
-          <a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Iluminación</a>
-          <a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Interruptores y Tableros</a>
-          <a class="text-on-surface-variant hover:text-primary transition-colors text-xs" href="#">Ferretería General</a>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/tienda?q=Material+Eléctrico">Material Eléctrico</NuxtLink>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/tienda?q=Herramientas">Herramientas</NuxtLink>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/tienda?q=Iluminación">Iluminación</NuxtLink>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/tienda?q=Interruptores">Interruptores y Tableros</NuxtLink>
+          <NuxtLink class="text-on-surface-variant hover:text-primary transition-colors text-xs" to="/tienda?q=Ferretería">Ferretería General</NuxtLink>
         </div>
       </div>
 
