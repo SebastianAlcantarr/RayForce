@@ -243,7 +243,10 @@ const handleLogin = async () => {
     }, 1500)
   } catch (err: any) {
     console.error('Error en login:', err)
-    error.value = err?.data?.message || err?.statusMessage || 'Usuario o contraseña incorrectos. Intenta de nuevo.'
+    const statusCode = err?.statusCode || err?.data?.statusCode
+    error.value = statusCode === 403
+      ? 'Contraseña incorrecta.'
+      : err?.data?.message || err?.statusMessage || 'Usuario o contraseña incorrectos. Intenta de nuevo.'
     showNotification('Error en inicio de sesión', 'error')
   } finally {
     isLoading.value = false
