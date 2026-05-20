@@ -7,10 +7,10 @@
       :class="[`bg-${adsConfig.topBanner.color || 'primary'} text-white text-center py-2.5 px-4 text-[11px] uppercase tracking-widest font-bold font-inter relative z-30`]"
     >
       <NuxtLink v-if="adsConfig.topBanner.link" :to="adsConfig.topBanner.link" class="hover:underline flex items-center justify-center gap-2">
-        {{ adsConfig.topBanner.text }}
+        {{ adsConfig.topBanner.text || 'Aprovecha nuestros descuentos exclusivos' }}
         <span class="material-symbols-outlined text-sm">arrow_forward</span>
       </NuxtLink>
-      <span v-else>{{ adsConfig.topBanner.text }}</span>
+      <span v-else>{{ adsConfig.topBanner.text || 'Aprovecha nuestros descuentos exclusivos' }}</span>
     </div>
 
     <!-- Hero Section -->
@@ -119,7 +119,7 @@
 
     <!-- Mid Promotional Banner (Admin Editable) -->
     <section v-if="adsConfig?.midBanner?.enabled" class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
-      <div class="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 h-[300px] md:h-[400px] flex items-center group">
+      <div class="relative rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-slate-900 to-slate-800 h-[300px] md:h-[400px] flex items-center group">
         <img 
           :src="adsConfig.midBanner.imageUrl" 
           alt="Promoción" 
@@ -128,9 +128,9 @@
         />
         <div class="relative z-20 px-6 md:px-20 text-white max-w-3xl">
           <span class="inline-block px-3 py-1 bg-red-600 text-white rounded font-bold uppercase tracking-widest text-[10px] mb-4 shadow-lg shadow-red-600/30">Promoción Especial</span>
-          <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">{{ adsConfig.midBanner.title }}</h2>
-          <p class="text-lg text-slate-300 font-light mb-8">{{ adsConfig.midBanner.subtitle }}</p>
-          <NuxtLink :to="adsConfig.midBanner.link" class="px-8 py-4 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl transition-colors inline-block uppercase text-xs tracking-widest shadow-lg shadow-primary/30">
+          <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">{{ adsConfig.midBanner.title || 'Promoción Especial a Mayoristas' }}</h2>
+          <p class="text-lg text-slate-300 font-light mb-8">{{ adsConfig.midBanner.subtitle || 'Equipa tu proyecto con las mejores marcas y precios exclusivos.' }}</p>
+          <NuxtLink :to="adsConfig.midBanner.link || '/tienda'" class="px-8 py-4 bg-primary hover:bg-blue-600 text-white font-bold rounded-xl transition-colors inline-block uppercase text-xs tracking-widest shadow-lg shadow-primary/30">
             {{ adsConfig.midBanner.buttonText || 'Aprovechar' }}
           </NuxtLink>
         </div>
@@ -148,7 +148,7 @@
             {{ animatedSubtitle }}<span v-if="isTypingSubtitle" class="ml-1 w-1 h-[1em] bg-white animate-pulse inline-block align-middle"></span>
           </p>
         </div>
-        <div class="w-full md:w-1/2 relative min-h-[300px] md:min-h-[500px] bg-black/50 overflow-hidden flex-shrink-0">
+        <div class="w-full md:w-1/2 relative min-h-[300px] md:min-h-[500px] bg-black/50 overflow-hidden flex-shrink-0 flex items-center justify-center">
           <video 
             v-if="adsConfig.videoSection.videoUrl"
             :src="adsConfig.videoSection.videoUrl" 
@@ -156,8 +156,13 @@
             autoplay 
             muted 
             loop 
-            class="absolute inset-0 w-full h-full object-cover"
+            class="absolute inset-0 w-full h-full object-cover z-10"
           ></video>
+          <!-- Placeholder visual cuando no hay video -->
+          <div v-else class="absolute inset-0 w-full h-full bg-slate-800 flex flex-col items-center justify-center text-white/20">
+            <span class="material-symbols-outlined text-[80px] mb-4">play_circle</span>
+            <p class="text-sm font-bold uppercase tracking-widest">Espacio para Video</p>
+          </div>
         </div>
       </div>
     </section>
@@ -283,8 +288,8 @@ watch(videoSectionRef, (el) => {
     videoObserver = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && !animationTriggered) {
         animationTriggered = true
-        let title = adsConfig.value?.videoSection?.title || ''
-        let sub = adsConfig.value?.videoSection?.subtitle || ''
+        let title = adsConfig.value?.videoSection?.title || 'Innovación y Respaldo'
+        let sub = adsConfig.value?.videoSection?.subtitle || 'Descubre por qué las mejores empresas confían en Rayforce para sus proyectos.'
         let i = 0
         isTypingTitle.value = true
         const tId = setInterval(() => {

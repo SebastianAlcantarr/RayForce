@@ -1,17 +1,17 @@
 {
   "topBanner": {
     "enabled": true,
-    "text": "Envios gratis",
-    "link": "/tienda",
+    "text": "",
+    "link": "",
     "color": "red-600"
   },
   "midBanner": {
     "enabled": true,
-    "title": "Gran Venta de Iluminación Industrial",
-    "subtitle": "Hasta 30% de descuento en campanas LED y reflectores IP65",
-    "buttonText": "Ver Ofertas",
-    "link": "/tienda?q=Iluminacion",
-    "imageUrl": "https://springgreen-sparrow-647332.hostingersite.com/wp-content/uploads/2026/05/WhatsApp-Image-2026-04-30-at-7.44.42-AM.jpeg"
+    "title": "",
+    "subtitle": "",
+    "buttonText": "",
+    "link": "",
+    "imageUrl": ""
   },
   "carousel": {
     "slide1Url": "",
@@ -23,10 +23,10 @@
   },
   "videoSection": {
     "enabled": true,
-    "videoUrl": "https://springgreen-sparrow-647332.hostingersite.com/wp-content/uploads/2026/05/WhatsApp-Video-2026-03-28-at-8.38.49-PM.mp4",
+    "videoUrl": "",
     "text": "hola hola hola hola hola hola hoola jola",
     "backgroundColor": "primary",
-    "title": "Sacatalaverga",
-    "subtitle": "HONOROBOL PIPI TACA TAC PSG"
+    "title": "",
+    "subtitle": ""
   }
 }
