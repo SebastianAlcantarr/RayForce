@@ -1,5 +1,5 @@
 import { shallowReactive, reactive, effectScope, getCurrentScope, hasInjectionContext, getCurrentInstance, toRef, inject, shallowRef, isReadonly, isRef, isShallow, isReactive, toRaw, defineAsyncComponent, defineComponent, computed, unref, ref, h, Suspense, nextTick, mergeProps, provide, Fragment, useSSRContext, withCtx, createVNode, onErrorCaptured, onServerPrefetch, resolveDynamicComponent, createApp } from 'vue';
-import { o as createHooks, p as getContext, c as createError$1, t as toRouteMatcher, q as createRouter, v as defu, w as withQuery, x as hasProtocol, y as isScriptProtocol, z as joinURL, A as sanitizeStatusCode, B as executeAsync } from '../nitro/nitro.mjs';
+import { v as createHooks, w as getContext, e as createError$1, x as toRouteMatcher, y as createRouter, z as defu, A as withQuery, B as hasProtocol, C as isScriptProtocol, D as joinURL, E as sanitizeStatusCode, F as executeAsync } from '../_/nitro.mjs';
 import { START_LOCATION, createMemoryHistory, createRouter as createRouter$1, useRoute as useRoute$1, RouterView } from 'vue-router';
 import { ssrRenderComponent, ssrRenderSuspense, ssrRenderVNode } from 'vue/server-renderer';
 
@@ -372,21 +372,29 @@ function encodeURL(location2, isExternalHost = false) {
   return url.toString();
 }
 
-const __nuxt_page_meta$3 = {
+const __nuxt_page_meta$5 = {
   middleware: "auth"
 };
 
-const __nuxt_page_meta$2 = {
+const __nuxt_page_meta$4 = {
   layout: false
 };
 
-const __nuxt_page_meta$1 = {
+const __nuxt_page_meta$3 = {
   layout: "checkout"
 };
 
-const __nuxt_page_meta = {
+const __nuxt_page_meta$2 = {
+  layout: "checkout"
+};
+
+const __nuxt_page_meta$1 = {
   layout: "admin",
   middleware: ["admin-auth"]
+};
+
+const __nuxt_page_meta = {
+  layout: "checkout"
 };
 
 function handleHotUpdate(_router, _generateRoutes) {
@@ -405,7 +413,7 @@ const _routes = [
   {
     name: "perfil",
     path: "/perfil",
-    meta: __nuxt_page_meta$3 || {},
+    meta: __nuxt_page_meta$5 || {},
     component: () => import('./perfil.vue.mjs')
   },
   {
@@ -416,7 +424,7 @@ const _routes = [
   {
     name: "admin-login",
     path: "/admin/login",
-    meta: __nuxt_page_meta$2 || {},
+    meta: __nuxt_page_meta$4 || {},
     component: () => import('./login.vue2.mjs')
   },
   {
@@ -428,6 +436,12 @@ const _routes = [
     name: "carrito",
     path: "/carrito",
     component: () => import('./index.vue3.mjs')
+  },
+  {
+    name: "checkout-wait",
+    path: "/checkout/wait",
+    meta: __nuxt_page_meta$3 || {},
+    component: () => import('./wait.vue.mjs')
   },
   {
     name: "cotizar",
@@ -447,7 +461,7 @@ const _routes = [
   {
     name: "checkout",
     path: "/checkout",
-    meta: __nuxt_page_meta$1 || {},
+    meta: __nuxt_page_meta$2 || {},
     component: () => import('./index.vue6.mjs')
   },
   {
@@ -468,8 +482,14 @@ const _routes = [
   {
     name: "admin-inventario",
     path: "/admin/inventario",
-    meta: __nuxt_page_meta || {},
+    meta: __nuxt_page_meta$1 || {},
     component: () => import('./inventario.vue.mjs')
+  },
+  {
+    name: "checkout-order_exito",
+    path: "/checkout/order_exito",
+    meta: __nuxt_page_meta || {},
+    component: () => import('./order_exito.vue.mjs')
   },
   {
     name: "recuperar-contrasena",

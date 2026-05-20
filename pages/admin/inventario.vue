@@ -210,7 +210,10 @@
 
             <div class="product-info flex-1">
               <input v-model="currentName" type="text" class="f-input font-bold text-lg mb-2 w-full" placeholder="Nombre del producto..." />
-              <div class="product-sku mb-2">SKU: {{ foundProduct.sku }}</div>
+              <div class="product-sku mb-2 flex items-center gap-2">
+                <span class="text-slate-500 text-sm font-semibold">SKU:</span>
+                <input v-model="currentSku" type="text" class="f-input !py-1 !px-2 text-sm w-40" placeholder="SKU del producto..." />
+              </div>
               
               <div class="price-edit-row">
                 <label for="price-edit-input" class="product-price-label">Precio (MXN):</label>
@@ -883,6 +886,7 @@ const currentStock = ref(0)
 const currentPrice = ref('')
 const currentDescription = ref('')
 const currentName = ref('')
+const currentSku = ref('')
 const currentCategories = ref<number[]>([])
 
 const editImgInput = ref<HTMLInputElement | null>(null)
@@ -926,6 +930,7 @@ async function searchBySku() {
     currentPrice.value = res.regular_price
     currentDescription.value = res.description
     currentName.value = res.name
+    currentSku.value = res.sku
     currentCategories.value = [...res.categories]
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
@@ -964,6 +969,7 @@ async function saveProductChanges() {
         stock_quantity: currentStock.value,
         regular_price: currentPrice.value,
         name: currentName.value,
+        sku: currentSku.value,
         description: currentDescription.value,
         categories: currentCategories.value,
         image_id: image_id !== foundProduct.value.image_id ? image_id : undefined, // Enviar si cambió
@@ -973,6 +979,7 @@ async function saveProductChanges() {
     foundProduct.value.stock_quantity = currentStock.value
     foundProduct.value.regular_price = currentPrice.value
     foundProduct.value.name = currentName.value
+    foundProduct.value.sku = currentSku.value
     foundProduct.value.description = currentDescription.value
     foundProduct.value.categories = [...currentCategories.value]
     foundProduct.value.image_id = image_id

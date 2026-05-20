@@ -1,4 +1,4 @@
-import { d as defineEventHandler } from '../../../nitro/nitro.mjs';
+import { c as defineEventHandler } from '../../../_/nitro.mjs';
 import { g as getCategories } from '../../../_/woocomerce.mjs';
 import 'node:http';
 import 'node:https';
