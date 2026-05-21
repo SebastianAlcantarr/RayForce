@@ -206,37 +206,12 @@
             </label>
           </div>
         </section>
-
-        <!-- Trust Badges -->
-        <div class="pt-8 grid grid-cols-1 md:grid-cols-2 gap-8 px-4">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 text-blue-600">
-               <span class="material-symbols-outlined text-2xl">verified</span>
-            </div>
-            <div>
-              <h4 class="font-bold text-sm uppercase tracking-wide">Garantía de Satisfacción</h4>
-              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Todos nuestros productos industriales están respaldados por nuestra garantía Rayforce.</p>
-            </div>
-          </div>
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 text-green-600">
-               <span class="material-symbols-outlined text-2xl">shield_lock</span>
-            </div>
-            <div>
-              <h4 class="font-bold text-sm uppercase tracking-wide">Pago 100% Seguro</h4>
-              <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Tus datos están encriptados y protegidos mediante la pasarela segura de Stripe.</p>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- Panel de Resumen Fijo -->
       <div class="xl:col-span-5 mt-10 xl:mt-0">
         <div class="sticky top-24 space-y-6">
           <div class="bg-surface-container-lowest shadow-2xl shadow-black/5 p-8 rounded-3xl border border-outline-variant/15 relative overflow-hidden">
-            <!-- Decorative dots -->
-            <div class="absolute top-4 right-4 w-16 h-16 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-on-surface to-transparent bg-[length:4px_4px]"></div>
-            
             <h3 class="text-2xl font-black tracking-tight mb-8 flex items-center gap-3">
                <span class="material-symbols-outlined text-primary">receipt_long</span>
                Resumen de Orden
@@ -271,9 +246,13 @@
                 <span>Subtotal ({{ cartItems.length }} items)</span>
                 <span class="text-on-surface font-bold">${{ subtotal.toFixed(2) }}</span>
               </div>
+              <div v-if="appliedCoupon" class="flex justify-between text-sm text-green-600">
+                <span class="font-semibold">Cupón {{ appliedCoupon.code }}</span>
+                <span class="font-bold">-${{ discountAmount.toFixed(2) }}</span>
+              </div>
               <div class="flex justify-between items-center pt-6 pb-2 border-t border-outline-variant/20">
                 <span class="text-lg font-bold">Total Final</span>
-                <span class="text-3xl font-black text-primary">${{ subtotal.toFixed(2) }}</span>
+                <span class="text-3xl font-black text-primary">${{ total.toFixed(2) }}</span>
               </div>
             </div>
 
@@ -308,7 +287,7 @@
           <div class="flex items-center justify-center gap-3 text-on-surface-variant/70 mt-6">
              <span class="material-symbols-outlined text-xl">lock</span>
              <p class="text-[10px] font-inter uppercase tracking-widest leading-relaxed max-w-[250px] text-center font-bold">
-              Al pagar aceptas nuestros <a href="#" class="underline hover:text-primary transition-colors">Términos y Condiciones</a>.
+              Al pagar aceptas nuestros <a href="/terminos-y-condiciones" class="underline hover:text-primary transition-colors">Términos y Condiciones</a>.
             </p>
           </div>
       </div>
@@ -330,7 +309,7 @@ useSeoMeta({
   description: 'Checkout seguro para pedidos industriales Rayforce.',
 })
 
-const { cartItems, subtotal } = useCart()
+const { cartItems, subtotal, discountAmount, total, appliedCoupon } = useCart()
 const auth = useAuth()
 const router = useRouter()
 
@@ -462,10 +441,6 @@ onMounted(async () => {
   }
 })
 
-const shippingCostNumber = computed(() => Number(shippingCost.value))
-const iva = computed(() => (subtotal.value + shippingCostNumber.value) * 0.16)
-const total = computed(() => subtotal.value + shippingCostNumber.value + iva.value)
-
 const handleCheckout = async () => {
   showErrors.value = true
   errorMessage.value = ''
@@ -492,6 +467,7 @@ const handleCheckout = async () => {
           product_id: parseInt(item.id),
           quantity: item.quantity,
         })),
+        coupon_code: appliedCoupon.value?.code || undefined,
         billing: {
           first_name: form.nombre,
           last_name: form.apellidos,

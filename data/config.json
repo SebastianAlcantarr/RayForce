@@ -1,9 +1,9 @@
 {
   "topBanner": {
     "enabled": false,
-    "text": "",
+    "text": "Envios Gratis",
     "link": "",
-    "color": "red-600"
+    "color": "green-600"
   },
   "midBanner": {
     "enabled": false,
