@@ -237,56 +237,145 @@
 
           <!-- TAB: DIRECCIONES -->
           <div v-else-if="currentTab === 'addresses'" key="addresses" class="space-y-8">
-             <div class="flex items-center gap-3 border-b border-outline-variant/15 pb-4">
-              <span class="material-symbols-outlined text-primary text-3xl bg-primary/10 p-2 rounded-lg">local_shipping</span>
-              <h2 class="text-2xl font-bold">Direcciones Guardadas</h2>
+             <div class="flex items-center justify-between border-b border-outline-variant/15 pb-4">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl bg-primary/10 p-2 rounded-lg">local_shipping</span>
+                <h2 class="text-2xl font-bold">Direcciones Guardadas</h2>
+              </div>
+              <div v-if="addressSaveSuccess" class="flex items-center gap-2 text-green-600 bg-green-500/10 px-4 py-2 rounded-full">
+                <span class="material-symbols-outlined text-sm">check_circle</span>
+                <span class="text-xs font-bold">Guardado</span>
+              </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <!-- Billing -->
-              <div class="relative bg-surface-container/30 border-2 border-outline-variant/20 rounded-2xl p-6 overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4"></div>
-                <div class="flex justify-between items-start mb-4 relative">
-                  <h3 class="text-lg font-bold flex items-center gap-2">
-                    <span class="material-symbols-outlined text-on-surface-variant">receipt</span> Facturación
-                  </h3>
-                  <span class="bg-surface-container text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded text-on-surface-variant">Default</span>
-                </div>
-                <p class="text-base leading-relaxed text-on-surface-variant min-h-[80px]">
-                  <template v-if="auth.user.value?.billing?.address_1">
-                    <span class="font-semibold text-on-surface block mb-1">{{ auth.user.value?.billing?.first_name }} {{ auth.user.value?.billing?.last_name }}</span>
-                    {{ auth.user.value?.billing?.address_1 }}<br>
-                    {{ auth.user.value?.billing?.city }}, {{ auth.user.value?.billing?.state }} {{ auth.user.value?.billing?.postcode }}<br>
-                    {{ auth.user.value?.billing?.country }}
-                  </template>
-                  <span v-else class="italic opacity-70">No has configurado una dirección de facturación.</span>
-                </p>
+            <!-- Billing Address Form -->
+            <div class="relative bg-surface-container/30 border-2 border-outline-variant/20 rounded-2xl p-6 overflow-hidden transition-all hover:border-primary/20">
+              <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4"></div>
+              <div class="flex justify-between items-start mb-6 relative">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                  <span class="material-symbols-outlined text-on-surface-variant">receipt</span> Facturación
+                </h3>
+                <span class="bg-surface-container text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded text-on-surface-variant">Default</span>
               </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Nombre</label>
+                  <input v-model="addressForm.billing.first_name" type="text" placeholder="Nombre"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Apellido</label>
+                  <input v-model="addressForm.billing.last_name" type="text" placeholder="Apellido"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5 md:col-span-2">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Teléfono</label>
+                  <input v-model="addressForm.billing.phone" type="tel" placeholder="A 10 dígitos"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5 md:col-span-2">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Dirección</label>
+                  <input v-model="addressForm.billing.address_1" type="text" placeholder="Calle, número, colonia"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Ciudad</label>
+                  <input v-model="addressForm.billing.city" type="text" placeholder="Ciudad o Municipio"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Estado</label>
+                  <input v-model="addressForm.billing.state" type="text" placeholder="Estado / Provincia"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Código Postal</label>
+                  <input v-model="addressForm.billing.postcode" type="text" placeholder="Ej. 64000"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">País</label>
+                  <input v-model="addressForm.billing.country" type="text" placeholder="MX"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+              </div>
+            </div>
 
-              <!-- Shipping -->
-              <div class="relative bg-surface-container/30 border-2 border-outline-variant/20 rounded-2xl p-6 overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4"></div>
-                <div class="flex justify-between items-start mb-4 relative">
-                  <h3 class="text-lg font-bold flex items-center gap-2">
-                    <span class="material-symbols-outlined text-on-surface-variant">inventory_2</span> Envío
-                  </h3>
+            <!-- Same address toggle -->
+            <label class="flex items-center gap-3 cursor-pointer group px-2">
+              <div class="relative">
+                <input type="checkbox" v-model="sameAsShipping" class="peer sr-only" />
+                <div class="w-11 h-6 bg-surface-container-high rounded-full peer-checked:bg-primary transition-colors border border-outline-variant/30 peer-checked:border-primary"></div>
+                <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-5"></div>
+              </div>
+              <span class="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Usar la misma dirección para envío</span>
+            </label>
+
+            <!-- Shipping Address Form -->
+            <div v-if="!sameAsShipping" class="relative bg-surface-container/30 border-2 border-outline-variant/20 rounded-2xl p-6 overflow-hidden transition-all hover:border-primary/20">
+              <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4"></div>
+              <div class="flex justify-between items-start mb-6 relative">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                  <span class="material-symbols-outlined text-on-surface-variant">inventory_2</span> Envío
+                </h3>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Nombre</label>
+                  <input v-model="addressForm.shipping.first_name" type="text" placeholder="Nombre"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
                 </div>
-                <p class="text-base leading-relaxed text-on-surface-variant min-h-[80px]">
-                  <template v-if="auth.user.value?.shipping?.address_1">
-                    <span class="font-semibold text-on-surface block mb-1">{{ auth.user.value?.shipping?.first_name }} {{ auth.user.value?.shipping?.last_name }}</span>
-                    {{ auth.user.value?.shipping?.address_1 }}<br>
-                    {{ auth.user.value?.shipping?.city }}, {{ auth.user.value?.shipping?.state }} {{ auth.user.value?.shipping?.postcode }}<br>
-                    {{ auth.user.value?.shipping?.country }}
-                  </template>
-                  <span v-else class="italic opacity-70">Igual que la dirección de facturación o no configurada.</span>
-                </p>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Apellido</label>
+                  <input v-model="addressForm.shipping.last_name" type="text" placeholder="Apellido"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5 md:col-span-2">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Dirección</label>
+                  <input v-model="addressForm.shipping.address_1" type="text" placeholder="Calle, número, colonia"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Ciudad</label>
+                  <input v-model="addressForm.shipping.city" type="text" placeholder="Ciudad o Municipio"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Estado</label>
+                  <input v-model="addressForm.shipping.state" type="text" placeholder="Estado / Provincia"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Código Postal</label>
+                  <input v-model="addressForm.shipping.postcode" type="text" placeholder="Ej. 64000"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">País</label>
+                  <input v-model="addressForm.shipping.country" type="text" placeholder="MX"
+                    class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                </div>
               </div>
             </div>
-            
-            <div class="bg-blue-500/10 border border-blue-500/20 text-blue-700 p-4 rounded-xl flex items-start gap-3 text-sm">
-              <span class="material-symbols-outlined text-blue-600">info</span>
-              <p>Las direcciones se actualizan automáticamente al momento de realizar tu próxima compra en el Checkout.</p>
+
+            <!-- Error message -->
+            <div v-if="addressSaveError" class="p-4 bg-error/10 border border-error/20 rounded-xl flex items-start gap-3 text-error">
+              <span class="material-symbols-outlined">error</span>
+              <p class="text-sm font-semibold">{{ addressSaveError }}</p>
             </div>
+
+            <!-- Save button -->
+            <button
+              @click="handleSaveAddresses"
+              :disabled="isSavingAddress"
+              class="w-full md:w-auto bg-primary text-white py-3.5 px-10 rounded-xl font-bold hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <span v-if="isSavingAddress" class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+              <span v-else class="material-symbols-outlined text-[20px]">save</span>
+              {{ isSavingAddress ? 'Guardando...' : 'Guardar Direcciones' }}
+            </button>
           </div>
 
           <!-- TAB: SEGURIDAD -->
@@ -334,7 +423,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted, watch } from 'vue'
 
 useSeoMeta({
   title: 'Rayforce | Mi Perfil',
@@ -373,6 +462,115 @@ const deleteErrors = ref<Record<number, string>>({})
 const orders = ref<any[]>([])
 const isLoadingOrders = ref(false)
 const ordersError = ref('')
+
+// Address Form State
+const isSavingAddress = ref(false)
+const addressSaveSuccess = ref(false)
+const addressSaveError = ref('')
+const sameAsShipping = ref(true)
+
+const addressForm = reactive({
+  billing: {
+    first_name: '',
+    last_name: '',
+    phone: '',
+    address_1: '',
+    city: '',
+    state: '',
+    postcode: '',
+    country: 'MX',
+  },
+  shipping: {
+    first_name: '',
+    last_name: '',
+    address_1: '',
+    city: '',
+    state: '',
+    postcode: '',
+    country: 'MX',
+  },
+})
+
+// Populate address form from user profile data
+const populateAddressForm = () => {
+  const billing = auth.user.value?.billing as Record<string, any> | null
+  const shipping = auth.user.value?.shipping as Record<string, any> | null
+
+  if (billing) {
+    addressForm.billing.first_name = billing.first_name || auth.user.value?.first_name || ''
+    addressForm.billing.last_name = billing.last_name || auth.user.value?.last_name || ''
+    addressForm.billing.phone = billing.phone || ''
+    addressForm.billing.address_1 = billing.address_1 || ''
+    addressForm.billing.city = billing.city || ''
+    addressForm.billing.state = billing.state || ''
+    addressForm.billing.postcode = billing.postcode || ''
+    addressForm.billing.country = billing.country || 'MX'
+  } else {
+    addressForm.billing.first_name = auth.user.value?.first_name || ''
+    addressForm.billing.last_name = auth.user.value?.last_name || ''
+  }
+
+  if (shipping) {
+    addressForm.shipping.first_name = shipping.first_name || ''
+    addressForm.shipping.last_name = shipping.last_name || ''
+    addressForm.shipping.address_1 = shipping.address_1 || ''
+    addressForm.shipping.city = shipping.city || ''
+    addressForm.shipping.state = shipping.state || ''
+    addressForm.shipping.postcode = shipping.postcode || ''
+    addressForm.shipping.country = shipping.country || 'MX'
+  }
+
+  // Determine if shipping is same as billing
+  if (shipping && shipping.address_1) {
+    const isSame = shipping.first_name === (billing?.first_name || '') &&
+                   shipping.last_name === (billing?.last_name || '') &&
+                   shipping.address_1 === (billing?.address_1 || '') &&
+                   shipping.city === (billing?.city || '') &&
+                   shipping.state === (billing?.state || '') &&
+                   shipping.postcode === (billing?.postcode || '')
+    sameAsShipping.value = isSame
+  } else {
+    sameAsShipping.value = true
+  }
+}
+
+// Save addresses to WooCommerce
+const handleSaveAddresses = async () => {
+  isSavingAddress.value = true
+  addressSaveSuccess.value = false
+  addressSaveError.value = ''
+
+  try {
+    const billingData = {
+      ...addressForm.billing,
+      email: auth.user.value?.email || '',
+    }
+
+    const shippingData = sameAsShipping.value
+      ? {
+          first_name: addressForm.billing.first_name,
+          last_name: addressForm.billing.last_name,
+          address_1: addressForm.billing.address_1,
+          city: addressForm.billing.city,
+          state: addressForm.billing.state,
+          postcode: addressForm.billing.postcode,
+          country: addressForm.billing.country,
+        }
+      : { ...addressForm.shipping }
+
+    await auth.updateAddress(billingData, shippingData)
+
+    addressSaveSuccess.value = true
+    // Auto-hide success badge after 4 seconds
+    setTimeout(() => {
+      addressSaveSuccess.value = false
+    }, 4000)
+  } catch (error: any) {
+    addressSaveError.value = error?.data?.statusMessage || 'No se pudieron guardar las direcciones. Intenta de nuevo.'
+  } finally {
+    isSavingAddress.value = false
+  }
+}
 
 // Computed Data
 const userFullName = computed(() => {
@@ -511,6 +709,8 @@ onMounted(async () => {
   } finally {
     isLoadingProfile.value = false
   }
+  // Populate address form with existing profile data
+  populateAddressForm()
   await loadOrders()
 })
 </script>

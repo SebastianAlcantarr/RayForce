@@ -1,3 +1,6 @@
+import { useAuth } from '~/composables/useAuth'
+import { useCart } from '~/composables/useCart'
+
 export default defineNuxtPlugin(() => {
   const auth = useAuth()
   const cart = useCart()
@@ -5,4 +8,3 @@ export default defineNuxtPlugin(() => {
   auth.initAuth()
   cart.loadCartFromStorage()
 })
-

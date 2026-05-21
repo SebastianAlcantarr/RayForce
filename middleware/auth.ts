@@ -1,4 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
+  if (import.meta.server) return
+
   const auth = useAuth()
   const authCookie = useCookie('auth_token')
 

@@ -145,7 +145,8 @@
                   <NuxtLink :to="`/tienda/${product.slug}`" class="text-lg font-bold tracking-tight hover:text-primary transition-colors">{{ product.name }}</NuxtLink>
                 </div>
                 <span v-if="product.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full mt-1">Opciones</span>
-                <span v-else class="text-lg font-light text-primary">${{ parseFloat(product.price || '0').toFixed(2) }}</span>
+                <span v-else class="text-lg font-light text-primary">
+                ${{ (parseFloat(product.price || '0') * 1.16).toFixed(2) }}</span>
               </div>
               <div class="flex gap-2">
                 <span

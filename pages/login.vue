@@ -205,6 +205,7 @@
 </template>
 
 <script setup lang="ts">
+import { useAuth } from '~/composables/useAuth'
 useSeoMeta({
   title: 'Rayforce | Iniciar Sesión',
   description: 'Inicia sesión o crea una cuenta en Rayforce',

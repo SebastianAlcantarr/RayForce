@@ -2,7 +2,16 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const body = await readBody(event)
 
-  if (!body.customer_id || !body.line_items || !body.billing) {
+  const token = getCookie(event, 'auth_token')
+
+  if (!token) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'No autenticado'
+    })
+  }
+
+  if (!body.line_items || !body.billing) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Datos faltantes para crear la orden'
@@ -12,59 +21,91 @@ export default defineEventHandler(async (event) => {
   try {
     const credentials = btoa(`${config.wooKey}:${config.wooSecret}`)
 
+    // Obtener usuario autenticado desde WordPress
+    const currentUser = await $fetch<any>(
+        `${config.wooUrl}/wp-json/wp/v2/users/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+    )
+
+    const customerId = currentUser.id
+
     const lineItems = body.line_items.map((item: any) => ({
-      product_id: parseInt(item.product_id) || parseInt(item.id),
+      product_id: parseInt(item.product_id || item.id),
       quantity: parseInt(item.quantity) || 1
     }))
 
     const orderBody = {
-      customer_id: body.customer_id,
+      customer_id: customerId,
+
       status: 'pending',
       set_paid: false,
 
+      payment_method: 'stripe',
+      payment_method_title: 'Tarjeta de crédito/débito',
+
       billing: body.billing,
-      shipping: body.shipping,
+      shipping: body.shipping || body.billing,
 
       line_items: lineItems,
 
-      // Cupón de descuento (opcional)
-      ...(body.coupon_code ? { coupon_lines: [{ code: body.coupon_code }] } : {}),
+      ...(body.coupon_code
+          ? {
+            coupon_lines: [
+              {
+                code: body.coupon_code
+              }
+            ]
+          }
+          : {}),
 
       shipping_lines: [
         {
           method_id: 'flat_rate',
           method_title: 'Envío',
-          total: '100'
+          total: '0'
         }
       ]
     }
 
-    const order = await $fetch<any>(`${config.wooUrl}/wp-json/wc/v3/orders`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Basic ${credentials}`,
-        'Content-Type': 'application/json'
-      },
-      body: orderBody
-    })
+    const order = await $fetch<any>(
+        `${config.wooUrl}/wp-json/wc/v3/orders`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Basic ${credentials}`,
+            'Content-Type': 'application/json'
+          },
+          body: orderBody
+        }
+    )
 
-    // Usar la URL de pago que WooCommerce genera automáticamente
-    // Esta URL ya incluye el order_key y funciona sin necesidad de estar logueado en WordPress
-    const redirectUrl = order.payment_url
 
-    console.log(`Orden #${order.id} creada. Payment URL: ${redirectUrl}`)
+    let redirectUrl = order.payment_url || ''
+
+    if (redirectUrl.startsWith('/order-pay')) {
+      redirectUrl = `${config.wooUrl}/checkout${redirectUrl}`
+    } else if (redirectUrl.startsWith('/')) {
+      redirectUrl = `${config.wooUrl}${redirectUrl}`
+    }
 
     return {
       success: true,
-      redirectUrl,
-      orderId: order.id
+      orderId: order.id,
+      redirectUrl
     }
   } catch (error: any) {
-    console.error('Error al crear orden:', error.message)
-    console.error('   Full Error:', JSON.stringify(error.data, null, 2))
+    console.error('Error creando orden')
+
     throw createError({
-      statusCode: error.statusCode || 500,
-      statusMessage: error.data?.message || error.message || 'Error al crear la orden'
+      statusCode: error?.statusCode || 500,
+      statusMessage:
+          error?.data?.message ||
+          error?.message ||
+          'Error al crear la orden'
     })
   }
 })

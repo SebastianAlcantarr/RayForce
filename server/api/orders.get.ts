@@ -99,6 +99,13 @@ export default defineEventHandler(async (event) => {
       date_created: order.date_created,
       date_modified: order.date_modified,
       payment_method_title: order.payment_method_title || '',
+      payment_url: (() => {
+        let payUrl = order.payment_url || ''
+        if (payUrl && payUrl.includes('rayforce.com.mx')) {
+          payUrl = payUrl.replace('https://rayforce.com.mx', wooUrl)
+        }
+        return payUrl
+      })(),
       line_items: (order.line_items || []).map((item: any) => ({
         id: item.id,
         name: item.name,

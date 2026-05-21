@@ -187,30 +187,14 @@
               <div class="p-6 bg-surface-container/30 border-2 border-outline-variant/20 peer-checked:bg-primary/5 peer-checked:border-primary transition-all rounded-2xl flex justify-between items-center group-hover:border-primary/50">
                 <div class="flex items-center gap-4">
                   <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center peer-checked:bg-primary peer-checked:text-white transition-colors">
-                     <span class="material-symbols-outlined text-[20px]">local_shipping</span>
+                      <!---<span class="material-symbols-outlined text-[20px]">local_shipping</span>-->
                   </div>
                   <div class="space-y-0.5">
-                    <p class="font-bold text-sm text-on-surface">Logística Estándar</p>
-                    <p class="text-xs text-on-surface-variant font-medium">3-5 Días Hábiles</p>
+                    <p class="font-bold text-xl text-on-surface">Recoger en Tienda Fisica</p>
+                    <p class="text-xs text-on-surface-variant font-medium"></p>
                   </div>
                 </div>
-                <span class="text-lg font-black text-on-surface">$12.00</span>
-              </div>
-            </label>
-            
-            <label class="relative group cursor-pointer">
-              <input class="peer sr-only" name="shipping" type="radio" value="45" v-model="shippingCost" />
-              <div class="p-6 bg-surface-container/30 border-2 border-outline-variant/20 peer-checked:bg-primary/5 peer-checked:border-primary transition-all rounded-2xl flex justify-between items-center group-hover:border-primary/50">
-                <div class="flex items-center gap-4">
-                  <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center peer-checked:bg-primary peer-checked:text-white transition-colors">
-                     <span class="material-symbols-outlined text-[20px]">flight_takeoff</span>
-                  </div>
-                  <div class="space-y-0.5">
-                    <p class="font-bold text-sm text-on-surface">Express Premium</p>
-                    <p class="text-xs text-on-surface-variant font-medium">Día Siguiente</p>
-                  </div>
-                </div>
-                <span class="text-lg font-black text-on-surface">$45.00</span>
+                <span class="text-lg font-black text-on-surface"></span>
               </div>
             </label>
           </div>
@@ -280,18 +264,9 @@
                 <span>Subtotal ({{ cartItems.length }} items)</span>
                 <span class="text-on-surface font-bold">${{ subtotal.toFixed(2) }}</span>
               </div>
-              <div class="flex justify-between text-sm text-on-surface-variant">
-                <span>Costo de Envío</span>
-                <span class="text-on-surface font-bold">${{ shippingCostNumber.toFixed(2) }}</span>
-              </div>
-              <div class="flex justify-between text-sm text-on-surface-variant">
-                <span>Impuestos (IVA 16%)</span>
-                <span class="text-on-surface font-bold">${{ iva.toFixed(2) }}</span>
-              </div>
-              
               <div class="flex justify-between items-center pt-6 pb-2 border-t border-outline-variant/20">
                 <span class="text-lg font-bold">Total Final</span>
-                <span class="text-3xl font-black text-primary">${{ total.toFixed(2) }}</span>
+                <span class="text-3xl font-black text-primary">${{ subtotal.toFixed(2) }}</span>
               </div>
             </div>
 
@@ -326,7 +301,7 @@
           <div class="flex items-center justify-center gap-3 text-on-surface-variant/70 mt-6">
              <span class="material-symbols-outlined text-xl">lock</span>
              <p class="text-[10px] font-inter uppercase tracking-widest leading-relaxed max-w-[250px] text-center font-bold">
-              Transacción encriptada. Al pagar aceptas nuestros <a href="#" class="underline hover:text-primary transition-colors">Términos y Condiciones</a>.
+              Al pagar aceptas nuestros <a href="#" class="underline hover:text-primary transition-colors">Términos y Condiciones</a>.
             </p>
           </div>
       </div>
@@ -431,7 +406,6 @@ const iva = computed(() => (subtotal.value + shippingCostNumber.value) * 0.16)
 const total = computed(() => subtotal.value + shippingCostNumber.value + iva.value)
 
 const handleCheckout = async () => {
-  // Disparar validación visual
   showErrors.value = true
   errorMessage.value = ''
 
@@ -453,8 +427,6 @@ const handleCheckout = async () => {
     const response = await $fetch<any>('/api/checkout/create-order', {
       method: 'POST',
       body: {
-        customer_id: auth.user.value.id,
-        status: 'pending',
         line_items: cartItems.value.map((item: any) => ({
           product_id: parseInt(item.id),
           quantity: item.quantity,
@@ -480,10 +452,43 @@ const handleCheckout = async () => {
       }
     })
 
-    console.log('Orden creada, redirigiendo al pago seguro...')
-    
-    // Redirigir a la URL de pago de WooCommerce
-    window.location.href = response.redirectUrl
+    auth.updateAddress(
+      {
+        first_name: form.nombre,
+        last_name: form.apellidos,
+        address_1: form.direccion,
+        city: form.ciudad,
+        state: form.estado,
+        postcode: form.codigoPostal,
+        phone: form.telefono,
+        email: auth.user.value.email,
+        country: 'MX',
+      },
+      {
+        first_name: form.nombre,
+        last_name: form.apellidos,
+        address_1: form.direccion,
+        city: form.ciudad,
+        state: form.estado,
+        postcode: form.codigoPostal,
+        country: 'MX',
+      }
+    ).catch((err: any) => console.warn('No se pudo guardar la dirección al perfil:', err))
+
+    console.log('Orden creada, obteniendo autologin...')
+
+    const WP_URL = 'https://springgreen-sparrow-647332.hostingersite.com'
+
+
+    const autologinRes = await $fetch<{ url: string }>(`${WP_URL}/wp-json/rayforce/v1/generate-autologin`, {
+      method: 'POST',
+      body: { redirect: response.redirectUrl },
+      headers: {
+        Authorization: `Bearer ${auth.token.value}`
+      }
+    })
+
+    window.location.href = autologinRes.url
 
   } catch (error: any) {
     console.error('Error en checkout:', error)

@@ -96,6 +96,35 @@ export const useAuth = () => {
     }
   }
 
+  // Actualizar direcciones del customer en WooCommerce
+  const updateAddress = async (billing: Record<string, any> | null, shipping: Record<string, any> | null) => {
+    try {
+      const body: Record<string, any> = {}
+      if (billing) body.billing = billing
+      if (shipping) body.shipping = shipping
+
+      const response = await $fetch<{ success: boolean; billing: any; shipping: any }>('/api/update-address', {
+        method: 'PUT',
+        body,
+      })
+
+      // Actualizar el estado local con los datos devueltos por WooCommerce
+      if (user.value) {
+        const updatedUser: User = {
+          ...user.value,
+          billing: response.billing || user.value.billing,
+          shipping: response.shipping || user.value.shipping,
+        }
+        saveAuth(updatedUser)
+      }
+
+      return response
+    } catch (error) {
+      console.error('Error actualizando direcciones:', error)
+      throw error
+    }
+  }
+
   // Alias para compatibilidad con código existente
   const fetchUser = async () => fetchProfile()
 
@@ -200,6 +229,7 @@ export const useAuth = () => {
     logout,
     fetchProfile,
     fetchUser,
+    updateAddress,
   }
 }
 

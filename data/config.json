@@ -1,12 +1,12 @@
 {
   "topBanner": {
-    "enabled": true,
+    "enabled": false,
     "text": "",
     "link": "",
     "color": "red-600"
   },
   "midBanner": {
-    "enabled": true,
+    "enabled": false,
     "title": "",
     "subtitle": "",
     "buttonText": "",
@@ -22,7 +22,7 @@
     "imageUrl": ""
   },
   "videoSection": {
-    "enabled": true,
+    "enabled": false,
     "videoUrl": "",
     "text": "hola hola hola hola hola hola hoola jola",
     "backgroundColor": "primary",

@@ -9,7 +9,7 @@
         <p class="text-sm text-on-surface-variant">Número de Pedido</p>
         <p class="text-2xl font-bold text-primary">{{ orderId }}</p>
       </div>
-
+      
       <p class="text-sm text-on-surface-variant mb-8">
         Te enviaremos un correo con los detalles de tu pedido
       </p>

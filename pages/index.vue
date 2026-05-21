@@ -266,6 +266,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
 
+
 useSeoMeta({
   title: 'Rayforce | E-Commerce Industrial',
   description: 'Venta de materiales eléctricos, ferretería general, e infraestructura para corporativos.',

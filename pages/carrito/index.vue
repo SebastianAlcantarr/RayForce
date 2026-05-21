@@ -96,7 +96,6 @@
                Proceder a checkout
                <span class="material-symbols-outlined text-lg">arrow_forward</span>
              </NuxtLink>
-             <p class="text-[15px] text-center text-black uppercase tracking-wider">Precio total sin contar el Envio</p>
            </div>
 
            <!-- Código Promocional -->
