@@ -126,7 +126,7 @@
                     'w-full bg-surface-container/50 border rounded-xl pl-12 pr-4 py-3.5 text-sm font-medium transition-all outline-none',
                     showErrors && !form.ciudad ? 'border-error/50 bg-error/5 focus:border-error focus:ring-4 focus:ring-error/10' : 'border-outline-variant/30 focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant'
                   ]" 
-                  placeholder="Ciudad o Municipio" type="text" 
+                  placeholder="Ciudad o municipio" type="text" 
                 />
               </div>
             </div>
@@ -138,15 +138,20 @@
               </label>
               <div class="relative group">
                 <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 group-focus-within:text-primary transition-colors">map</span>
-                <input 
+                <select
                   v-model="form.estado" 
                   @blur="touched.estado = true"
                   :class="[
-                    'w-full bg-surface-container/50 border rounded-xl pl-12 pr-4 py-3.5 text-sm font-medium transition-all outline-none',
+                    'w-full appearance-none bg-surface-container/50 border rounded-xl pl-12 pr-10 py-3.5 text-sm font-medium transition-all outline-none',
                     showErrors && !form.estado ? 'border-error/50 bg-error/5 focus:border-error focus:ring-4 focus:ring-error/10' : 'border-outline-variant/30 focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant'
-                  ]" 
-                  placeholder="Estado / Provincia" type="text" 
-                />
+                  ]"
+                >
+                  <option value="" disabled>Selecciona un estado</option>
+                  <option v-for="state in mexicoStates" :key="state.code" :value="state.code">
+                    {{ state.name }}
+                  </option>
+                </select>
+                <span class="material-symbols-outlined pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50">expand_more</span>
               </div>
             </div>
 
@@ -164,6 +169,8 @@
                     'w-full bg-surface-container/50 border rounded-xl pl-12 pr-4 py-3.5 text-sm font-medium transition-all outline-none',
                     showErrors && !form.codigoPostal ? 'border-error/50 bg-error/5 focus:border-error focus:ring-4 focus:ring-error/10' : 'border-outline-variant/30 focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant'
                   ]" 
+                  inputmode="numeric"
+                  maxlength="5"
                   placeholder="Ej. 64000" type="text" 
                 />
               </div>
@@ -343,6 +350,60 @@ const form = reactive({
   telefono: ''
 })
 
+const mexicoStates = [
+  { code: 'AGU', name: 'Aguascalientes' },
+  { code: 'BCN', name: 'Baja California' },
+  { code: 'BCS', name: 'Baja California Sur' },
+  { code: 'CAM', name: 'Campeche' },
+  { code: 'CHP', name: 'Chiapas' },
+  { code: 'CHH', name: 'Chihuahua' },
+  { code: 'COA', name: 'Coahuila' },
+  { code: 'COL', name: 'Colima' },
+  { code: 'CMX', name: 'Ciudad de México' },
+  { code: 'DUR', name: 'Durango' },
+  { code: 'GUA', name: 'Guanajuato' },
+  { code: 'GRO', name: 'Guerrero' },
+  { code: 'HID', name: 'Hidalgo' },
+  { code: 'JAL', name: 'Jalisco' },
+  { code: 'MEX', name: 'Estado de México' },
+  { code: 'MIC', name: 'Michoacán' },
+  { code: 'MOR', name: 'Morelos' },
+  { code: 'NAY', name: 'Nayarit' },
+  { code: 'NLE', name: 'Nuevo León' },
+  { code: 'OAX', name: 'Oaxaca' },
+  { code: 'PUE', name: 'Puebla' },
+  { code: 'QUE', name: 'Querétaro' },
+  { code: 'ROO', name: 'Quintana Roo' },
+  { code: 'SLP', name: 'San Luis Potosí' },
+  { code: 'SIN', name: 'Sinaloa' },
+  { code: 'SON', name: 'Sonora' },
+  { code: 'TAB', name: 'Tabasco' },
+  { code: 'TAM', name: 'Tamaulipas' },
+  { code: 'TLA', name: 'Tlaxcala' },
+  { code: 'VER', name: 'Veracruz' },
+  { code: 'YUC', name: 'Yucatán' },
+  { code: 'ZAC', name: 'Zacatecas' },
+]
+
+const normalizeStateCode = (state: string | undefined | null) => {
+  const rawState = (state || '').trim()
+  if (!rawState) return ''
+
+  const normalizedState = rawState
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
+  return mexicoStates.find((item) => {
+    const normalizedName = item.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+
+    return item.code.toLowerCase() === normalizedState || normalizedName === normalizedState
+  })?.code || rawState
+}
+
 const touched = reactive({
   nombre: false,
   apellidos: false,
@@ -359,8 +420,8 @@ const isFormValid = computed(() => {
          form.apellidos.trim().length >= 2 &&
          form.direccion.trim().length >= 5 &&
          form.ciudad.trim().length >= 2 &&
-         form.estado.trim().length >= 2 &&
-         form.codigoPostal.trim().length >= 4 &&
+         mexicoStates.some((state) => state.code === form.estado) &&
+         /^\d{5}$/.test(form.codigoPostal.trim()) &&
          form.telefono.trim().length >= 8
 })
 
@@ -377,7 +438,7 @@ const applyProfileToForm = () => {
   form.apellidos = auth.user.value.last_name || (sourceAddr as any)?.last_name || ''
   form.direccion = (sourceAddr as any)?.address_1 || ''
   form.ciudad = (sourceAddr as any)?.city || ''
-  form.estado = (sourceAddr as any)?.state || ''
+  form.estado = normalizeStateCode((sourceAddr as any)?.state)
   form.codigoPostal = (sourceAddr as any)?.postcode || ''
   form.telefono = (billingAddr as any)?.phone || ''
 }
@@ -506,8 +567,5 @@ const handleCheckout = async () => {
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: rgb(var(--color-outline-variant) / 0.3);
-  border-radius: 10px;
-}
+
 </style>
