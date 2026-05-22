@@ -6,6 +6,7 @@ export interface CartItem {
   quantity: number
   image: string
   slug?: string
+  taxIncluded?: boolean
 }
 
 export interface AppliedCoupon {
@@ -22,6 +23,21 @@ export interface Cart {
 }
 
 const STORAGE_KEY = 'rayforce_cart'
+const TAX_RATE = 0.16
+
+const toTaxIncludedPrice = (price: number) => {
+  return Math.round(price * (1 + TAX_RATE) * 100) / 100
+}
+
+const normalizeCartItem = (item: CartItem): CartItem => {
+  if (item.taxIncluded) return item
+
+  return {
+    ...item,
+    price: toTaxIncludedPrice(Number(item.price) || 0),
+    taxIncluded: true,
+  }
+}
 
 export const useCart = () => {
   // Inicializar el estado global dentro del composable
@@ -30,7 +46,11 @@ export const useCart = () => {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         try {
-          return JSON.parse(stored)
+          const parsed = JSON.parse(stored)
+          return {
+            items: Array.isArray(parsed?.items) ? parsed.items.map(normalizeCartItem) : [],
+            coupon: parsed?.coupon || null,
+          }
         } catch (e) {
           console.error('Error loading cart:', e)
           return { items: [], coupon: null }
@@ -50,9 +70,10 @@ export const useCart = () => {
       try {
         const parsed = JSON.parse(stored)
         cart.value = {
-          items: Array.isArray(parsed?.items) ? parsed.items : [],
+          items: Array.isArray(parsed?.items) ? parsed.items.map(normalizeCartItem) : [],
           coupon: parsed?.coupon || null,
         }
+        saveCart()
       } catch (e) {
         console.error('Error loading cart:', e)
       }
@@ -78,15 +99,16 @@ export const useCart = () => {
 
   // Agregar producto al carrito
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
-    const existingItem = cart.value.items.find(item => item.id === product.id)
+    const productWithTax = normalizeCartItem({
+      ...product,
+      quantity: 1,
+    })
+    const existingItem = cart.value.items.find(item => item.id === productWithTax.id)
     
     if (existingItem) {
       existingItem.quantity += 1
     } else {
-      cart.value.items.push({
-        ...product,
-        quantity: 1,
-      })
+      cart.value.items.push(productWithTax)
     }
     
     // Forzar reactividad
@@ -165,7 +187,18 @@ export const useCart = () => {
   })
 
   const discountAmount = computed(() => {
-    return cart.value.coupon?.discountValue ?? 0
+    const coupon = cart.value.coupon
+    if (!coupon) return 0
+
+    const amount = Number(coupon.amount) || 0
+    if (coupon.discount_type === 'percent') {
+      return Math.round(((subtotal.value * amount) / 100) * 100) / 100
+    }
+    if (coupon.discount_type === 'fixed_cart') {
+      return Math.min(amount, subtotal.value)
+    }
+
+    return coupon.discountValue ?? 0
   })
 
   const total = computed(() => {

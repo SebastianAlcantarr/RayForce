@@ -33,7 +33,7 @@
 
         <div class="space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ product.name }}</h1>
-          <p class="text-primary text-3xl font-black">${{ currentPrice }}</p>
+          <p class="text-primary text-3xl font-black">${{ currentPriceWithTax }}</p>
           <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ currentSku }}</p>
           <div class="text-on-surface-variant leading-relaxed" v-html="activeVariation?.description || product.short_description || product.description || ''" />
           
@@ -203,9 +203,9 @@
               </h3>
               <div class="mt-auto flex items-end justify-between">
                 <div>
-                  <span v-if="relProduct.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ relProduct.regular_price }}</span>
+                  <span v-if="relProduct.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ formatPriceWithTax(relProduct.regular_price) }}</span>
                   <span v-if="relProduct.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full">Opciones</span>
-                  <p v-else class="text-primary font-black text-xl">${{ relProduct.price }}</p>
+                  <p v-else class="text-primary font-black text-xl">${{ formatPriceWithTax(relProduct.price) }}</p>
                 </div>
                 <div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
                   <span class="material-symbols-outlined text-xl">shopping_cart</span>
@@ -348,6 +348,15 @@ const currentPrice = computed(() => {
   }
   return product.value?.price || '0'
 })
+
+const formatPriceWithTax = (price: string | number | undefined | null) => {
+  const numericPrice = typeof price === 'number' ? price : parseFloat(price || '0')
+  if (!Number.isFinite(numericPrice)) return '0.00'
+
+  return (numericPrice * 1.16).toFixed(2)
+}
+
+const currentPriceWithTax = computed(() => formatPriceWithTax(currentPrice.value))
 
 const currentSku = computed(() => {
   if (product.value?.type === 'variable' && activeVariation.value?.sku) {

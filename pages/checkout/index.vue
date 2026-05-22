@@ -466,6 +466,7 @@ const handleCheckout = async () => {
         line_items: cartItems.value.map((item: any) => ({
           product_id: parseInt(item.id),
           quantity: item.quantity,
+          price: item.price,
         })),
         coupon_code: appliedCoupon.value?.code || undefined,
         billing: {
@@ -512,18 +513,16 @@ const handleCheckout = async () => {
       }
     ).catch((err: any) => console.warn('No se pudo guardar la dirección al perfil:', err))
 
-    console.log('Orden creada, obteniendo autologin...')
-
-    const WP_URL = 'https://springgreen-sparrow-647332.hostingersite.com'
-
-
-    const autologinRes = await $fetch<{ url: string }>(`${WP_URL}/wp-json/rayforce/v1/generate-autologin`, {
-      method: 'POST',
-      body: { redirect: response.redirectUrl },
-      headers: {
-        Authorization: `Bearer ${auth.token.value}`
-      }
-    })
+    const autologinRes = await $fetch<{ url: string }>(
+        '/api/checkout/generate-autologin',
+        {
+          method: 'POST',
+          body: { redirect: response.redirectUrl },
+          headers: {
+            Authorization: `Bearer ${auth.token.value}`
+          }
+        }
+    )
 
     window.location.href = autologinRes.url
 
