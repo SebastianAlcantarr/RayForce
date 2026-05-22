@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="pt-8 pb-24 max-w-[1440px] mx-auto px-4 md:px-8">
     <nav class="mb-6 flex gap-3 text-[10px] uppercase tracking-[0.1em] font-inter text-outline">
       <NuxtLink class="hover:text-primary transition-colors" to="/">Inicio</NuxtLink>
@@ -30,7 +30,7 @@
             </button>
           </div>
           <!-- Leyenda de imagen ilustrativa -->
-          <p class="font-inter text-[10px] text-outline-variant italic mt-3 text-center uppercase tracking-wider">
+          <p class="font-inter text-[12px] text-blue-700 italic mt-3 text-center uppercase tracking-wider">
             * La imagen del producto es ilustrativa y puede no coincidir 100% con el producto real.
           </p>
         </div>
