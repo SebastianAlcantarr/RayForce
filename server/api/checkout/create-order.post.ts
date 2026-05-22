@@ -33,24 +33,10 @@ export default defineEventHandler(async (event) => {
 
     const customerId = currentUser.id
 
-    const lineItems = body.line_items.map((item: any) => {
-      const quantity = parseInt(item.quantity) || 1
-      const price = Number(item.price)
-      const lineTotal = Number.isFinite(price)
-        ? (Math.round(price * quantity * 100) / 100).toFixed(2)
-        : undefined
-
-      return {
-        product_id: parseInt(item.product_id || item.id),
-        quantity,
-        ...(lineTotal
-          ? {
-            subtotal: lineTotal,
-            total: lineTotal
-          }
-          : {})
-      }
-    })
+    const lineItems = body.line_items.map((item: any) => ({
+      product_id: parseInt(item.product_id || item.id),
+      quantity: parseInt(item.quantity) || 1
+    }))
 
     const orderBody = {
       customer_id: customerId,
