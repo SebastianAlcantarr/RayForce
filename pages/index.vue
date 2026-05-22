@@ -259,6 +259,167 @@
       </div>
     </section>
 
+    <!-- Carrusel de Marcas Colaboradoras -->
+    <section class="py-16 bg-[#f1f3f6] overflow-hidden border-t border-b border-outline-variant/10">
+      <div class="max-w-[1440px] mx-auto px-4 md:px-8 mb-8 flex justify-between items-end">
+        <div>
+          <span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Nuestros Socios</span>
+          <h2 class="text-3xl font-black text-slate-800 tracking-tight">Marcas de Confianza</h2>
+        </div>
+        <NuxtLink to="/tienda" class="text-xs font-bold text-primary hover:underline uppercase tracking-wider">
+          Ver todas las marcas
+        </NuxtLink>
+      </div>
+
+      <!-- Marquesina de Desplazamiento Infinito -->
+      <div class="relative w-full flex items-center overflow-hidden py-4">
+        <!-- Cinta del Ticker Duplicada -->
+        <div class="flex animate-infinite-scroll w-max">
+          <!-- Primera tanda de marcas -->
+          <NuxtLink
+            v-for="(brand, index) in brandsList"
+            :key="'b1-' + index"
+            :to="{ path: '/tienda', query: brand.query }"
+            :style="{ '--brand-color': brand.color }"
+            class="brand-card w-52 h-28 md:w-60 md:h-32 mx-4 bg-white rounded-2xl flex flex-col items-center justify-between border border-outline-variant/20 shadow-sm hover:shadow-lg transition-all duration-300 shrink-0 select-none group py-4"
+          >
+            <!-- Logo Container -->
+            <div class="flex-1 flex items-center justify-center px-4 w-full text-slate-700">
+              <!-- 3M -->
+              <svg v-if="brand.logoType === '3m'" viewBox="0 0 100 40" class="h-9 w-auto fill-current transition-colors duration-300">
+                <path d="M12,8 h14 c4,0 7,2 7,5.5 c0,2.5 -1.5,4 -3.5,4.5 c2.5,0.5 4.5,2 4.5,5 c0,4 -3.5,6 -8,6 H12 V8 z M18,13 v4 h5 c1.5,0 2.5,-0.5 2.5,-2 c0,-1.5 -1,-2 -2.5,-2 H18 z M18,20 v5 h6 c1.5,0 2.5,-0.5 2.5,-2.5 c0,-2 -1,-2.5 -2.5,-2.5 H18 z" />
+                <path d="M38,8 h10 l5,10 l5,-10 h10 v21 h-7 V14 l-6.5,12 h-3 L45,14 v15 h-7 V8 z" />
+              </svg>
+
+              <!-- TRUPER -->
+              <svg v-else-if="brand.logoType === 'truper'" viewBox="0 0 160 30" class="h-6 w-auto fill-current transition-colors duration-300">
+                <path d="M5,3 h24 v6 h-9 v18 h-6 v-18 h-9 z" />
+                <path d="M34,3 h12 c5,0 9,2 9,6 c0,3 -2,5 -5,6 l6,12 h-7 l-5,-11 h-2 v11 h-6 z M40,9 v4 h5 c2,0 3,-0.5 3,-2 c0,-1.5 -1,-2 -3,-2 z" />
+                <path d="M59,3 h6 v13 c0,3 2,5 5,5 c3,0 5,-2 5,-5 v-13 h6 v13 c0,6 -4,9 -11,9 c-7,0 -11,-3 -11,-9 z" />
+                <path d="M86,3 h12 c5,0 9,3 9,7 c0,4 -4,6 -9,6 h-6 v8 h-6 z M92,9 v3 h5 c2,0 3,-0.5 3,-1.5 c0,-1 -1,-1.5 -3,-1.5 z" />
+                <path d="M112,3 h16 v6 h-10 v4 h8 v5 h-8 v4 h10 v5 h-16 z" />
+                <path d="M133,3 h12 c5,0 9,2 9,6 c0,3 -2,5 -5,6 l6,12 h-7 l-5,-11 h-2 v11 h-6 z M139,9 v4 h5 c2,0 3,-0.5 3,-2 c0,-1.5 -1,-2 -3,-2 z" />
+              </svg>
+
+              <!-- SIEMENS -->
+              <svg v-else-if="brand.logoType === 'siemens'" viewBox="0 0 180 32" class="h-6 w-auto fill-current transition-colors duration-300">
+                <path d="M5,22 h8 c0,2 1.5,3 3.5,3 c2.5,0 4,-1 4,-2.5 c0,-2 -2,-2.5 -6,-3.5 c-5,-1 -9.5,-3 -9.5,-8.5 c0,-5.5 5,-8.5 10.5,-8.5 c6,0 10.5,3 10.5,8 h-8 c0,-2 -1.5,-3 -3.5,-3 c-2,0 -3.5,1 -3.5,2.5 c0,2 2,2.5 6,3.5 c5,1 9.5,3 9.5,8.5 c0,6 -5,9 -11,9 c-6.5,0 -11,-3 -11,-9 z" />
+                <rect x="29" y="3" width="7" height="27" />
+                <path d="M42,3 h17 v6 h-10 v4.5 h8 v5.5 h-8 v5 h10 v6 h-17 z" />
+                <path d="M64,3 h10 l5,10 l5,-10 h10 v27 h-7 v-17 l-5.5,11 h-5 l-5.5,-11 v17 h-7 z" />
+                <path d="M100,3 h17 v6 h-10 v4.5 h8 v5.5 h-8 v5 h10 v6 h-17 z" />
+                <path d="M122,3 h7 l9.5,15 v-15 h7 v27 h-6.5 l-10,-15.5 v15.5 h-7 z" />
+                <path d="M150,22 h8 c0,2 1.5,3 3.5,3 c2.5,0 4,-1 4,-2.5 c0,-2 -2,-2.5 -6,-3.5 c-5,-1 -9.5,-3 -9.5,-8.5 c0,-5.5 5,-8.5 10.5,-8.5 c6,0 10.5,3 10.5,8 h-8 c0,-2 -1.5,-3 -3.5,-3 c-2,0 -3.5,1 -3.5,2.5 c0,2 2,2.5 6,3.5 c5,1 9.5,3 9.5,8.5 c0,6 -5,9 -11,9 c-6.5,0 -11,-3 -11,-9 z" />
+              </svg>
+
+              <!-- SQUARE D -->
+              <svg v-else-if="brand.logoType === 'squared'" viewBox="0 0 160 40" class="h-8 w-auto fill-current transition-colors duration-300 flex items-center">
+                <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="3" fill="none" />
+                <path d="M14,12 h6 c4,0 7,2 7,8 c0,6 -3,8 -7,8 h-6 V12 z M19,16 v8 h1 c1.5,0 2.5,-0.5 2.5,-4 c0,-3.5 -1,-4 -2.5,-4 H19 z" />
+                <text x="48" y="26" font-family="'Inter', sans-serif" font-weight="900" font-size="14" letter-spacing="0.5">SQUARE D</text>
+              </svg>
+
+              <!-- URREA -->
+              <svg v-else-if="brand.logoType === 'urrea'" viewBox="0 0 140 30" class="h-6 w-auto fill-current transition-colors duration-300 font-bold italic tracking-tighter uppercase">
+                <path d="M5,3 h7 v13 c0,3 1.5,4.5 4,4.5 c2.5,0 3.5,-1.5 3.5,-4.5 V3 h7 v13.5 c0,6 -3,9 -10.5,9 c-7.5,0 -11,-3 -11,-9 z" />
+                <path d="M30,3 h13 c5,0 8.5,2.5 8.5,6 c0,3 -2.5,5.5 -5,6.5 l7.5,10.5 h-8 l-5.5,-8.5 h-3.5 v8.5 h-7 z M37,8.5 v4 h4.5 c1.5,0 2.5,-0.5 2.5,-2 c0,-1.5 -1,-2 -2.5,-2 z" />
+                <path d="M56,3 h13 c5,0 8.5,2.5 8.5,6 c0,3 -2.5,5.5 -5,6.5 l7.5,10.5 h-8 l-5.5,-8.5 h-3.5 v8.5 h-7 z M63,8.5 v4 h4.5 c1.5,0 2.5,-0.5 2.5,-2 c0,-1.5 -1,-2 -2.5,-2 z" />
+                <path d="M82,3 h14 v5 h-7 v4 h6 v4.5 h-6 v4.5 h8 v5 h-15 z" />
+                <path d="M99,26.5 l8.5,-23.5 h7.5 l8.5,23.5 h-7.5 l-1.5,-4.5 h-8 l-1.5,4.5 z M108,17.5 h5 l-2.5,-7.5 z" />
+              </svg>
+
+              <!-- VOLTECK -->
+              <svg v-else-if="brand.logoType === 'volteck'" viewBox="0 0 150 30" class="h-6 w-auto fill-current transition-colors duration-300 flex items-center">
+                <path d="M2,15 c0,0 3,-7 6,-7 c4,0 3.5,7 7,7 c3.5,0 6,-7 6,-7" stroke="currentColor" stroke-width="2.5" fill="none" />
+                <text x="26" y="21" font-family="'Inter', sans-serif" font-weight="900" font-size="14" letter-spacing="1">VOLTECK</text>
+              </svg>
+
+              <!-- Fallback Estilizado de Alta Fidelidad para las demás marcas -->
+              <span v-else class="font-inter font-black uppercase tracking-wider text-xs md:text-sm text-center select-none transition-colors duration-300 leading-snug">
+                {{ brand.name }}
+              </span>
+            </div>
+            
+            <!-- Especialidad / Nicho de Marca -->
+            <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant group-hover:text-white/80 transition-colors duration-300 text-center px-3 leading-tight select-none">
+              {{ brand.category }}
+            </span>
+          </NuxtLink>
+          
+          <!-- Segunda tanda de marcas (copia idéntica para loop infinito sin cortes) -->
+          <NuxtLink
+            v-for="(brand, index) in brandsList"
+            :key="'b2-' + index"
+            :to="{ path: '/tienda', query: brand.query }"
+            :style="{ '--brand-color': brand.color }"
+            class="brand-card w-52 h-28 md:w-60 md:h-32 mx-4 bg-white rounded-2xl flex flex-col items-center justify-between border border-outline-variant/20 shadow-sm hover:shadow-lg transition-all duration-300 shrink-0 select-none group py-4"
+          >
+            <!-- Logo Container -->
+            <div class="flex-1 flex items-center justify-center px-4 w-full text-slate-700">
+              <!-- 3M -->
+              <svg v-if="brand.logoType === '3m'" viewBox="0 0 100 40" class="h-9 w-auto fill-current transition-colors duration-300">
+                <path d="M12,8 h14 c4,0 7,2 7,5.5 c0,2.5 -1.5,4 -3.5,4.5 c2.5,0.5 4.5,2 4.5,5 c0,4 -3.5,6 -8,6 H12 V8 z M18,13 v4 h5 c1.5,0 2.5,-0.5 2.5,-2 c0,-1.5 -1,-2 -2.5,-2 H18 z M18,20 v5 h6 c1.5,0 2.5,-0.5 2.5,-2.5 c0,-2 -1,-2.5 -2.5,-2.5 H18 z" />
+                <path d="M38,8 h10 l5,10 l5,-10 h10 v21 h-7 V14 l-6.5,12 h-3 L45,14 v15 h-7 V8 z" />
+              </svg>
+
+              <!-- TRUPER -->
+              <svg v-else-if="brand.logoType === 'truper'" viewBox="0 0 160 30" class="h-6 w-auto fill-current transition-colors duration-300">
+                <path d="M5,3 h24 v6 h-9 v18 h-6 v-18 h-9 z" />
+                <path d="M34,3 h12 c5,0 9,2 9,6 c0,3 -2,5 -5,6 l6,12 h-7 l-5,-11 h-2 v11 h-6 z M40,9 v4 h5 c2,0 3,-0.5 3,-2 c0,-1.5 -1,-2 -3,-2 z" />
+                <path d="M59,3 h6 v13 c0,3 2,5 5,5 c3,0 5,-2 5,-5 v-13 h6 v13 c0,6 -4,9 -11,9 c-7,0 -11,-3 -11,-9 z" />
+                <path d="M86,3 h12 c5,0 9,3 9,7 c0,4 -4,6 -9,6 h-6 v8 h-6 z M92,9 v3 h5 c2,0 3,-0.5 3,-1.5 c0,-1 -1,-1.5 -3,-1.5 z" />
+                <path d="M112,3 h16 v6 h-10 v4 h8 v5 h-8 v4 h10 v5 h-16 z" />
+                <path d="M133,3 h12 c5,0 9,2 9,6 c0,3 -2,5 -5,6 l6,12 h-7 l-5,-11 h-2 v11 h-6 z M139,9 v4 h5 c2,0 3,-0.5 3,-2 c0,-1.5 -1,-2 -3,-2 z" />
+              </svg>
+
+              <!-- SIEMENS -->
+              <svg v-else-if="brand.logoType === 'siemens'" viewBox="0 0 180 32" class="h-6 w-auto fill-current transition-colors duration-300">
+                <path d="M5,22 h8 c0,2 1.5,3 3.5,3 c2.5,0 4,-1 4,-2.5 c0,-2 -2,-2.5 -6,-3.5 c-5,-1 -9.5,-3 -9.5,-8.5 c0,-5.5 5,-8.5 10.5,-8.5 c6,0 10.5,3 10.5,8 h-8 c0,-2 -1.5,-3 -3.5,-3 c-2,0 -3.5,1 -3.5,2.5 c0,2 2,2.5 6,3.5 c5,1 9.5,3 9.5,8.5 c0,6 -5,9 -11,9 c-6.5,0 -11,-3 -11,-9 z" />
+                <rect x="29" y="3" width="7" height="27" />
+                <path d="M42,3 h17 v6 h-10 v4.5 h8 v5.5 h-8 v5 h10 v6 h-17 z" />
+                <path d="M64,3 h10 l5,10 l5,-10 h10 v27 h-7 v-17 l-5.5,11 h-5 l-5.5,-11 v17 h-7 z" />
+                <path d="M100,3 h17 v6 h-10 v4.5 h8 v5.5 h-8 v5 h10 v6 h-17 z" />
+                <path d="M122,3 h7 l9.5,15 v-15 h7 v27 h-6.5 l-10,-15.5 v15.5 h-7 z" />
+                <path d="M150,22 h8 c0,2 1.5,3 3.5,3 c2.5,0 4,-1 4,-2.5 c0,-2 -2,-2.5 -6,-3.5 c-5,-1 -9.5,-3 -9.5,-8.5 c0,-5.5 5,-8.5 10.5,-8.5 c6,0 10.5,3 10.5,8 h-8 c0,-2 -1.5,-3 -3.5,-3 c-2,0 -3.5,1 -3.5,2.5 c0,2 2,2.5 6,3.5 c5,1 9.5,3 9.5,8.5 c0,6 -5,9 -11,9 c-6.5,0 -11,-3 -11,-9 z" />
+              </svg>
+
+              <!-- SQUARE D -->
+              <svg v-else-if="brand.logoType === 'squared'" viewBox="0 0 160 40" class="h-8 w-auto fill-current transition-colors duration-300 flex items-center">
+                <rect x="2" y="2" width="36" height="36" rx="4" stroke="currentColor" stroke-width="3" fill="none" />
+                <path d="M14,12 h6 c4,0 7,2 7,8 c0,6 -3,8 -7,8 h-6 V12 z M19,16 v8 h1 c1.5,0 2.5,-0.5 2.5,-4 c0,-3.5 -1,-4 -2.5,-4 H19 z" />
+                <text x="48" y="26" font-family="'Inter', sans-serif" font-weight="900" font-size="14" letter-spacing="0.5">SQUARE D</text>
+              </svg>
+
+              <!-- URREA -->
+              <svg v-else-if="brand.logoType === 'urrea'" viewBox="0 0 140 30" class="h-6 w-auto fill-current transition-colors duration-300 font-bold italic tracking-tighter uppercase">
+                <path d="M5,3 h7 v13 c0,3 1.5,4.5 4,4.5 c2.5,0 3.5,-1.5 3.5,-4.5 V3 h7 v13.5 c0,6 -3,9 -10.5,9 c-7.5,0 -11,-3 -11,-9 z" />
+                <path d="M30,3 h13 c5,0 8.5,2.5 8.5,6 c0,3 -2.5,5.5 -5,6.5 l7.5,10.5 h-8 l-5.5,-8.5 h-3.5 v8.5 h-7 z M37,8.5 v4 h4.5 c1.5,0 2.5,-0.5 2.5,-2 c0,-1.5 -1,-2 -2.5,-2 z" />
+                <path d="M56,3 h13 c5,0 8.5,2.5 8.5,6 c0,3 -2.5,5.5 -5,6.5 l7.5,10.5 h-8 l-5.5,-8.5 h-3.5 v8.5 h-7 z M63,8.5 v4 h4.5 c1.5,0 2.5,-0.5 2.5,-2 c0,-1.5 -1,-2 -2.5,-2 z" />
+                <path d="M82,3 h14 v5 h-7 v4 h6 v4.5 h-6 v4.5 h8 v5 h-15 z" />
+                <path d="M99,26.5 l8.5,-23.5 h7.5 l8.5,23.5 h-7.5 l-1.5,-4.5 h-8 l-1.5,4.5 z M108,17.5 h5 l-2.5,-7.5 z" />
+              </svg>
+
+              <!-- VOLTECK -->
+              <svg v-else-if="brand.logoType === 'volteck'" viewBox="0 0 150 30" class="h-6 w-auto fill-current transition-colors duration-300 flex items-center">
+                <path d="M2,15 c0,0 3,-7 6,-7 c4,0 3.5,7 7,7 c3.5,0 6,-7 6,-7" stroke="currentColor" stroke-width="2.5" fill="none" />
+                <text x="26" y="21" font-family="'Inter', sans-serif" font-weight="900" font-size="14" letter-spacing="1">VOLTECK</text>
+              </svg>
+
+              <!-- Fallback Estilizado de Alta Fidelidad para las demás marcas -->
+              <span v-else class="font-inter font-black uppercase tracking-wider text-xs md:text-sm text-center select-none transition-colors duration-300 leading-snug">
+                {{ brand.name }}
+              </span>
+            </div>
+            
+            <!-- Especialidad / Nicho de Marca -->
+            <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant group-hover:text-white/80 transition-colors duration-300 text-center px-3 leading-tight select-none">
+              {{ brand.category }}
+            </span>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
   </div>
 </template>
 
@@ -392,6 +553,30 @@ const trustItems = [
   { title: 'Pagos Seguros', description: 'Encriptación AES-256 bits', icon: 'shield_lock' },
   { title: 'Soporte 24/7', description: 'Consultas vía WhatsApp', icon: 'support_agent' },
 ]
+
+// === Lista de Marcas del Carrusel ===
+const brandsList = [
+  { name: 'SURTEK', query: { brand: 267 }, logoType: 'surtek', color: '#0057B8', category: 'Herramientas y Cerrajería' },
+  { name: 'TRUPER', query: { brand: 261 }, logoType: 'truper', color: '#f15a24', category: 'Herramientas Profesionales' },
+  { name: 'URREA', query: { brand: 361 }, logoType: 'urrea', color: '#e30613', category: 'Herramientas de Alta Exigencia' },
+  { name: 'LITHONIA', query: { brand: 340 }, logoType: 'lithonia', color: '#004b87', category: 'Iluminación Industrial y LED' },
+  { name: 'TECNOLITE', query: { brand: 256 }, logoType: 'tecnolite', color: '#0a0a0a', category: 'Iluminación Residencial' },
+  { name: 'ESTEVEZ', query: { brand: 255 }, logoType: 'estevez', color: '#c8102e', category: 'Placas y Dispositivos de Lujo' },
+  { name: 'FOY', query: { brand: 351 }, logoType: 'foy', color: '#ffc72c', category: 'Herramientas Manuales' },
+  { name: 'FOKASU', query: { brand: 314 }, logoType: 'fokasu', color: '#00a651', category: 'Proyectores y Reflectores LED' },
+  { name: 'VIAKON', query: { q: 'viakon' }, logoType: 'viakon', color: '#00509d', category: 'Cables de Energía y Telecom' },
+  { name: 'VOLTECK', query: { brand: 270 }, logoType: 'volteck', color: '#1b365d', category: 'Material y Accesorios Eléctricos' },
+  { name: 'SIEMENS', query: { brand: 266 }, logoType: 'siemens', color: '#009999', category: 'Equipo y Control Industrial' },
+  { name: 'ANCLO', query: { brand: 257 }, logoType: 'anclo', color: '#d00000', category: 'Soportería y Fijaciones Metálicas' },
+  { name: '3M', query: { brand: 295 }, logoType: '3m', color: '#ff0000', category: 'Cintas e Aislantes Eléctricos' },
+  { name: 'SAGLite', query: { brand: 294 }, logoType: 'saglite', color: '#1c3d5a', category: 'Luminarias LED Especializadas' },
+  { name: 'ARGOS', query: { brand: 329 }, logoType: 'argos', color: '#e85d04', category: 'Canalizaciones y Tubos Conduit' },
+  { name: 'CONDULAC', query: { q: 'condulac' }, logoType: 'condulac', color: '#9e2a2b', category: 'Conductores de Cobre' },
+  { name: 'JUPITER', query: { brand: 308 }, logoType: 'jupiter', color: '#0077b6', category: 'Tecnología LED y Luminarias' },
+  { name: 'INDIANA', query: { brand: 282 }, logoType: 'indiana', color: '#2d6a4f', category: 'Cables y Conductores Eléctricos' },
+  { name: 'CONDUMEX', query: { brand: 281 }, logoType: 'condumex', color: '#bd1f2d', category: 'Conductores de Cobre y Energía' },
+  { name: 'SQUARE D', query: { brand: 298 }, logoType: 'squared', color: '#009639', category: 'Interruptores y Centros de Carga' }
+]
 </script>
 
 <style scoped>
@@ -401,5 +586,37 @@ const trustItems = [
 }
 .animate-fade-in-up {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.animate-infinite-scroll {
+  display: flex;
+  width: max-content;
+  animation: scroll 45s linear infinite;
+}
+.animate-infinite-scroll:hover {
+  animation-play-state: paused;
+}
+
+.brand-card {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-bottom: 4px solid var(--brand-color);
+}
+.brand-card:hover {
+  background-color: var(--brand-color) !important;
+  border-color: var(--brand-color) !important;
+  transform: translateY(-6px) scale(1.05);
+}
+.brand-card:hover svg,
+.brand-card:hover span {
+  color: white !important;
+  fill: white !important;
 }
 </style>

@@ -103,6 +103,31 @@
       </aside>
 
       <div class="flex-1">
+        <!-- Filtros Activos -->
+        <div v-if="route.query.category || route.query.brand || route.query.q" class="flex flex-wrap gap-2 mb-8 items-center bg-[#f1f3f6] p-3 rounded-lg border border-outline-variant/10">
+          <span class="text-[10px] uppercase tracking-wider text-outline font-bold mr-2">Filtros activos:</span>
+          
+          <!-- Badge de búsqueda -->
+          <span v-if="route.query.q" class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/20">
+            Búsqueda: "{{ route.query.q }}"
+            <button @click="clearFilter('q')" class="material-symbols-outlined text-sm hover:text-red-600 transition-colors cursor-pointer" type="button">close</button>
+          </span>
+          
+          <!-- Badge de categoría -->
+          <span v-if="route.query.category" class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/20">
+            Categoría: {{ getCategoryName(Number(route.query.category)) }}
+            <button @click="clearFilter('category')" class="material-symbols-outlined text-sm hover:text-red-600 transition-colors cursor-pointer" type="button">close</button>
+          </span>
+          
+          <!-- Badge de marca -->
+          <span v-if="route.query.brand" class="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-bold px-3 py-1 rounded-full border border-primary/20">
+            Marca: {{ getBrandName(Number(route.query.brand)) }}
+            <button @click="clearFilter('brand')" class="material-symbols-outlined text-sm hover:text-red-600 transition-colors cursor-pointer" type="button">close</button>
+          </span>
+
+          <button @click="clearAllFilters" class="text-xs text-red-600 font-bold hover:text-red-800 transition-colors hover:underline ml-auto" type="button">Limpiar todo</button>
+        </div>
+
         <div v-if="pending" class="text-on-surface-variant">Cargando productos...</div>
         <div v-else-if="error" class="text-red-600">No se pudieron cargar productos.</div>
         <div v-else-if="products.length === 0" class="text-on-surface-variant">No hay productos disponibles.</div>
@@ -227,7 +252,8 @@ const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
   () => {
     const q = route.query.q ? `&q=${route.query.q}` : ''
     const cat = route.query.category ? `&category=${route.query.category}` : ''
-    return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}${cat}`
+    const brand = route.query.brand ? `&brand=${route.query.brand}` : ''
+    return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}${cat}${brand}`
   }
 )
 
@@ -267,10 +293,53 @@ async function goToPage(page: number) {
   if (page > 1) queryParams.page = String(page)
   if (route.query.q) queryParams.q = String(route.query.q)
   if (route.query.category) queryParams.category = String(route.query.category)
+  if (route.query.brand) queryParams.brand = String(route.query.brand)
 
   await navigateTo({
     path: '/tienda',
     query: queryParams,
   })
+}
+
+// === Lógica y Mapeo de Marcas ===
+const BRANDS_MAP: Record<number, string> = {
+  267: 'SURTEK',
+  261: 'TRUPER',
+  361: 'URREA',
+  340: 'LITHONIA',
+  256: 'TECNOLITE',
+  255: 'ESTEVEZ',
+  351: 'FOY',
+  314: 'FOKASU',
+  270: 'VOLTECK',
+  266: 'SIEMENS',
+  257: 'ANCLO',
+  295: '3M',
+  294: 'SAGLite',
+  329: 'ARGOS',
+  308: 'JUPITER',
+  282: 'INDIANA',
+  281: 'CONDUMEX',
+  298: 'SQUARE D'
+}
+
+const getBrandName = (id: number) => {
+  return BRANDS_MAP[id] || 'Marca'
+}
+
+const getCategoryName = (id: number) => {
+  const cat = categoriesList.value.find(c => c.id === id)
+  return cat ? cat.name : 'Categoría'
+}
+
+const clearFilter = (key: string) => {
+  const queryParams = { ...route.query }
+  delete queryParams[key]
+  delete queryParams.page
+  router.push({ path: '/tienda', query: queryParams })
+}
+
+const clearAllFilters = () => {
+  router.push({ path: '/tienda' })
 }
 </script>

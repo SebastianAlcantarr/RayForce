@@ -236,7 +236,7 @@ export async function getProductVariations(productId: number) {
   })
 }
 
-export async function getProductsList(page = 1, perPage = 20, search = '', categoryId?: number): Promise<WooPaginatedResult<WooProduct>> {
+export async function getProductsList(page = 1, perPage = 20, search = '', categoryId?: number, brandId?: number): Promise<WooPaginatedResult<WooProduct>> {
   const params: Record<string, string | number> = {
     orderby: 'date',
     order: 'desc',
@@ -268,6 +268,10 @@ export async function getProductsList(page = 1, perPage = 20, search = '', categ
 
   if (categoryId) {
     params.category = categoryId
+  }
+
+  if (brandId) {
+    params.brand = brandId
   }
 
   const paginated = await getProductsPaginated(params, page, perPage)
