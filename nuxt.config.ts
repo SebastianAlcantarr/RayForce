@@ -30,7 +30,13 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Rayforce | Technical Support & Help Center',
+      title: 'Rayforce | Material Eléctrico, Ferretería e Infraestructura',
+      meta: [
+        {
+          name: 'description',
+          content: 'Rayforce es tu proveedor de confianza en material eléctrico de alta calidad, ferretería industrial y soluciones de infraestructura eléctrica para proyectos comerciales, industriales y residenciales.'
+        }
+      ],
       link: [
         {
           rel: 'icon',

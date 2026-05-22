@@ -268,8 +268,8 @@ import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerc
 
 
 useSeoMeta({
-  title: 'Rayforce | E-Commerce Industrial',
-  description: 'Venta de materiales eléctricos, ferretería general, e infraestructura para corporativos.',
+  title: 'Rayforce | Material Eléctrico, Ferretería e Infraestructura',
+  description: 'Encuentra en Rayforce materiales eléctricos de alta calidad, ferretería industrial y soluciones de infraestructura para todo tipo de proyectos comerciales, industriales y residenciales.',
 })
 
 // === Fetch Publicidad / Banners (Data configurada en el Admin) ===

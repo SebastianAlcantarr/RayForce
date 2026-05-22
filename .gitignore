@@ -42,3 +42,11 @@ Thumbs.db
 
 # Optional: VSCode
 .vscode/
+
+# Local uploads and data resguard
+/public/uploads/
+/server/data/
+
+# Temporal migration files
+/_migration/data/
+/_migration/_archivos_temporales/

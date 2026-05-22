@@ -1,7 +1,7 @@
 <script setup lang="ts">
 </script>
 <template>
-  <footer class="bg-surface-container-lowest w-full border-t border-outline-variant/15 font-manrope text-sm tracking-wide">
+  <footer data-nosnippet class="bg-surface-container-lowest w-full border-t border-outline-variant/15 font-manrope text-sm tracking-wide">
     <div class="max-w-screen-2xl mx-auto px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
       <div class="space-y-4">
         <div class="text-3xl md:text-4xl tracking-tighter font-rayforce mb-10">
@@ -38,19 +38,19 @@
         <span class="font-bold text-primary text-xs uppercase tracking-widest block">Contacto</span>
         <div class="space-y-3 text-xs">
           <div class="flex items-start gap-2 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">location_on</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">&#xe0c8;</span>
             <span>Campeche 250, Col San Benito,<br/>C.P. 83100, Hermosillo, Sonora</span>
           </div>
           <div class="flex items-center gap-2 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm flex-shrink-0">phone</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0">&#xe0cd;</span>
             <span>(662) 171 1371</span>
           </div>
           <div class="flex items-center gap-2 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm flex-shrink-0">mail</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0">&#xe158;</span>
             <span>ventas2@rayforce.com.mx</span>
           </div>
           <div class="flex items-start gap-2 text-on-surface-variant">
-            <span class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">schedule</span>
+            <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">&#xe8b5;</span>
             <span>Lun - Vie: 8:00 - 18:00 | Sáb: 8:00 - 14:00</span>
           </div>
         </div>
