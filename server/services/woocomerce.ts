@@ -15,22 +15,26 @@ function getConfig(): WooConfig {
   let key = String(config.wooKey || process.env.NUXT_WOO_KEY || process.env.WOO_KEY || '')
   let secret = String(config.wooSecret || process.env.NUXT_WOO_SECRET || process.env.WOO_SECRET || '')
 
-  // Fallback definitivo: Lectura manual de .env.local (muy confiable en dev mode en Windows/Node 24)
+  // Fallback definitivo: Lectura manual de .env.local y .env (muy confiable en dev mode en Windows/Node 24)
   if (!wooUrl || !key || !secret) {
-    try {
-      const envPath = resolve(process.cwd(), '.env.local')
-      const content = readFileSync(envPath, 'utf-8')
-      for (const line of content.split('\n')) {
-        const trimmed = line.trim()
-        if (trimmed.startsWith('#') || !trimmed.includes('=')) continue
-        const [k, ...rest] = trimmed.split('=')
-        const val = rest.join('=').trim()
-        
-        if (k.trim() === 'WOO_URL' || k.trim() === 'NUXT_WOO_URL') wooUrl = wooUrl || val
-        if (k.trim() === 'WOO_KEY' || k.trim() === 'NUXT_WOO_KEY') key = key || val
-        if (k.trim() === 'WOO_SECRET' || k.trim() === 'NUXT_WOO_SECRET') secret = secret || val
-      }
-    } catch {}
+    const filesToTry = ['.env.local', '.env']
+    for (const file of filesToTry) {
+      try {
+        const envPath = resolve(process.cwd(), file)
+        const content = readFileSync(envPath, 'utf-8')
+        for (const line of content.split('\n')) {
+          const trimmed = line.trim()
+          if (trimmed.startsWith('#') || !trimmed.includes('=')) continue
+          const [k, ...rest] = trimmed.split('=')
+          const val = rest.join('=').trim()
+          
+          if (k.trim() === 'WOO_URL' || k.trim() === 'NUXT_WOO_URL') wooUrl = wooUrl || val
+          if (k.trim() === 'WOO_KEY' || k.trim() === 'NUXT_WOO_KEY') key = key || val
+          if (k.trim() === 'WOO_SECRET' || k.trim() === 'NUXT_WOO_SECRET') secret = secret || val
+        }
+      } catch {}
+      if (wooUrl && key && secret) break
+    }
   }
 
   wooUrl = wooUrl.replace(/\/+$/, '') // remover trailing slash
