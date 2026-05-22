@@ -6,6 +6,8 @@ export interface CartItem {
   quantity: number
   image: string
   slug?: string
+  stock_status?: string
+  stock_quantity?: number | null
   taxIncluded?: boolean
 }
 
@@ -99,6 +101,10 @@ export const useCart = () => {
 
   // Agregar producto al carrito
   const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+    if (product.stock_status === 'outofstock') {
+      return false
+    }
+
     const productWithTax = normalizeCartItem({
       ...product,
       quantity: 1,
@@ -114,6 +120,8 @@ export const useCart = () => {
     // Forzar reactividad
     cart.value = { ...cart.value, items: [...cart.value.items] }
     saveCart()
+
+    return true
   }
 
   // Eliminar producto del carrito

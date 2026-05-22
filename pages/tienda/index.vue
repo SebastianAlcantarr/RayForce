@@ -110,15 +110,20 @@
                 />
                 <button
                     @click.prevent="handleAddToCart(product)"
+                    :disabled="product.stock_status === 'outofstock'"
                     :class="[
                       'absolute bottom-6 right-6 w-12 h-12 text-on-primary rounded-full flex items-center justify-center transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110',
-                      addedProductId === product.id.toString() ? 'bg-green-600 opacity-100' : 'bg-primary opacity-0 group-hover:opacity-100'
+                      product.stock_status === 'outofstock'
+                        ? 'bg-slate-400 opacity-100 cursor-not-allowed hover:scale-100'
+                        : addedProductId === product.id.toString()
+                          ? 'bg-green-600 opacity-100'
+                          : 'bg-primary opacity-0 group-hover:opacity-100'
                     ]"
                     type="button"
-                    :aria-label="product.type === 'variable' ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`"
+                    :aria-label="product.stock_status === 'outofstock' ? `${product.name} sin existencias` : (product.type === 'variable' ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`)"
                 >
                   <span class="material-symbols-outlined">
-                    {{ addedProductId === product.id.toString() ? 'check' : (product.type === 'variable' ? 'visibility' : 'add_shopping_cart') }}
+                    {{ product.stock_status === 'outofstock' ? 'remove_shopping_cart' : (addedProductId === product.id.toString() ? 'check' : (product.type === 'variable' ? 'visibility' : 'add_shopping_cart')) }}
                   </span>
                 </button>
               </div>
@@ -224,6 +229,10 @@ const { addToCart } = useCart()
 const addedProductId = ref<string | null>(null)
 
 const handleAddToCart = async (product: WooProduct) => {
+  if (product.stock_status === 'outofstock') {
+    return
+  }
+
   if (product.type === 'variable') {
     await router.push(`/tienda/${product.slug}`)
     return
@@ -236,6 +245,8 @@ const handleAddToCart = async (product: WooProduct) => {
     price: parseFloat(product.price || '0'),
     image: product.images?.[0]?.src || '/placeholder.jpg',
     slug: product.slug,
+    stock_status: product.stock_status,
+    stock_quantity: product.stock_quantity,
   })
 
   addedProductId.value = product.id.toString()

@@ -225,8 +225,14 @@
                   <span class="material-symbols-outlined text-xl">shopping_cart</span>
                 </div>
               </div>
-              <button @click.prevent="addRelatedToCart(relProduct)" class="w-full mt-4 py-2 bg-primary hover:bg-[#004f9f] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center gap-2">
-                <span class="material-symbols-outlined text-lg">shopping_cart</span> Agregar al carrito
+              <button
+                @click.prevent="addRelatedToCart(relProduct)"
+                :disabled="relProduct.stock_status === 'outofstock'"
+                :class="relProduct.stock_status === 'outofstock' ? 'bg-slate-400 cursor-not-allowed' : 'bg-primary hover:bg-[#004f9f]'"
+                class="w-full mt-4 py-2 text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <span class="material-symbols-outlined text-lg">{{ relProduct.stock_status === 'outofstock' ? 'remove_shopping_cart' : 'shopping_cart' }}</span>
+                {{ relProduct.stock_status === 'outofstock' ? 'Agotado' : 'Agregar al carrito' }}
               </button>
             </div>
           </NuxtLink>
@@ -390,6 +396,12 @@ const handleAddToCart = async () => {
     price: parseFloat(product.value.price || '0'),
     image: product.value.images?.[0]?.src || '/placeholder.jpg',
     slug: route.params.slug as string,
+    stock_status: product.value.stock_status,
+    stock_quantity: product.value.stock_quantity,
+  }
+
+  if (itemToAdd.stock_status === 'outofstock') {
+    return
   }
 
   if (product.value.type === 'variable') {
@@ -406,6 +418,8 @@ const handleAddToCart = async () => {
       itemToAdd.name = activeVariation.value.name || product.value.name
       itemToAdd.price = parseFloat(activeVariation.value.price || '0')
       itemToAdd.sku = activeVariation.value.sku || product.value.sku || 'SIN SKU'
+      itemToAdd.stock_status = activeVariation.value.stock_status
+      itemToAdd.stock_quantity = activeVariation.value.stock_quantity
       if (activeVariation.value.images?.[0]?.src) {
         itemToAdd.image = activeVariation.value.images[0].src
       }
@@ -413,6 +427,11 @@ const handleAddToCart = async () => {
        variationError.value = `Esta combinación no está disponible.`
        return
     }
+  }
+
+  if (itemToAdd.stock_status === 'outofstock') {
+    variationError.value = 'Este producto no tiene existencias.'
+    return
   }
 
   for(let i = 0; i < quantity.value; i++) {
@@ -427,6 +446,10 @@ const handleAddToCart = async () => {
 }
 
 const addRelatedToCart = (relProduct: any) => {
+  if (relProduct.stock_status === 'outofstock') {
+    return
+  }
+
   addToCart({
     id: relProduct.id.toString(),
     name: relProduct.name,
@@ -434,6 +457,8 @@ const addRelatedToCart = (relProduct: any) => {
     price: parseFloat(relProduct.price || '0'),
     image: relProduct.images?.[0]?.src || '/placeholder.jpg',
     slug: relProduct.slug,
+    stock_status: relProduct.stock_status,
+    stock_quantity: relProduct.stock_quantity,
   })
 }
 
