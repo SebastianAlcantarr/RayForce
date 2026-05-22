@@ -528,7 +528,25 @@ const handleCheckout = async () => {
 
   } catch (error: any) {
     console.error('Error en checkout:', error)
-    errorMessage.value = error.data?.message || 'Hubo un error al procesar tu orden. Por favor intenta de nuevo.'
+
+    const statusCode = error?.status || error?.statusCode || 0
+    const serverMsg = error?.data?.statusMessage || error?.data?.message || error?.message || ''
+
+    // Detectar sesión expirada o token JWT inválido (iss mismatch por cambio de URL de WP)
+    const isSessionExpired =
+      statusCode === 401 ||
+      serverMsg.toLowerCase().includes('iss do not match') ||
+      serverMsg.toLowerCase().includes('sesión ha expirado') ||
+      serverMsg.toLowerCase().includes('invalid_token')
+
+    if (isSessionExpired) {
+      // Limpiar sesión corrupta del localStorage y estado
+      auth.logout()
+      navigateTo('/login?redirect=/checkout&expired=1')
+      return
+    }
+
+    errorMessage.value = serverMsg || 'Hubo un error al procesar tu orden. Por favor intenta de nuevo.'
   } finally {
     isLoading.value = false
   }

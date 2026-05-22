@@ -10,6 +10,14 @@
         <p class="text-on-surface-variant text-sm mt-20">{{ isLogin ? 'Accede a tu cuenta' : 'Crea una cuenta nueva' }}</p>
       </div>
 
+      <!-- Banner: sesión expirada -->
+      <div v-if="sessionExpired" class="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-300 text-amber-800 rounded-xl p-4">
+        <span class="material-symbols-outlined text-amber-500 shrink-0">timer_off</span>
+        <p class="text-sm font-semibold leading-snug">
+          Tu sesión ha expirado. Por favor inicia sesión de nuevo para continuar con tu compra.
+        </p>
+      </div>
+
       <!-- Form -->
       <div class="bg-surface-container-lowest border border-outline-variant/15 p-8 rounded-xl space-y-6">
         <!-- Toggle Tabs -->
@@ -212,6 +220,11 @@ useSeoMeta({
 })
 
 const router = useRouter()
+const route = useRoute()
+
+// Leer parámetros de la URL
+const redirectTo = computed(() => String(route.query.redirect || '/tienda'))
+const sessionExpired = computed(() => route.query.expired === '1')
 
 // Login
 const username = ref('')
@@ -240,8 +253,8 @@ const handleLogin = async () => {
     password.value = ''
 
     setTimeout(() => {
-      router.push('/tienda')
-    }, 1500)
+      router.push(redirectTo.value)
+    }, 1000)
   } catch (err: any) {
     console.error('Error en login:', err)
     const statusCode = err?.statusCode || err?.data?.statusCode

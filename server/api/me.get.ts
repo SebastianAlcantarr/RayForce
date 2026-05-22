@@ -97,12 +97,24 @@ export default defineEventHandler(async (event) => {
     }
   }
   catch (error: any) {
-    const statusCode = error?.statusCode || error?.response?.status || 401
-    console.error('Error en /api/me:', error)
+    console.error('Error en /api/me:', error?.data || error?.message || error)
 
-    throw createError({
-      statusCode,
-      statusMessage: statusCode === 401 ? 'Sesión inválida o expirada' : 'No se pudo obtener el perfil',
-    })
+    // Detectar error de JWT issuer mismatch (token generado con URL anterior)
+    const errMsg = String(
+      error?.data?.message || error?.data?.code || error?.message || ''
+    ).toLowerCase()
+
+    const isJwtIssuerError =
+      errMsg.includes('iss do not match') ||
+      errMsg.includes('invalid_token') ||
+      errMsg.includes('jwt_auth_invalid_token') ||
+      errMsg.includes('token is invalid')
+
+    const statusCode = isJwtIssuerError ? 401 : (error?.statusCode || error?.response?.status || 401)
+    const statusMessage = isJwtIssuerError
+      ? 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
+      : (statusCode === 401 ? 'Sesión inválida o expirada' : 'No se pudo obtener el perfil')
+
+    throw createError({ statusCode, statusMessage })
   }
 })

@@ -112,7 +112,25 @@ export default defineEventHandler(async (event) => {
       redirectUrl
     }
   } catch (error: any) {
-    console.error('Error creando orden')
+    console.error('Error creando orden:', error?.data || error?.message || error)
+
+    // Detectar error específico de JWT issuer mismatch — token viejo de URL anterior
+    const errMsg = String(
+      error?.data?.message || error?.data?.code || error?.message || ''
+    ).toLowerCase()
+
+    const isJwtIssuerError =
+      errMsg.includes('iss do not match') ||
+      errMsg.includes('invalid_token') ||
+      errMsg.includes('jwt_auth_invalid_token') ||
+      errMsg.includes('token is invalid')
+
+    if (isJwtIssuerError) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.',
+      })
+    }
 
     throw createError({
       statusCode: error?.statusCode || 500,
