@@ -29,13 +29,16 @@
               <img :src="image.src" :alt="image.alt || product.name" class="w-full h-full object-cover" />
             </button>
           </div>
+          <!-- Leyenda de imagen ilustrativa -->
+          <p class="font-inter text-[10px] text-outline-variant italic mt-3 text-center uppercase tracking-wider">
+            * La imagen del producto es ilustrativa y puede no coincidir 100% con el producto real.
+          </p>
         </div>
 
         <div class="space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ product.name }}</h1>
           <p class="text-primary text-3xl font-black">${{ currentPriceWithTax }}</p>
           <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ currentSku }}</p>
-          <div class="text-on-surface-variant leading-relaxed" v-html="activeVariation?.description || product.short_description || product.description || ''" />
           
           <!-- Variaciones (Chips) -->
           <div v-if="product.type === 'variable' && product.attributes && product.attributes.length > 0" class="space-y-4 pt-4 border-t border-outline-variant/20">
@@ -133,16 +136,27 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-16 border-t border-outline-variant/10 pt-12">
-          <div v-for="group in specGroups" :key="group.title" class="space-y-6">
-            <div>
-              <span class="font-inter text-xs uppercase text-primary font-bold tracking-widest block mb-2">
-                {{ group.title }}
-              </span>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 border-t border-outline-variant/10 pt-12">
+          <!-- Columna de Descripción del Producto -->
+          <div class="space-y-4">
+            <span class="font-inter text-xs uppercase text-primary font-bold tracking-widest block mb-2">
+              Descripción del Producto
+            </span>
+            <div class="text-on-surface-variant leading-relaxed text-sm font-light text-justify" v-html="activeVariation?.description || product.short_description || product.description || 'No hay descripción detallada disponible.'" />
+          </div>
 
-              <div v-for="item in group.items" :key="item.label" class="flex justify-between border-b border-outline-variant/10 pb-2 gap-8">
-                <span class="text-on-surface-variant">{{ item.label }}</span>
-                <span class="text-on-surface font-bold text-right">{{ item.value }}</span>
+          <!-- Columnas de Especificaciones Técnicas (Información y Atributos) -->
+          <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-16">
+            <div v-for="group in specGroups" :key="group.title" class="space-y-6">
+              <div>
+                <span class="font-inter text-xs uppercase text-primary font-bold tracking-widest block mb-2">
+                  {{ group.title }}
+                </span>
+
+                <div v-for="item in group.items" :key="item.label" class="flex justify-between border-b border-outline-variant/10 pb-2 gap-8">
+                  <span class="text-on-surface-variant text-sm">{{ item.label }}</span>
+                  <span class="text-on-surface font-bold text-sm text-right">{{ item.value }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -240,8 +254,9 @@ const { data: product, pending, error } = await useFetch<WooProduct>(
   () => `/api/product/${encodeURIComponent(slug.value)}`,
 )
 
-const { data: relatedData, pending: relatedPending } = await useFetch<any>('/api/products?perPage=8')
-const relatedProducts = computed(() => relatedData.value?.items || [])
+const { data: relatedProducts, pending: relatedPending } = await useFetch<any>(
+  () => product.value ? `/api/products/related?id=${product.value.id}` : null
+)
 
 // === Hermanos (siblings): otras variantes del mismo producto ===
 const siblingsUrl = computed(() =>

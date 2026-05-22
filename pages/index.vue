@@ -176,7 +176,7 @@
         <NuxtLink 
           v-for="cat in categories" 
           :key="cat.title"
-          :to="`/tienda?q=${cat.title}`"
+          :to="cat.link"
           class="bg-white rounded-2xl flex flex-col items-center justify-center p-6 gap-4 text-center border border-outline-variant/20 hover:border-primary hover:shadow-lg transition-all group"
         >
           <div class="w-14 h-14 rounded-full bg-[#f9f9fb] group-hover:bg-primary group-hover:text-white text-slate-500 font-light flex items-center justify-center transition-colors">
@@ -425,19 +425,19 @@ onMounted(() => { startTimer() })
 onUnmounted(() => { clearInterval(slideInterval) })
 
 // === Productos Recientes ===
-const { data: productsData, pending: productsPending, error: productsError } = await useFetch<WooPaginatedResult<WooProduct>>('/api/products?perPage=8')
+const { data: productsData, pending: productsPending, error: productsError } = await useFetch<WooPaginatedResult<WooProduct>>('/api/products?perPage=8&brand=261')
 const homeProducts = computed(() => productsData.value?.items || [])
 
 // === Categorías Visuales Rápidas ===
 const categories = [
-  { title: 'Eléctrico', icon: 'electrical_services' },
-  { title: 'Tubería', icon: 'water_damage' },
-  { title: 'Tableros', icon: 'switch' },
-  { title: 'Iluminación', icon: 'lightbulb' },
-  { title: 'Ferretería', icon: 'hardware' },
-  { title: 'Protección', icon: 'health_and_safety' },
-  { title: 'Herramientas', icon: 'handyman' },
-  { title: 'Consumibles', icon: 'inventory_2' },
+  { title: 'Eléctrico', icon: 'electrical_services', link: '/tienda?category=23' },
+  { title: 'Canalización', icon: 'water_damage', link: '/tienda?category=38' },
+  { title: 'Control y Protec.', icon: 'settings', link: '/tienda?category=50' },
+  { title: 'Iluminación', icon: 'lightbulb', link: '/tienda?category=26' },
+  { title: 'Ferretería', icon: 'hardware', link: '/tienda?category=18' },
+  { title: 'Seguridad', icon: 'health_and_safety', link: '/tienda?category=59' },
+  { title: 'Herramientas', icon: 'handyman', link: '/tienda?category=53' },
+  { title: 'Cableado', icon: 'cable', link: '/tienda?category=55' },
 ]
 
 // === Trust Features ===

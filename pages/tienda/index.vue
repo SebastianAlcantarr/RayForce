@@ -59,46 +59,6 @@
             </ul>
           </section>
 
-          <section>
-            <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Especificaciones</h3>
-            <div class="space-y-6">
-              <div>
-                <label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Voltaje</label>
-                <div class="space-y-2">
-                  <label class="flex items-center gap-3 cursor-pointer group">
-                    <input class="w-4 h-4 border-outline-variant rounded-sm text-primary focus:ring-primary/20" type="checkbox" />
-                    <span class="text-xs font-inter text-on-surface-variant group-hover:text-on-surface transition-colors">110V - 230V</span>
-                  </label>
-                  <label class="flex items-center gap-3 cursor-pointer group">
-                    <input class="w-4 h-4 border-outline-variant rounded-sm text-primary focus:ring-primary/20" type="checkbox" />
-                    <span class="text-xs font-inter text-on-surface-variant group-hover:text-on-surface transition-colors">400V Industrial</span>
-                  </label>
-                </div>
-              </div>
-              <div>
-                <label class="block font-inter text-[9px] text-outline-variant uppercase tracking-widest mb-3">Grado de Protección IP</label>
-                <div class="grid grid-cols-2 gap-2">
-                  <button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP44</button>
-                  <button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP65</button>
-                  <button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP67</button>
-                  <button class="py-2 px-3 border border-outline-variant/20 text-[10px] font-inter hover:border-primary transition-all rounded-sm" type="button">IP68</button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h3 class="font-inter text-[11px] font-bold uppercase tracking-[0.15em] mb-6 text-on-surface">Rango de Precio</h3>
-            <div class="h-1 bg-surface-container rounded-full relative">
-              <div class="absolute inset-y-0 left-0 right-1/4 bg-primary rounded-full" />
-              <div class="absolute -top-1.5 left-0 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm" />
-              <div class="absolute -top-1.5 right-1/4 w-4 h-4 bg-white border-2 border-primary rounded-full shadow-sm" />
-            </div>
-            <div class="flex justify-between mt-4 font-inter text-[10px] text-outline">
-              <span>$0</span>
-              <span>$5,000+</span>
-            </div>
-          </section>
         </div>
       </aside>
 
