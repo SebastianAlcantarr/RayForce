@@ -378,6 +378,225 @@
             </button>
           </div>
 
+          <!-- TAB: FACTURACIÓN -->
+          <div v-else-if="currentTab === 'fiscal'" key="fiscal" class="space-y-8">
+            <div class="flex items-center justify-between border-b border-outline-variant/15 pb-4">
+              <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-primary text-3xl bg-primary/10 p-2 rounded-lg">receipt</span>
+                <h2 class="text-2xl font-bold">Datos de Facturación Fiscal</h2>
+              </div>
+              <div v-if="fiscalSaveSuccess" class="flex items-center gap-2 text-green-600 bg-green-500/10 px-4 py-2 rounded-full">
+                <span class="material-symbols-outlined text-sm">check_circle</span>
+                <span class="text-xs font-bold">Guardado</span>
+              </div>
+            </div>
+
+            <!-- MODO LECTURA / VISTA PREVIA -->
+            <div v-if="!isEditingFiscal" class="space-y-6">
+              <div v-if="!fiscalProfileLoaded" class="py-12 flex flex-col items-center justify-center opacity-70">
+                <span class="material-symbols-outlined animate-spin text-4xl text-primary mb-4">hourglass_top</span>
+                <p class="font-medium text-sm">Cargando tus datos fiscales...</p>
+              </div>
+
+              <div v-else-if="!fiscalProfileExists" class="text-center py-12 bg-surface-container/20 border border-outline-variant/15 rounded-2xl">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  <span class="material-symbols-outlined text-primary text-3xl">receipt</span>
+                </div>
+                <h3 class="text-lg font-bold mb-2">No tienes datos fiscales guardados</h3>
+                <p class="text-on-surface-variant text-sm mb-6 max-w-md mx-auto">Registra tu RFC y datos de facturación para que se auto-completen en tus futuras compras.</p>
+                <button @click="startEditingFiscal" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all">Registrar datos fiscales</button>
+              </div>
+
+              <div v-else class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-1">Razón Social</label>
+                    <p class="text-base font-semibold text-on-surface">{{ fiscalForm.razonSocial || '—' }}</p>
+                  </div>
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-1">RFC</label>
+                    <p class="text-base font-mono font-semibold text-primary uppercase">{{ fiscalForm.rfc || '—' }}</p>
+                  </div>
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-1">Régimen Fiscal</label>
+                    <p class="text-base font-semibold text-on-surface">
+                      {{ getRegimenLabel(fiscalForm.regimenFiscal) }}
+                    </p>
+                  </div>
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-1">Uso de CFDI Preferido</label>
+                    <p class="text-base font-semibold text-on-surface">
+                      {{ getUsoCfdiLabel(fiscalForm.usoCfdi) }}
+                    </p>
+                  </div>
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-1">Forma de Pago Preferida</label>
+                    <p class="text-base font-semibold text-on-surface">
+                      {{ getFormaPagoLabel(fiscalForm.formaPago) }}
+                    </p>
+                  </div>
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-1">Correo de Facturación</label>
+                    <p class="text-base font-semibold text-on-surface">{{ fiscalForm.emailFactura || '—' }}</p>
+                  </div>
+                  <div class="p-5 bg-surface-container/30 border border-outline-variant/15 rounded-xl md:col-span-2">
+                    <label class="text-[10px] font-inter uppercase tracking-widest text-on-surface-variant block mb-2">Constancia de Situación Fiscal</label>
+                    <div class="flex items-center gap-4">
+                      <span class="material-symbols-outlined text-4xl text-primary bg-primary/10 p-2 rounded-lg">verified_user</span>
+                      <div class="min-w-0 flex-grow">
+                        <p class="text-sm font-semibold text-on-surface truncate">Constancia Guardada</p>
+                        <p class="text-xs text-on-surface-variant">Tu archivo está cargado y listo para asociarse a tus pedidos.</p>
+                      </div>
+                      <a :href="fiscalForm.constanciaUrl" target="_blank" class="px-4 py-2 bg-surface-container text-on-surface-variant hover:bg-primary/10 hover:text-primary rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-sm">download</span> Descargar
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-4">
+                  <button @click="startEditingFiscal" class="bg-primary text-white py-3.5 px-8 rounded-xl font-bold hover:shadow-lg transition-all flex items-center gap-2">
+                    <span class="material-symbols-outlined text-[20px]">edit_note</span>
+                    <span>Editar Datos Fiscales</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- MODO EDICIÓN -->
+            <div v-else class="space-y-6">
+              <div class="relative bg-surface-container/30 border-2 border-outline-variant/20 rounded-2xl p-6 overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -mr-4 -mt-4"></div>
+                <h3 class="text-lg font-bold mb-6 flex items-center gap-2 relative">
+                  <span class="material-symbols-outlined text-primary">edit</span> Modificar Datos Fiscales
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                  <!-- Razón Social -->
+                  <div class="flex flex-col gap-1.5 md:col-span-2">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Razón Social / Nombre Fiscal</label>
+                    <input v-model="editFiscalForm.razonSocial" type="text" placeholder="Razón Social Completa"
+                      class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                  </div>
+
+                  <!-- RFC -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">RFC</label>
+                    <input v-model="editFiscalForm.rfc" type="text" placeholder="RFC" maxlength="13"
+                      class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant uppercase" />
+                  </div>
+
+                  <!-- Correo Facturación -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Correo Electrónico de Facturación</label>
+                    <input v-model="editFiscalForm.emailFactura" type="email" placeholder="facturacion@correo.com"
+                      class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant" />
+                  </div>
+
+                  <!-- Régimen Fiscal -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Régimen Fiscal</label>
+                    <select v-model="editFiscalForm.regimenFiscal"
+                      class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant">
+                      <option value="" disabled>Selecciona un régimen</option>
+                      <option v-for="item in regimenesFiscales" :key="item.code" :value="item.code">
+                        {{ item.code }} - {{ item.name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Uso CFDI -->
+                  <div class="flex flex-col gap-1.5">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Uso de CFDI</label>
+                    <select v-model="editFiscalForm.usoCfdi"
+                      class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant">
+                      <option value="" disabled>Selecciona uso CFDI</option>
+                      <option v-for="item in usosCfdi" :key="item.code" :value="item.code">
+                        {{ item.code }} - {{ item.name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Forma de Pago -->
+                  <div class="flex flex-col gap-1.5 md:col-span-2">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Forma de Pago</label>
+                    <select v-model="editFiscalForm.formaPago"
+                      class="w-full bg-surface-container/50 border border-outline-variant/30 rounded-xl px-4 py-3 text-sm font-medium transition-all outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant">
+                      <option value="" disabled>Selecciona forma de pago</option>
+                      <option v-for="item in formasPago" :key="item.code" :value="item.code">
+                        {{ item.code }} - {{ item.name }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Constancia upload zone -->
+                  <div class="flex flex-col gap-1.5 md:col-span-2">
+                    <label class="font-inter text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Constancia de Situación Fiscal (PDF o Imagen)</label>
+                    <div 
+                      class="border-2 border-dashed border-outline-variant/30 bg-surface-container-lowest rounded-2xl p-6 text-center group hover:border-primary/50 transition-colors cursor-pointer relative"
+                      :class="{
+                        'border-primary bg-primary/5': isFiscalDragging,
+                        'border-error/30 bg-error/5': fiscalFileError
+                      }"
+                      @click="triggerFiscalFileInput"
+                      @dragover.prevent="isFiscalDragging = true"
+                      @dragenter.prevent="isFiscalDragging = true"
+                      @dragleave.prevent="isFiscalDragging = false"
+                      @drop.prevent="onFiscalDrop"
+                    >
+                      <input type="file" ref="fiscalFileInput" class="hidden" accept=".pdf,.png,.jpg,.jpeg" @change="onFiscalFileSelected" />
+                      
+                      <div v-if="!selectedFiscalFile && !editFiscalForm.constanciaUrl" class="flex flex-col items-center">
+                        <span class="material-symbols-outlined text-3xl text-outline-variant mb-2 group-hover:text-primary transition-colors">upload_file</span>
+                        <p class="font-bold text-on-surface text-xs">Arrastra tu constancia aquí o haz clic para subir</p>
+                        <p class="font-inter text-[9px] text-outline-variant mt-1">Formatos: .PDF, .PNG, .JPG (Max 10MB)</p>
+                      </div>
+                      
+                      <div v-else class="flex flex-col items-center" @click.stop>
+                        <span class="material-symbols-outlined text-3xl text-primary mb-2">verified_user</span>
+                        <p v-if="selectedFiscalFile" class="font-bold text-on-surface text-xs max-w-xs truncate">{{ selectedFiscalFile.name }}</p>
+                        <p v-else class="font-bold text-on-surface text-xs max-w-xs truncate">Constancia Guardada</p>
+                        <p v-if="selectedFiscalFile" class="font-inter text-[9px] text-outline-variant mt-0.5">{{ formatSize(selectedFiscalFile.size) }}</p>
+                        <button type="button" @click="removeFiscalFile" class="mt-3 px-2 py-1 bg-error/10 hover:bg-error/20 text-error text-[9px] font-bold uppercase tracking-wider rounded transition-colors flex items-center gap-1 mx-auto">
+                          <span class="material-symbols-outlined text-xs">delete</span> Reemplazar Archivo
+                        </button>
+                      </div>
+                    </div>
+                    <p v-if="fiscalFileError" class="text-xs text-error mt-2 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">error</span> {{ fiscalFileError }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Error messages -->
+              <div v-if="fiscalSaveError" class="p-4 bg-error/10 border border-error/20 rounded-xl flex items-start gap-3 text-error">
+                <span class="material-symbols-outlined">error</span>
+                <p class="text-sm font-semibold">{{ fiscalSaveError }}</p>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="flex gap-4">
+                <button
+                  @click="handleSaveFiscal"
+                  :disabled="isSavingFiscal || !isEditFiscalFormValid"
+                  class="bg-primary text-white py-3.5 px-8 rounded-xl font-bold hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  <span v-if="isSavingFiscal" class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                  <span v-else class="material-symbols-outlined text-[20px]">save</span>
+                  <span>{{ isSavingFiscal ? 'Guardando...' : 'Guardar Cambios' }}</span>
+                </button>
+                <button
+                  @click="cancelEditingFiscal"
+                  :disabled="isSavingFiscal"
+                  class="bg-surface-container text-on-surface-variant py-3.5 px-8 rounded-xl font-bold hover:bg-surface-container-high transition-all"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- TAB: SEGURIDAD -->
           <div v-else-if="currentTab === 'security'" key="security" class="space-y-8">
             <div class="flex items-center gap-3 border-b border-outline-variant/15 pb-4">
@@ -439,13 +658,14 @@ const router = useRouter()
 const auth = useAuth()
 
 // Estado de Tabs
-type TabId = 'account' | 'orders' | 'addresses' | 'security'
+type TabId = 'account' | 'orders' | 'addresses' | 'fiscal' | 'security'
 const currentTab = ref<TabId>('orders') // Por defecto abrir en pedidos
 
 const tabs = [
   { id: 'account', name: 'Mi Cuenta', shortName: 'Cuenta', icon: 'person' },
   { id: 'orders', name: 'Mis Pedidos', shortName: 'Pedidos', icon: 'receipt_long' },
   { id: 'addresses', name: 'Direcciones', shortName: 'Envío', icon: 'local_shipping' },
+  { id: 'fiscal', name: 'Facturación', shortName: 'Factura', icon: 'receipt' },
   { id: 'security', name: 'Seguridad', shortName: 'Seguridad', icon: 'shield_lock' },
 ] as const
 
@@ -685,6 +905,254 @@ const handleDeleteOrder = async (order: any) => {
   }
 }
 
+// --- SISTEMA DE FACTURACIÓN (CFDI) ---
+const isEditingFiscal = ref(false)
+const fiscalProfileLoaded = ref(false)
+const fiscalProfileExists = ref(false)
+const isSavingFiscal = ref(false)
+const fiscalSaveSuccess = ref(false)
+const fiscalSaveError = ref('')
+const selectedFiscalFile = ref<File | null>(null)
+const fiscalFileError = ref('')
+const isFiscalDragging = ref(false)
+const fiscalFileInput = ref<HTMLInputElement | null>(null)
+
+const fiscalForm = reactive({
+  rfc: '',
+  razonSocial: '',
+  regimenFiscal: '',
+  usoCfdi: '',
+  formaPago: '',
+  emailFactura: '',
+  constanciaUrl: ''
+})
+
+const editFiscalForm = reactive({
+  rfc: '',
+  razonSocial: '',
+  regimenFiscal: '',
+  usoCfdi: '',
+  formaPago: '',
+  emailFactura: '',
+  constanciaUrl: ''
+})
+
+const regimenesFiscales = [
+  { code: '601', name: 'General de Ley Personas Morales' },
+  { code: '603', name: 'Personas Morales con Fines no Lucrativos' },
+  { code: '605', name: 'Sueldos y Salarios e Ingresos Asimilados a Salarios' },
+  { code: '606', name: 'Arrendamiento' },
+  { code: '612', name: 'Personas Físicas con Actividades Empresariales y Profesionales' },
+  { code: '616', name: 'Sin obligaciones fiscales' },
+  { code: '621', name: 'Incorporación Fiscal' },
+  { code: '625', name: 'Régimen de las Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras' },
+  { code: '626', name: 'Régimen Simplificado de Confianza (RESICO)' },
+]
+
+const usosCfdi = [
+  { code: 'G01', name: 'Adquisición de mercancías' },
+  { code: 'G03', name: 'Gastos en general' },
+  { code: 'I01', name: 'Construcciones' },
+  { code: 'I02', name: 'Mobiliario y equipo de oficina por inversiones' },
+  { code: 'I03', name: 'Equipo de transporte' },
+  { code: 'I04', name: 'Equipo de cómputo y accesorios' },
+  { code: 'I08', name: 'Otra maquinaria y equipo' },
+  { code: 'S01', name: 'Sin efectos fiscales' },
+  { code: 'CP01', name: 'Pagos' },
+]
+
+const formasPago = [
+  { code: '01', name: 'Efectivo' },
+  { code: '02', name: 'Cheque nominativo' },
+  { code: '03', name: 'Transferencia electrónica de fondos (SPEI)' },
+  { code: '04', name: 'Tarjeta de crédito' },
+  { code: '28', name: 'Tarjeta de débito' },
+  { code: '99', name: 'Por definir' },
+]
+
+const getRegimenLabel = (code: string) => {
+  return regimenesFiscales.find(r => r.code === code)?.name 
+    ? `${code} - ${regimenesFiscales.find(r => r.code === code)?.name}` 
+    : code || '—'
+}
+
+const getUsoCfdiLabel = (code: string) => {
+  return usosCfdi.find(u => u.code === code)?.name 
+    ? `${code} - ${usosCfdi.find(u => u.code === code)?.name}` 
+    : code || '—'
+}
+
+const getFormaPagoLabel = (code: string) => {
+  return formasPago.find(f => f.code === code)?.name 
+    ? `${code} - ${formasPago.find(f => f.code === code)?.name}` 
+    : code || '—'
+}
+
+const isEditFiscalFormValid = computed(() => {
+  const rfcValid = /^[A-Z&Ññ]{3,4}\d{6}[A-Z0-9]{3}$/i.test(editFiscalForm.rfc.trim())
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editFiscalForm.emailFactura.trim())
+  return editFiscalForm.razonSocial.trim().length >= 3 &&
+         rfcValid &&
+         editFiscalForm.regimenFiscal !== '' &&
+         editFiscalForm.usoCfdi !== '' &&
+         editFiscalForm.formaPago !== '' &&
+         emailValid &&
+         (selectedFiscalFile.value || editFiscalForm.constanciaUrl !== '')
+})
+
+const startEditingFiscal = () => {
+  editFiscalForm.rfc = fiscalForm.rfc
+  editFiscalForm.razonSocial = fiscalForm.razonSocial
+  editFiscalForm.regimenFiscal = fiscalForm.regimenFiscal
+  editFiscalForm.usoCfdi = fiscalForm.usoCfdi
+  editFiscalForm.formaPago = fiscalForm.formaPago
+  editFiscalForm.emailFactura = fiscalForm.emailFactura || auth.user.value?.email || ''
+  editFiscalForm.constanciaUrl = fiscalForm.constanciaUrl
+  selectedFiscalFile.value = null
+  fiscalFileError.value = ''
+  isEditingFiscal.value = true
+}
+
+const cancelEditingFiscal = () => {
+  isEditingFiscal.value = false
+  selectedFiscalFile.value = null
+  fiscalFileError.value = ''
+}
+
+const triggerFiscalFileInput = () => {
+  fiscalFileInput.value?.click()
+}
+
+const validateAndSetFiscalFile = (file: File) => {
+  fiscalFileError.value = ''
+  
+  const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg']
+  const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
+  
+  if (!allowedExtensions.includes(fileExt)) {
+    fiscalFileError.value = 'Formato no permitido. Sube un archivo PDF, PNG, JPG o JPEG.'
+    return
+  }
+  
+  const maxSize = 10 * 1024 * 1024 // 10MB
+  if (file.size > maxSize) {
+    fiscalFileError.value = 'El archivo supera el límite de 10MB.'
+    return
+  }
+  
+  selectedFiscalFile.value = file
+}
+
+const onFiscalFileSelected = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  if (file) {
+    validateAndSetFiscalFile(file)
+  }
+}
+
+const onFiscalDrop = (event: DragEvent) => {
+  isFiscalDragging.value = false
+  const file = event.dataTransfer?.files?.[0]
+  if (file) {
+    validateAndSetFiscalFile(file)
+  }
+}
+
+const removeFiscalFile = () => {
+  selectedFiscalFile.value = null
+  editFiscalForm.constanciaUrl = ''
+  fiscalFileError.value = ''
+  if (fiscalFileInput.value) {
+    fiscalFileInput.value.value = ''
+  }
+}
+
+const formatSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
+
+const handleSaveFiscal = async () => {
+  isSavingFiscal.value = true
+  fiscalSaveSuccess.value = false
+  fiscalSaveError.value = ''
+
+  try {
+    const profileData = new FormData()
+    profileData.append('rfc', editFiscalForm.rfc.toUpperCase().trim())
+    profileData.append('razonSocial', editFiscalForm.razonSocial.trim())
+    profileData.append('regimenFiscal', editFiscalForm.regimenFiscal)
+    profileData.append('usoCfdi', editFiscalForm.usoCfdi)
+    profileData.append('formaPago', editFiscalForm.formaPago)
+    profileData.append('emailFactura', editFiscalForm.emailFactura.trim())
+    
+    if (selectedFiscalFile.value) {
+      profileData.append('file', selectedFiscalFile.value)
+    } else if (editFiscalForm.constanciaUrl) {
+      profileData.append('constanciaUrl', editFiscalForm.constanciaUrl)
+    }
+
+    const response = await $fetch<any>('/api/fiscal-data', {
+      method: 'PUT',
+      body: profileData
+    })
+
+    if (response.success && response.data) {
+      const data = response.data
+      fiscalForm.rfc = data.rfc || ''
+      fiscalForm.razonSocial = data.razonSocial || ''
+      fiscalForm.regimenFiscal = data.regimenFiscal || ''
+      fiscalForm.usoCfdi = data.usoCfdi || ''
+      fiscalForm.formaPago = data.formaPago || ''
+      fiscalForm.emailFactura = data.emailFactura || ''
+      fiscalForm.constanciaUrl = data.constanciaUrl || ''
+      
+      fiscalProfileExists.value = true
+      isEditingFiscal.value = false
+      fiscalSaveSuccess.value = true
+      
+      setTimeout(() => {
+        fiscalSaveSuccess.value = false
+      }, 4000)
+    }
+  } catch (error: any) {
+    fiscalSaveError.value = error?.data?.statusMessage || 'No se pudieron guardar los datos fiscales. Intenta de nuevo.'
+  } finally {
+    isSavingFiscal.value = false
+  }
+}
+
+const loadFiscalProfile = async () => {
+  fiscalProfileLoaded.value = false
+  try {
+    const response = await $fetch<any>('/api/fiscal-data')
+    if (response && response.success && response.data) {
+      const data = response.data
+      fiscalForm.rfc = data.rfc || ''
+      fiscalForm.razonSocial = data.razonSocial || ''
+      fiscalForm.regimenFiscal = data.regimenFiscal || ''
+      fiscalForm.usoCfdi = data.usoCfdi || ''
+      fiscalForm.formaPago = data.formaPago || ''
+      fiscalForm.emailFactura = data.emailFactura || auth.user.value?.email || ''
+      fiscalForm.constanciaUrl = data.constanciaUrl || ''
+      fiscalProfileExists.value = true
+    } else {
+      fiscalProfileExists.value = false
+      fiscalForm.emailFactura = auth.user.value?.email || ''
+    }
+  } catch (error) {
+    console.error('Error al cargar datos fiscales:', error)
+    fiscalProfileExists.value = false
+    fiscalForm.emailFactura = auth.user.value?.email || ''
+  } finally {
+    fiscalProfileLoaded.value = true
+  }
+}
+
 const handleLogout = async () => {
   isLoggingOut.value = true
   try {
@@ -712,6 +1180,7 @@ onMounted(async () => {
   // Populate address form with existing profile data
   populateAddressForm()
   await loadOrders()
+  await loadFiscalProfile()
 })
 </script>
 

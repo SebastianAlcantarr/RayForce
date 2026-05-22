@@ -82,7 +82,8 @@ export default defineEventHandler(async (event) => {
           method_title: 'Envío',
           total: '0'
         }
-      ]
+      ],
+      customer_note: body.customer_note || undefined
     }
 
     const order = await $fetch<any>(
