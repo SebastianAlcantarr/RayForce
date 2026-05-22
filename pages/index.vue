@@ -222,7 +222,7 @@
         >
           <!-- Badge Oferta -->
           <span v-if="product.sale_price" class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10">OFERTA</span>
-          
+
           <div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5">
             <img
               :src="product.images?.[0]?.src || '/placeholder.jpg'"
@@ -230,7 +230,7 @@
               class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
             />
           </div>
-          
+
           <div class="flex-1 flex flex-col">
             <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 line-clamp-1 block">
               {{ product.sku || 'SIN SKU' }} · {{ product.categories?.[0]?.name || 'Equipos' }}
@@ -244,8 +244,15 @@
                 <span v-if="product.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full">Opciones</span>
                 <p v-else class="text-primary font-black text-xl">${{ product.price }}</p>
               </div>
-              <div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                <span class="material-symbols-outlined text-xl">shopping_cart</span>
+              <div
+                :class="[
+                  'w-10 h-10 rounded-full flex items-center justify-center transition-colors',
+                  product.stock_status === 'outofstock'
+                    ? 'bg-slate-400 text-white'
+                    : 'bg-surface-container-high text-slate-600 group-hover:bg-primary group-hover:text-white'
+                ]"
+              >
+                <span class="material-symbols-outlined text-xl">{{ product.stock_status === 'outofstock' ? 'remove_shopping_cart' : 'shopping_cart' }}</span>
               </div>
             </div>
           </div>
@@ -442,10 +449,10 @@ const categories = [
 
 // === Trust Features ===
 const trustItems = [
-  { title: 'Envío Garantizado', description: 'Logística rápida asegurada', icon: 'local_shipping' },
-  { title: 'Garantía Original', description: 'Mercancía directa de fábrica', icon: 'verified' },
-  { title: 'Pagos Seguros', description: 'Encriptación AES-256 bits', icon: 'shield_lock' },
-  { title: 'Soporte 24/7', description: 'Consultas vía WhatsApp', icon: 'support_agent' },
+  { title: 'Recoger en tienda ', description: 'Entrega de productos asegurada', icon: 'package_2' },
+  { title: 'Produtos de calidad', description: 'Mercancía directa de fábrica', icon: 'verified' },
+  { title: 'Marcas reconocidas', description: 'Marcas con excelente reputacion', icon: 'check' },
+  { title: 'Soporte ', description: 'Consultas vía WhatsApp', icon: 'support_agent' },
 ]
 
 // === Lista de Marcas del Carrusel ===
