@@ -207,14 +207,6 @@
                     </div>
 
                     <div class="space-y-2 mt-auto">
-                      <a 
-                        v-if="order.payment_url && order.status === 'pending'"
-                        :href="order.payment_url"
-                        class="w-full text-center block bg-primary text-white text-xs font-bold uppercase tracking-wider py-2.5 rounded-lg hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
-                      >
-                        Pagar Ahora
-                      </a>
-                      
                       <button
                         v-if="order.status === 'pending'"
                         @click="handleDeleteOrder(order)"
