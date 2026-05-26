@@ -613,16 +613,12 @@ const usosCfdi = [
   { code: 'I04', name: 'Equipo de cómputo y accesorios' },
   { code: 'I08', name: 'Otra maquinaria y equipo' },
   { code: 'S01', name: 'Sin efectos fiscales' },
-  { code: 'CP01', name: 'Pagos' },
 ]
 
 const formasPago = [
-  { code: '01', name: 'Efectivo' },
-  { code: '02', name: 'Cheque nominativo' },
   { code: '03', name: 'Transferencia electrónica de fondos (SPEI)' },
   { code: '04', name: 'Tarjeta de crédito' },
   { code: '28', name: 'Tarjeta de débito' },
-  { code: '99', name: 'Por definir' },
 ]
 
 const isRfcValid = computed(() => {

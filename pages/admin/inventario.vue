@@ -833,7 +833,6 @@ async function parseFile(file: File) {
     return
   }
 
-  parsedRows.value    = rows
   parsedHeaders.value = Object.keys(rows[0])
 
   // Auto-detectar columnas comunes de CONTPAQi
@@ -841,6 +840,22 @@ async function parseFile(file: File) {
   colMap.sku   = parsedHeaders.value[headers.findIndex((h) => h.includes('PRODUCTO') || h.includes('CÓDIGO') || h.includes('CODIGO') || h.includes('SKU'))] ?? ''
   colMap.price = parsedHeaders.value[headers.findIndex((h) => h.includes('PRECIO') || h.includes('PRICE'))] ?? ''
   colMap.stock = parsedHeaders.value[headers.findIndex((h) => h.includes('INVENTARIO') || h.includes('EXIST') || h.includes('STOCK') || h.includes('CANTIDAD'))] ?? ''
+
+  // Filtrar filas vacías o con metadatos/totales
+  const skuColumn = colMap.sku
+  const cleanedRows = rows.filter((row) => {
+    const rawSku = String(row[skuColumn] || '').trim()
+    // Si el SKU está vacío, lo omitimos
+    if (!rawSku) return false
+    // Si contiene texto de cabecera/metadatos de CONTPAQi, lo omitimos
+    const upperSku = rawSku.toUpperCase()
+    if (upperSku.includes('ALMACÉN') || upperSku.includes('ALMACEN') || upperSku.includes('NOMBRE') || upperSku.includes('CÓDIGO') || upperSku.includes('CODIGO')) {
+      return false
+    }
+    return true
+  })
+
+  parsedRows.value = cleanedRows
 }
 
 function resetUpload() {

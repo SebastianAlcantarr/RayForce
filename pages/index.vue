@@ -273,9 +273,12 @@
           <span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Nuestros Socios</span>
           <h2 class="text-3xl font-black text-slate-800 tracking-tight">Marcas de Confianza</h2>
         </div>
-        <NuxtLink to="/tienda" class="text-xs font-bold text-primary hover:underline uppercase tracking-wider">
+        <button 
+          @click="showBrandsModal = true" 
+          class="text-xs font-bold text-primary hover:underline uppercase tracking-wider cursor-pointer"
+        >
           Ver todas las marcas
-        </NuxtLink>
+        </button>
       </div>
 
       <!-- Marquesina de Desplazamiento Infinito -->
@@ -287,17 +290,19 @@
             v-for="(brand, index) in brandsList"
             :key="'b1-' + index"
             :to="{ path: '/tienda', query: brand.query }"
-            :style="{ backgroundColor: brand.color, '--brand-color': brand.color }"
-            class="brand-card w-48 h-20 md:w-56 md:h-24 mx-4 rounded-2xl flex items-center justify-center border border-transparent shadow-sm transition-all duration-300 shrink-0 select-none group px-6"
+            :style="{ backgroundColor: brand.bgColor }"
+            class="relative overflow-hidden w-36 h-24 md:w-42 md:h-28 mx-4 rounded-2xl shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-md hover:z-20 shrink-0 select-none"
           >
-            <span 
-              :class="[
-                brand.name === 'FOY' ? 'text-slate-900' : 'text-white',
-                'font-inter font-black uppercase tracking-tighter text-lg md:text-xl text-center select-none transition-colors duration-300 leading-snug'
-              ]"
-            >
-              {{ brand.name }}
-            </span>
+            <img
+              :src="brand.logo"
+              :alt="brand.name"
+              class="w-full h-full object-cover absolute top-1/2 left-1/2 select-none pointer-events-none"
+              :style="{
+                transform: `translate(-50%, -50%) scale(${brand.scale || 0.95})`,
+                clipPath: 'inset(0 0 8% 0)'
+              }"
+              loading="lazy"
+            />
           </NuxtLink>
           
           <!-- Segunda tanda de marcas (copia idéntica para loop infinito sin cortes) -->
@@ -305,21 +310,81 @@
             v-for="(brand, index) in brandsList"
             :key="'b2-' + index"
             :to="{ path: '/tienda', query: brand.query }"
-            :style="{ backgroundColor: brand.color, '--brand-color': brand.color }"
-            class="brand-card w-48 h-20 md:w-56 md:h-24 mx-4 rounded-2xl flex items-center justify-center border border-transparent shadow-sm transition-all duration-300 shrink-0 select-none group px-6"
+            :style="{ backgroundColor: brand.bgColor }"
+            class="relative overflow-hidden w-36 h-24 md:w-42 md:h-28 mx-4 rounded-2xl shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-md hover:z-20 shrink-0 select-none"
           >
-            <span 
-              :class="[
-                brand.name === 'FOY' ? 'text-slate-900' : 'text-white',
-                'font-inter font-black uppercase tracking-tighter text-lg md:text-xl text-center select-none transition-colors duration-300 leading-snug'
-              ]"
-            >
-              {{ brand.name }}
-            </span>
+            <img
+              :src="brand.logo"
+              :alt="brand.name"
+              class="w-full h-full object-cover absolute top-1/2 left-1/2 select-none pointer-events-none"
+              :style="{
+                transform: `translate(-50%, -50%) scale(${brand.scale || 0.95})`,
+                clipPath: 'inset(0 0 8% 0)'
+              }"
+              loading="lazy"
+            />
           </NuxtLink>
         </div>
       </div>
     </section>
+
+    <!-- Modal de Todas las Marcas -->
+    <Transition name="fade">
+      <div 
+        v-if="showBrandsModal" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+      >
+        <!-- Background Overlay -->
+        <div 
+          class="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+          @click="showBrandsModal = false"
+        ></div>
+        
+        <!-- Modal Card Content -->
+        <div 
+          class="relative bg-slate-50 w-full max-w-5xl rounded-3xl shadow-2xl p-6 md:p-10 border border-slate-200/50 max-h-[85vh] overflow-hidden flex flex-col z-10 animate-fade-in-up"
+        >
+          <!-- Modal Header -->
+          <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
+            <div>
+              <span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Catálogo Completo</span>
+              <h3 class="text-2xl font-black text-slate-800 tracking-tight">Nuestras Marcas Colaboradoras</h3>
+            </div>
+            <button 
+              @click="showBrandsModal = false" 
+              class="w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-xl">close</span>
+            </button>
+          </div>
+          
+          <!-- Brands Grid -->
+          <div class="overflow-y-auto flex-1 pr-2 py-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              <NuxtLink
+                v-for="(brand, index) in brandsList"
+                :key="'modal-' + index"
+                :to="{ path: '/tienda', query: brand.query }"
+                :style="{ backgroundColor: brand.bgColor }"
+                class="relative overflow-hidden w-full aspect-[3/2] rounded-2xl shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md hover:z-20 shrink-0 select-none flex items-center justify-center cursor-pointer"
+                @click="showBrandsModal = false"
+              >
+                <img
+                  :src="brand.logo"
+                  :alt="brand.name"
+                  class="w-full h-full object-cover absolute top-1/2 left-1/2 select-none pointer-events-none"
+                  :style="{
+                    transform: `translate(-50%, -50%) scale(${brand.scale || 0.95})`,
+                    clipPath: 'inset(0 0 8% 0)'
+                  }"
+                  loading="lazy"
+                />
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
   </div>
 </template>
@@ -381,6 +446,7 @@ watch(videoSectionRef, (el) => {
 
 // === Carrusel ===
 const activeSlide = ref(0)
+const showBrandsModal = ref(false)
 let slideInterval: any
 
 const slides = [
@@ -457,26 +523,26 @@ const trustItems = [
 
 // === Lista de Marcas del Carrusel ===
 const brandsList = [
-  { name: 'SURTEK', query: { brand: 267 }, logoType: 'surtek', color: '#0057B8', category: 'Herramientas y Cerrajería' },
-  { name: 'TRUPER', query: { brand: 261 }, logoType: 'truper', color: '#f15a24', category: 'Herramientas Profesionales' },
-  { name: 'URREA', query: { brand: 361 }, logoType: 'urrea', color: '#e30613', category: 'Herramientas de Alta Exigencia' },
-  { name: 'LITHONIA', query: { brand: 340 }, logoType: 'lithonia', color: '#004b87', category: 'Iluminación Industrial y LED' },
-  { name: 'TECNOLITE', query: { brand: 256 }, logoType: 'tecnolite', color: '#0a0a0a', category: 'Iluminación Residencial' },
-  { name: 'ESTEVEZ', query: { brand: 255 }, logoType: 'estevez', color: '#c8102e', category: 'Placas y Dispositivos de Lujo' },
-  { name: 'FOY', query: { brand: 351 }, logoType: 'foy', color: '#ffc72c', category: 'Herramientas Manuales' },
-  { name: 'FOKASU', query: { brand: 314 }, logoType: 'fokasu', color: '#00a651', category: 'Proyectores y Reflectores LED' },
-  { name: 'VIAKON', query: { q: 'viakon' }, logoType: 'viakon', color: '#00509d', category: 'Cables de Energía y Telecom' },
-  { name: 'VOLTECK', query: { brand: 270 }, logoType: 'volteck', color: '#1b365d', category: 'Material y Accesorios Eléctricos' },
-  { name: 'SIEMENS', query: { brand: 266 }, logoType: 'siemens', color: '#009999', category: 'Equipo y Control Industrial' },
-  { name: 'ANCLO', query: { brand: 257 }, logoType: 'anclo', color: '#d00000', category: 'Soportería y Fijaciones Metálicas' },
-  { name: '3M', query: { brand: 295 }, logoType: '3m', color: '#ff0000', category: 'Cintas e Aislantes Eléctricos' },
-  { name: 'SAGLite', query: { brand: 294 }, logoType: 'saglite', color: '#1c3d5a', category: 'Luminarias LED Especializadas' },
-  { name: 'ARGOS', query: { brand: 329 }, logoType: 'argos', color: '#e85d04', category: 'Canalizaciones y Tubos Conduit' },
-  { name: 'CONDULAC', query: { q: 'condulac' }, logoType: 'condulac', color: '#9e2a2b', category: 'Conductores de Cobre' },
-  { name: 'JUPITER', query: { brand: 308 }, logoType: 'jupiter', color: '#0077b6', category: 'Tecnología LED y Luminarias' },
-  { name: 'INDIANA', query: { brand: 282 }, logoType: 'indiana', color: '#2d6a4f', category: 'Cables y Conductores Eléctricos' },
-  { name: 'CONDUMEX', query: { brand: 281 }, logoType: 'condumex', color: '#bd1f2d', category: 'Conductores de Cobre y Energía' },
-  { name: 'SQUARE D', query: { brand: 298 }, logoType: 'squared', color: '#009639', category: 'Interruptores y Centros de Carga' }
+  { name: 'SURTEK', query: { brand: 267 }, logo: '/images/marcas/1.png', bgColor: '#0356a4', scale: 0.85, color: '#0057B8', category: 'Herramientas y Cerrajería' },
+  { name: 'TRUPER', query: { brand: 261 }, logo: '/images/marcas/2.png', bgColor: '#ee5921', scale: 0.95, color: '#f15a24', category: 'Herramientas Profesionales' },
+  { name: 'URREA', query: { brand: 361 }, logo: '/images/marcas/3.png', bgColor: '#d60e11', scale: 0.95, color: '#e30613', category: 'Herramientas de Alta Exigencia' },
+  { name: 'LITHONIA', query: { brand: 340 }, logo: '/images/marcas/4.png', bgColor: '#024e80', scale: 0.95, color: '#004b87', category: 'Iluminación Industrial y LED' },
+  { name: 'TECNOLITE', query: { brand: 256 }, logo: '/images/marcas/5.png', bgColor: '#111111', scale: 0.80, color: '#0a0a0a', category: 'Iluminación Residencial' },
+  { name: 'ESTEVEZ', query: { brand: 255 }, logo: '/images/marcas/6.png', bgColor: '#115093', scale: 0.80, color: '#c8102e', category: 'Placas y Dispositivos de Lujo' },
+  { name: 'FOY', query: { brand: 351 }, logo: '/images/marcas/7.png', bgColor: '#fdc123', scale: 0.95, color: '#ffc72c', category: 'Herramientas Manuales' },
+  { name: 'FOKASU', query: { brand: 314 }, logo: '/images/marcas/8.png', bgColor: '#ffffff', scale: 0.95, color: '#00a651', category: 'Proyectores y Reflectores LED' },
+  { name: 'VIAKON', query: { q: 'viakon' }, logo: '/images/marcas/9.png', bgColor: '#b6070c', scale: 0.85, color: '#00509d', category: 'Cables de Energía y Telecom' },
+  { name: 'VOLTECK', query: { brand: 270 }, logo: '/images/marcas/10.png', bgColor: '#203757', scale: 0.80, color: '#1b365d', category: 'Material y Accesorios Eléctricos' },
+  { name: 'SIEMENS', query: { brand: 266 }, logo: '/images/marcas/11.png', bgColor: '#029897', scale: 0.82, color: '#009999', category: 'Equipo y Control Industrial' },
+  { name: 'ANCLO', query: { brand: 257 }, logo: '/images/marcas/12.jpg', bgColor: '#ffffff', scale: 0.82, color: '#d00000', category: 'Soportería y Fijaciones Metálicas' },
+  { name: '3M', query: { brand: 295 }, logo: '/images/marcas/13.jpg', bgColor: '#ffffff', scale: 0.80, color: '#ff0000', category: 'Cintas e Aislantes Eléctricos' },
+  { name: 'SAGLite', query: { brand: 294 }, logo: '/images/marcas/14.jpg', bgColor: '#012059', scale: 0.95, color: '#1c3d5a', category: 'Luminarias LED Especializadas' },
+  { name: 'ARGOS', query: { brand: 329 }, logo: '/images/marcas/15.jpg', bgColor: '#ffffff', scale: 0.95, color: '#e85d04', category: 'Canalizaciones y Tubos Conduit' },
+  { name: 'CONDULAC', query: { q: 'condulac' }, logo: '/images/marcas/16.jpg', bgColor: '#2b633c', scale: 0.95, color: '#9e2a2b', category: 'Conductores de Cobre' },
+  { name: 'JUPITER', query: { brand: 308 }, logo: '/images/marcas/17.jpg', bgColor: '#ffffff', scale: 0.95, color: '#0077b6', category: 'Tecnología LED y Luminarias' },
+  { name: 'INDIANA', query: { brand: 282 }, logo: '/images/marcas/18.jpg', bgColor: '#f6b01c', scale: 0.95, color: '#2d6a4f', category: 'Cables y Conductores Eléctricos' },
+  { name: 'CONDUMEX', query: { brand: 281 }, logo: '/images/marcas/19.jpg', bgColor: '#ffffff', scale: 0.95, color: '#bd1f2d', category: 'Conductores de Cobre y Energía' },
+  { name: 'SQUARE D', query: { brand: 298 }, logo: '/images/marcas/20.jpg', bgColor: '#001d59', scale: 0.80, color: '#009639', category: 'Interruptores y Centros de Carga' }
 ]
 </script>
 
@@ -506,31 +572,12 @@ const brandsList = [
   animation-play-state: paused;
 }
 
-.brand-card {
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  z-index: 1;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
 }
-.brand-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--brand-color);
-  border-radius: inherit;
-  z-index: -1;
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
-  filter: blur(14px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-}
-.brand-card:hover {
-  transform: translateY(-8px) scale(1.06);
-  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.25);
-  z-index: 20;
-}
-.brand-card:hover::after {
-  opacity: 0.75;
-  transform: scale(1.12);
-  filter: blur(22px);
 }
 </style>

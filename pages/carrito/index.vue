@@ -93,7 +93,7 @@
                to="/checkout"
                class="w-full bg-[#13069f] text-white py-5 rounded-md text-sm font-bold uppercase tracking-[0.2em] hover:bg-[#1a0eb0] transition-all flex items-center justify-center gap-3 active:scale-[0.98]"
              >
-               Proceder a checkout
+               Proceder a compra
                <span class="material-symbols-outlined text-lg">arrow_forward</span>
              </NuxtLink>
            </div>

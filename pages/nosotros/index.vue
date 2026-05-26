@@ -38,7 +38,7 @@
             <span class="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">Nuestra Historia</span>
             <h2 class="text-3xl md:text-4xl font-extrabold text-on-surface tracking-tight mb-6">Nuestra Trayectoria</h2>
             <p class="text-on-surface-variant leading-relaxed text-base mb-4">
-              Rayforce inició sus operaciones el <strong>26 de junio de 2023</strong> en Hermosillo, Sonora, con el firme objetivo de proveer material y equipo eléctrico en el estado, logrando una rápida y favorable aceptación gracias a la excelencia de nuestro servicio.
+              Rayforce inició sus operaciones el 2023 en Hermosillo, Sonora, con el firme objetivo de proveer material y equipo eléctrico en el estado, logrando una rápida y favorable aceptación gracias a la excelencia de nuestro servicio.
             </p>
             <p class="text-on-surface-variant leading-relaxed text-base">
               Hoy en día, respondiendo a la confianza de nuestros clientes, hemos ampliado nuestro portafolio para ofrecer soluciones integrales que abarcan proyectos eléctricos, automatización y control, estudios de ahorro de energía, obra civil y proveeduría ferretera.
@@ -180,25 +180,20 @@
           <div 
             v-for="(proj, idx) in projects" 
             :key="idx" 
-            class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 hover:border-primary-container/40 transition-all duration-300 group flex flex-col justify-between"
+            class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50 hover:border-primary-container/40 transition-all duration-300 group"
           >
             <div>
-              <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center mb-6">
                 <span class="text-[10px] font-bold text-primary-container bg-primary-dim px-2.5 py-1 rounded uppercase tracking-wider">
                   {{ proj.client }}
                 </span>
-                <span class="text-slate-500 text-xs font-bold">{{ proj.year }}</span>
               </div>
               <h3 class="text-lg font-bold text-white mb-2 group-hover:text-primary-container transition-colors leading-tight">
                 {{ proj.title }}
               </h3>
-              <p class="text-slate-400 text-xs leading-relaxed font-light mb-6">
+              <p class="text-slate-400 text-xs leading-relaxed font-light">
                 {{ proj.description }}
               </p>
-            </div>
-            <div class="flex items-center gap-2 pt-4 border-t border-slate-700/40 text-slate-500 group-hover:text-primary-container transition-colors">
-              <span class="material-symbols-outlined text-sm">location_on</span>
-              <span class="text-[11px] font-medium tracking-wide uppercase">{{ proj.location }}</span>
             </div>
           </div>
         </div>

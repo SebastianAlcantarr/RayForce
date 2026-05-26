@@ -29,14 +29,14 @@
               <img :src="image.src" :alt="image.alt || product.name" class="w-full h-full object-cover" />
             </button>
           </div>
-          <!-- Leyenda de imagen ilustrativa -->
-          <p class="font-inter text-[12px] text-blue-700 italic mt-3 text-center uppercase tracking-wider">
-            * La imagen del producto es ilustrativa y puede no coincidir 100% con el producto real.
-          </p>
         </div>
 
         <div class="space-y-6">
           <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ product.name }}</h1>
+          <!-- Leyenda de imagen ilustrativa -->
+          <p class="font-inter text-[12px] text-blue-700 italic uppercase tracking-wider">
+            * La imagen del producto es ilustrativa y puede no coincidir 100% con el producto real.
+          </p>
           <p class="text-primary text-3xl font-black">${{ currentPriceWithTax }}</p>
           <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ currentSku }}</p>
           
@@ -100,23 +100,34 @@
           
           <div class="pt-6 mt-6 border-t border-outline-variant/20 flex flex-col sm:flex-row gap-4">
             <!-- Selector de Cantidad -->
-            <div class="flex items-center border border-outline-variant/30 rounded-md bg-white">
-              <button @click="quantity > 1 ? quantity-- : null" class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500">-</button>
+            <div 
+              class="flex items-center border border-outline-variant/30 rounded-md bg-white transition-all duration-300"
+              :class="{ 'opacity-50 pointer-events-none bg-slate-50': isOutOfStock }"
+            >
+              <button 
+                @click="quantity > 1 ? quantity-- : null" 
+                :disabled="isOutOfStock || quantity <= 1"
+                class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+              >-</button>
               <div class="w-12 h-12 flex items-center justify-center font-bold font-inter text-slate-800">{{ quantity }}</div>
-              <button @click="quantity++" class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500">+</button>
+              <button 
+                @click="quantity < maxAvailableStock ? quantity++ : null" 
+                :disabled="isOutOfStock || quantity >= maxAvailableStock"
+                class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+              >+</button>
             </div>
             
             <!-- Botón Agregar -->
             <button 
-              :disabled="product.stock_status === 'outofstock'"
+              :disabled="isOutOfStock"
               @click="handleAddToCart" 
               :class="[
                 addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-primary hover:bg-[#004f9f]',
-                product.stock_status === 'outofstock' ? 'opacity-60 cursor-not-allowed bg-slate-400 hover:bg-slate-400' : 'active:scale-95'
+                isOutOfStock ? 'opacity-60 cursor-not-allowed bg-slate-400 hover:bg-slate-400' : 'active:scale-95'
               ]" 
               class="flex-1 text-white font-bold h-12 rounded-md transition-all flex items-center justify-center gap-2 shadow-sm">
-              <span class="material-symbols-outlined text-xl">{{ addedToCart ? 'check_circle' : (product.stock_status === 'outofstock' ? 'remove_shopping_cart' : 'shopping_cart') }}</span>
-              {{ product.stock_status === 'outofstock' ? 'Agotado' : (addedToCart ? '¡Añadido!' : 'Agregar al Carrito') }}
+              <span class="material-symbols-outlined text-xl">{{ addedToCart ? 'check_circle' : (isOutOfStock ? 'remove_shopping_cart' : 'shopping_cart') }}</span>
+              {{ isOutOfStock ? 'Agotado' : (addedToCart ? '¡Añadido!' : 'Agregar al Carrito') }}
             </button>
             
             <!-- Botón WhatsApp -->
@@ -357,6 +368,42 @@ const activeVariation = computed(() => {
       return selectedOptions.value[attr.name] === attr.option
     }) ?? true
   })
+})
+
+const isOutOfStock = computed(() => {
+  if (!product.value) return true
+  if (product.value.type === 'variable' && activeVariation.value) {
+    return activeVariation.value.stock_status === 'outofstock'
+  }
+  return product.value.stock_status === 'outofstock'
+})
+
+const maxAvailableStock = computed(() => {
+  if (!product.value) return 0
+  if (product.value.type === 'variable' && activeVariation.value) {
+    return typeof activeVariation.value.stock_quantity === 'number' ? activeVariation.value.stock_quantity : 9999
+  }
+  return typeof product.value.stock_quantity === 'number' ? product.value.stock_quantity : 9999
+})
+
+watch(isOutOfStock, (out) => {
+  if (out) {
+    quantity.value = 0
+  } else {
+    quantity.value = 1
+  }
+}, { immediate: true })
+
+watch(quantity, (newVal) => {
+  if (newVal > maxAvailableStock.value) {
+    quantity.value = maxAvailableStock.value
+  }
+})
+
+watch(maxAvailableStock, (newMax) => {
+  if (quantity.value > newMax) {
+    quantity.value = newMax
+  }
 })
 
 const currentPrice = computed(() => {
