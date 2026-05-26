@@ -41,9 +41,13 @@
             <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">&#xe0c8;</span>
             <span>Campeche 250, Col San Benito,<br/>C.P. 83100, Hermosillo, Sonora</span>
           </div>
-          <div class="flex items-center gap-2 text-on-surface-variant">
-            <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0">&#xe0cd;</span>
-            <span>(662) 171 1371</span>
+          <div class="flex items-start gap-2 text-on-surface-variant">
+            <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">&#xe0cd;</span>
+            <div class="flex flex-col gap-1">
+              <span>(662) 171 1371</span>
+              <span>(662) 215 1020</span>
+              <span>(662) 215 1080</span>
+            </div>
           </div>
           <div class="flex items-center gap-2 text-on-surface-variant">
             <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0">&#xe158;</span>
@@ -51,7 +55,7 @@
           </div>
           <div class="flex items-start gap-2 text-on-surface-variant">
             <span aria-hidden="true" class="material-symbols-outlined text-sm flex-shrink-0 mt-0.5">&#xe8b5;</span>
-            <span>Lun - Vie: 8:00 - 18:00 | Sáb: 8:00 - 14:00</span>
+            <span>Lun - Vie: 8:00 - 17:00 | Sáb: 9:00 - 13:00</span>
           </div>
         </div>
       </div>
