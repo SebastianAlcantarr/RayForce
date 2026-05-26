@@ -119,6 +119,15 @@ export interface WooProduct {
   image?: WooProductImage
   attributes?: WooProductAttribute[]
   variations?: WooProduct[]
+  brands?: any[]
+}
+
+export interface WooBrand {
+  id: number
+  name: string
+  slug: string
+  description?: string
+  count?: number
 }
 
 export interface WooCategory {
@@ -295,6 +304,22 @@ export async function getCategories() {
   return wooFetch<WooCategory[]>('/products/categories', {
     params: { per_page: 100, hide_empty: 1 },
   })
+}
+
+export async function getBrands(): Promise<WooBrand[]> {
+  let allBrands: WooBrand[] = []
+  let page = 1
+  while (true) {
+    const response = await wooFetchResponse('/products/brands', {
+      params: { per_page: 100, page },
+    })
+    const brands = await response.json() as WooBrand[]
+    if (!brands || brands.length === 0) break
+    allBrands = allBrands.concat(brands)
+    if (brands.length < 100) break
+    page++
+  }
+  return allBrands
 }
 
 export async function getProductsByCategory(categoryId: number, page = 1) {

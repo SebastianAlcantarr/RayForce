@@ -4,7 +4,7 @@ import type { WooProduct } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { id, name, sku, regular_price, stock_quantity, description, categories, image_id } = body || {}
+  const { id, name, sku, regular_price, stock_quantity, description, categories, image_id, brand } = body || {}
 
   if (!id) {
     throw createError({ statusCode: 400, statusMessage: 'ID de producto requerido' })
@@ -33,6 +33,9 @@ export default defineEventHandler(async (event) => {
   if (image_id !== undefined && image_id !== null) {
     payload.images = [{ id: image_id }]
   }
+  if (brand !== undefined) {
+    payload.brands = brand !== null ? [{ id: Number(brand) }] : []
+  }
 
   try {
     const updated = await wooFetch<WooProduct>(`/products/${id}`, {
@@ -46,6 +49,7 @@ export default defineEventHandler(async (event) => {
       sku: updated.sku,
       regular_price: updated.regular_price,
       stock_quantity: updated.stock_quantity,
+      brand: updated.brands?.[0]?.id ?? null,
     }
   } catch (err: any) {
     throw createError({

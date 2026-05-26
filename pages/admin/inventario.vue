@@ -229,6 +229,20 @@
                   />
                 </div>
               </div>
+              <div class="brand-edit-row mt-3">
+                <label for="brand-edit-select" class="product-price-label">Marca:</label>
+                <div v-if="brandLoading" class="text-slate-500 text-xs py-1">Cargando marcas…</div>
+                <select
+                  v-else
+                  id="brand-edit-select"
+                  v-model="currentBrand"
+                  class="f-input w-full mt-1 !py-1.5 !px-2.5 text-sm"
+                  style="height: 36px; background-color: #1e293b;"
+                >
+                  <option :value="null">— Sin Marca —</option>
+                  <option v-for="b in brands" :key="b.id" :value="b.id">{{ b.name }}</option>
+                </select>
+              </div>
               
               <div class="stock-control mt-4 items-start">
                 <div class="stock-label">Stock actual</div>
@@ -271,15 +285,54 @@
             </div>
           </div>
 
-          <div class="mt-6 flex justify-end">
+          <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <button
+              id="delete-product-trigger-btn"
+              type="button"
+              class="btn-ghost !border-red-900/50 hover:!border-red-600 !text-red-400 hover:!bg-red-950/20 w-full sm:w-auto justify-center"
+              :disabled="saveLoading || deleteLoading"
+              @click="showDeleteConfirm = true"
+            >
+              🗑️ Eliminar Producto
+            </button>
             <button
               id="save-stock-btn"
-              class="btn-primary w-full md:w-auto justify-center"
-              :disabled="saveLoading"
+              class="btn-primary w-full sm:w-auto justify-center"
+              :disabled="saveLoading || deleteLoading"
               @click="saveProductChanges"
             >
               <span v-if="saveLoading" class="spinner-sm" />
               <span v-else>💾 Guardar Cambios</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de Confirmación de Eliminación -->
+      <div v-if="showDeleteConfirm" class="coupon-modal-overlay">
+        <div class="coupon-modal !max-w-md">
+          <div class="coupon-modal-header !border-red-950/20">
+            <h3 class="!text-red-400 flex items-center gap-2">⚠️ Advertencia de Eliminación</h3>
+            <button class="modal-close-btn" @click="showDeleteConfirm = false">✕</button>
+          </div>
+          <div class="coupon-modal-body text-center py-6">
+            <p class="text-slate-300 text-sm mb-4">
+              ¿Estás seguro de que deseas eliminar permanentemente el producto <strong>{{ foundProduct?.name }}</strong>?
+            </p>
+            <p class="text-red-400 text-xs font-semibold">
+              Esta acción no se puede deshacer y borrará el producto de la base de datos.
+            </p>
+          </div>
+          <div class="coupon-modal-footer !border-red-950/20">
+            <button class="btn-ghost" @click="showDeleteConfirm = false" :disabled="deleteLoading">Cancelar</button>
+            <button
+              id="confirm-delete-btn"
+              class="btn-primary !bg-red-600 hover:!bg-red-700"
+              :disabled="deleteLoading"
+              @click="deleteProduct"
+            >
+              <span v-if="deleteLoading" class="spinner-sm" />
+              <span v-else>Sí, Eliminar Producto</span>
             </button>
           </div>
         </div>
@@ -897,12 +950,19 @@ const skuQuery    = ref('')
 const skuLoading  = ref(false)
 const skuError    = ref('')
 const saveLoading = ref(false)
+const deleteLoading = ref(false)
+const showDeleteConfirm = ref(false)
 const currentStock = ref(0)
 const currentPrice = ref('')
 const currentDescription = ref('')
 const currentName = ref('')
 const currentSku = ref('')
 const currentCategories = ref<number[]>([])
+const currentBrand = ref<number | null>(null)
+
+interface Brand { id: number; name: string; slug: string }
+const brands = ref<Brand[]>([])
+const brandLoading = ref(false)
 
 const editImgInput = ref<HTMLInputElement | null>(null)
 const previewEditUrl = ref<string | null>(null)
@@ -911,7 +971,7 @@ const editImgFile = ref<File | null>(null)
 interface FoundProduct {
   id: number; name: string; sku: string
   stock_quantity: number; regular_price: string; image: string | null; image_id: number | null
-  description: string; categories: number[]
+  description: string; categories: number[]; brand: number | null
 }
 const foundProduct = ref<FoundProduct | null>(null)
 
@@ -928,6 +988,17 @@ function toggleEditCategory(id: number) {
   const idx = currentCategories.value.indexOf(id)
   if (idx === -1) currentCategories.value.push(id)
   else currentCategories.value.splice(idx, 1)
+}
+
+async function loadBrands() {
+  brandLoading.value = true
+  try {
+    brands.value = await $fetch<Brand[]>('/api/admin/brands')
+  } catch {
+    notifyError('No se pudieron cargar las marcas.')
+  } finally {
+    brandLoading.value = false
+  }
 }
 
 async function searchBySku() {
@@ -947,6 +1018,7 @@ async function searchBySku() {
     currentName.value = res.name
     currentSku.value = res.sku
     currentCategories.value = [...res.categories]
+    currentBrand.value = res.brand
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
     skuError.value = e?.statusMessage || 'Producto no encontrado.'
@@ -988,6 +1060,7 @@ async function saveProductChanges() {
         description: currentDescription.value,
         categories: currentCategories.value,
         image_id: image_id !== foundProduct.value.image_id ? image_id : undefined, // Enviar si cambió
+        brand: currentBrand.value,
       },
     })
     
@@ -998,6 +1071,7 @@ async function saveProductChanges() {
     foundProduct.value.description = currentDescription.value
     foundProduct.value.categories = [...currentCategories.value]
     foundProduct.value.image_id = image_id
+    foundProduct.value.brand = currentBrand.value
     editImgFile.value = null // resetear archivo
 
     success(`Producto actualizado correctamente.`)
@@ -1006,6 +1080,25 @@ async function saveProductChanges() {
     notifyError(`Error al guardar: ${e?.statusMessage}`)
   } finally {
     saveLoading.value = false
+  }
+}
+
+async function deleteProduct() {
+  if (!foundProduct.value) return
+  deleteLoading.value = true
+  try {
+    await $fetch(`/api/admin/delete-product?id=${foundProduct.value.id}`, {
+      method: 'DELETE'
+    })
+    success(`Producto "${foundProduct.value.name}" eliminado correctamente de WooCommerce.`)
+    foundProduct.value = null
+    skuQuery.value = ''
+    showDeleteConfirm.value = false
+  } catch (err: unknown) {
+    const e = err as { statusMessage?: string }
+    notifyError(`Error al eliminar producto: ${e?.statusMessage || 'Error desconocido'}`)
+  } finally {
+    deleteLoading.value = false
   }
 }
 
@@ -1353,6 +1446,7 @@ async function copyCouponCode(code: string) {
 // ── Inicialización ────────────────────────────
 onMounted(() => { 
   loadCategories() 
+  loadBrands()
   loadAdsConfig()
   loadCoupons()
 })

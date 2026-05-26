@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
     image_id: p.images?.[0]?.id ?? null,
     description: p.description ?? '',
     categories: (p.categories || []).map((c: any) => c.id),
+    brand: p.brands?.[0]?.id ?? null,
     status: p.status,
   }
 })
