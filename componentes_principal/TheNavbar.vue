@@ -1,8 +1,8 @@
 <template>
   <nav class="fixed top-0 w-full z-50 bg-[#f9f9fb]/70 backdrop-blur-xl font-manrope antialiased tracking-tight">
-    <div class="flex justify-between items-center px-4 md:px-8 py-4 max-w-screen-2xl mx-auto relative">
+    <div class="flex justify-between items-center px-4 md:px-8 py-4 md:py-5 max-w-screen-2xl mx-auto relative">
       <!-- Logo -->
-      <NuxtLink to="/" class="text-3xl md:text-5xl  tracking-tighter text-primary  font-rayforce">
+      <NuxtLink to="/" class="text-[28px] md:text-[44px] tracking-tighter text-primary font-rayforce ml-2 md:ml-4 relative -top-1 md:-top-2">
         Rayforce
       </NuxtLink>
 

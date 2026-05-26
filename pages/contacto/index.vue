@@ -27,7 +27,11 @@
             </div>
             <div>
               <h3 class="font-bold text-lg text-slate-800">Teléfonos</h3>
-              <p class="text-slate-500 font-light mt-1"><a href="tel:6621711371" class="hover:text-primary">662 171 1371</a></p>
+              <div class="text-slate-500 font-light mt-1 flex flex-col gap-1">
+                <a href="tel:6621711371" class="hover:text-primary">662 171 1371</a>
+                <a href="tel:6622151020" class="hover:text-primary">662 215 1020</a>
+                <a href="tel:6622151080" class="hover:text-primary">662 215 1080</a>
+              </div>
             </div>
           </div>
 
