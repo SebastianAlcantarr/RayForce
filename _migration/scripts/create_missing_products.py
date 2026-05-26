@@ -144,6 +144,9 @@ def csv_row_to_product(row):
         "description": row.get("Description", "").strip(),
         "images": images,
         "attributes": parse_attributes(row),
+        "manage_stock": True,
+        "stock_quantity": 0,
+        "stock_status": "outofstock",
     }
 
 # ── 4. Forzar actualizacion/creacion ──────────────────────────────────────────

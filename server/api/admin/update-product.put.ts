@@ -21,8 +21,10 @@ export default defineEventHandler(async (event) => {
     payload.regular_price = String(regular_price)
   }
   if (stock_quantity !== undefined && stock_quantity !== null) {
-    payload.stock_quantity = Number(stock_quantity)
+    const qty = Number(stock_quantity)
+    payload.stock_quantity = qty
     payload.manage_stock = true
+    payload.stock_status = qty > 0 ? 'instock' : 'outofstock'
   }
   if (description !== undefined && description !== null) {
     payload.description = String(description)

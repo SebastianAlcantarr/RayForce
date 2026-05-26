@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
     type: 'simple',
     manage_stock: true,
     stock_quantity: 0,
+    stock_status: 'outofstock',
     description: description || '',
   }
 
