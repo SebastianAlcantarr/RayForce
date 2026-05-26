@@ -43,23 +43,23 @@
         
         <!-- Modal Card Content -->
         <div 
-          class="relative bg-white w-full max-w-5xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh] md:max-h-[80vh] z-10 animate-fade-in-up"
+          class="relative bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col z-10 animate-fade-in-up"
         >
-          <!-- Left Column: Information (Scrollable) -->
-          <div class="w-full md:w-3/5 p-6 md:p-10 overflow-y-auto flex flex-col justify-between">
+          <!-- Close Button (Absolute, top right of the modal) -->
+          <button 
+            @click="selectedServicio = null" 
+            class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors duration-200 z-20"
+          >
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+
+          <!-- Content (Scrollable) -->
+          <div class="w-full p-6 md:p-10 overflow-y-auto max-h-[80vh] flex flex-col justify-between">
             <div>
               <!-- Header -->
-              <div class="flex justify-between items-start mb-6">
-                <div>
-                  <span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Servicios Profesionales</span>
-                  <h3 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight leading-tight">{{ selectedServicio.title }}</h3>
-                </div>
-                <button 
-                  @click="selectedServicio = null" 
-                  class="md:hidden w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer"
-                >
-                  <span class="material-symbols-outlined text-lg">close</span>
-                </button>
+              <div class="mb-6 pr-12">
+                <span class="text-[10px] font-bold text-primary tracking-widest uppercase mb-1 block">Servicios Profesionales</span>
+                <h3 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight leading-tight">{{ selectedServicio.title }}</h3>
               </div>
               
               <!-- Description Paragraph -->
@@ -118,35 +118,18 @@
             <div class="flex items-center gap-4 pt-4 border-t border-slate-100 mt-6">
               <NuxtLink 
                 to="/cotizar" 
-                class="flex-1 bg-primary hover:bg-primary/90 text-white font-bold text-center py-3 rounded-xl transition-colors duration-200 text-sm"
+                class="flex-1 bg-primary hover:bg-primary/95 text-white font-bold text-center py-3 rounded-xl transition-colors duration-200 text-sm font-bold"
                 @click="selectedServicio = null"
               >
                 Cotizar este servicio
               </NuxtLink>
               <button 
                 @click="selectedServicio = null"
-                class="hidden md:block px-6 py-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors duration-200 text-sm font-bold cursor-pointer"
+                class="px-6 py-3 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors duration-200 text-sm font-bold cursor-pointer"
               >
                 Cerrar
               </button>
             </div>
-          </div>
-          
-          <!-- Right Column: Vector Illustration -->
-          <div class="w-full md:w-2/5 bg-[#f3f7fa] border-t md:border-t-0 md:border-l border-slate-100 flex items-center justify-center p-6 relative overflow-hidden shrink-0 min-h-[300px] md:min-h-0">
-            <!-- Close Button (Desktop) -->
-            <button 
-              @click="selectedServicio = null" 
-              class="hidden md:flex absolute top-4 right-4 w-10 h-10 rounded-full bg-white shadow-md hover:bg-slate-100 text-slate-600 items-center justify-center cursor-pointer transition-colors duration-200 z-20"
-            >
-              <span class="material-symbols-outlined text-xl">close</span>
-            </button>
-            
-            <img 
-              :src="selectedServicio.image" 
-              :alt="selectedServicio.title"
-              class="w-full h-full object-contain max-h-[280px] md:max-h-[85%] select-none pointer-events-none transition-transform duration-500 hover:scale-105"
-            />
           </div>
         </div>
       </div>
