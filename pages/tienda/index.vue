@@ -291,7 +291,9 @@ const BRANDS_MAP: Record<number, string> = {
   308: 'JUPITER',
   282: 'INDIANA',
   281: 'CONDUMEX',
-  298: 'SQUARE D'
+  298: 'SQUARE D',
+  371: 'VIAKON',
+  372: 'CONDULAC'
 }
 
 const getBrandName = (id: number) => {
