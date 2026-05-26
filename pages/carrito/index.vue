@@ -38,19 +38,19 @@
               </button>
             </div>
           </div>
-          <div class="text-center font-manrope font-semibold text-on-surface-variant">${{ item.price.toFixed(2) }}</div>
+          <div class="text-center font-manrope font-semibold text-on-surface-variant">${{ formatPrice(item.price) }}</div>
           <div class="flex justify-center">
             <div class="flex items-center border border-outline-variant/30 rounded-full overflow-hidden h-10 bg-surface-container-low">
               <button @click="decrementQuantity(item.id)" class="px-3 hover:bg-surface-container-high transition-colors" type="button">
                 <span class="material-symbols-outlined text-sm">remove</span>
               </button>
-              <span class="px-4 text-sm font-bold w-12 text-center">{{ String(item.quantity).padStart(2, '0') }}</span>
+              <span class="px-4 text-sm font-bold w-12 text-center">{{ item.quantity < 10 ? '0' + item.quantity : item.quantity }}</span>
               <button @click="incrementQuantity(item.id)" class="px-3 hover:bg-surface-container-high transition-colors" type="button">
                 <span class="material-symbols-outlined text-sm">add</span>
               </button>
             </div>
           </div>
-          <div class="text-right font-manrope font-bold text-lg text-on-surface">${{ (item.price * item.quantity).toFixed(2) }}</div>
+          <div class="text-right font-manrope font-bold text-lg text-on-surface">${{ formatPrice(item.price * item.quantity) }}</div>
         </div>
       </div>
 
@@ -64,7 +64,7 @@
              <!-- Subtotal -->
              <div class="flex justify-between items-baseline text-sm">
                <span class="text-on-surface-variant">Subtotal</span>
-               <span class="font-semibold text-on-surface">${{ subtotal.toFixed(2) }}</span>
+                <span class="font-semibold text-on-surface">${{ formatPrice(subtotal) }}</span>
              </div>
 
              <!-- Cupón aplicado -->
@@ -76,7 +76,7 @@
                  </span>
                </div>
                <div class="flex items-center gap-3">
-                 <span class="text-green-400 font-semibold text-sm">−${{ discountAmount.toFixed(2) }}</span>
+                  <span class="text-green-400 font-semibold text-sm">−${{ formatPrice(discountAmount) }}</span>
                  <button @click="removeCoupon()" class="text-outline-variant hover:text-error transition-colors text-xs" type="button">✕</button>
                </div>
              </div>
@@ -84,7 +84,7 @@
              <!-- Total -->
              <div class="pt-6 border-t border-outline-variant/15 flex justify-between items-baseline">
                <span class="text-sm font-bold uppercase tracking-widest text-on-surface">Total</span>
-               <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ total.toFixed(2)}}</span>
+                <span class="text-3xl font-extrabold text-primary tracking-tighter">${{ formatPrice(total) }}</span>
              </div>
            </div>
 
@@ -174,6 +174,15 @@ async function validateCoupon() {
   } finally {
     couponLoading.value = false
   }
+}
+
+const formatPrice = (value) => {
+  const num = typeof value === 'number' ? value : parseFloat(value || '0')
+  if (isNaN(num)) return '0.00'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(num)
 }
 </script>
 

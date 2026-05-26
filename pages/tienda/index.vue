@@ -136,7 +136,7 @@
                 </div>
                 <span v-if="product.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full mt-1">Opciones</span>
                 <span v-else class="text-lg font-light text-primary">
-                ${{ (parseFloat(product.price || '0') * 1.16).toFixed(2) }}</span>
+                ${{ formatPrice(product.price) }}</span>
               </div>
               <div class="flex gap-2">
                 <span
@@ -314,5 +314,14 @@ const clearFilter = (key: string) => {
 
 const clearAllFilters = () => {
   router.push({ path: '/tienda' })
+}
+
+const formatPrice = (price: string | number | undefined | null) => {
+  const numericPrice = typeof price === 'number' ? price : parseFloat(price || '0')
+  if (isNaN(numericPrice)) return '0.00'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(numericPrice * 1.16)
 }
 </script>

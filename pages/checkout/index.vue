@@ -435,7 +435,7 @@
                   </div>
                   <div class="flex justify-between items-end mt-2">
                     <span class="text-xs font-semibold bg-surface-container px-2 py-0.5 rounded-md text-on-surface-variant">Cant: {{ item.quantity }}</span>
-                    <span class="text-sm font-black text-on-surface">${{ (item.price * item.quantity).toFixed(2) }}</span>
+                    <span class="text-sm font-black text-on-surface">${{ formatPrice(item.price * item.quantity) }}</span>
                   </div>
                 </div>
               </div>
@@ -445,15 +445,15 @@
             <div class="space-y-4 pt-6 border-t-2 border-dashed border-outline-variant/20 font-medium">
               <div class="flex justify-between text-sm text-on-surface-variant">
                 <span>Subtotal ({{ cartItems.length }} items)</span>
-                <span class="text-on-surface font-bold">${{ subtotal.toFixed(2) }}</span>
+                <span class="text-on-surface font-bold">${{ formatPrice(subtotal) }}</span>
               </div>
               <div v-if="appliedCoupon" class="flex justify-between text-sm text-green-600">
                 <span class="font-semibold">Cupón {{ appliedCoupon.code }}</span>
-                <span class="font-bold">-${{ discountAmount.toFixed(2) }}</span>
+                <span class="font-bold">-${{ formatPrice(discountAmount) }}</span>
               </div>
               <div class="flex justify-between items-center pt-6 pb-2 border-t border-outline-variant/20">
                 <span class="text-lg font-bold">Total Final</span>
-                <span class="text-3xl font-black text-primary">${{ total.toFixed(2) }}</span>
+                <span class="text-3xl font-black text-primary">${{ formatPrice(total) }}</span>
               </div>
             </div>
 
@@ -961,6 +961,15 @@ const handleCheckout = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const formatPrice = (value: number | string | undefined | null) => {
+  const num = typeof value === 'number' ? value : parseFloat(value || '0')
+  if (isNaN(num)) return '0.00'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(num)
 }
 </script>
 

@@ -458,7 +458,10 @@ const formatPriceWithTax = (price: string | number | undefined | null) => {
   const numericPrice = typeof price === 'number' ? price : parseFloat(price || '0')
   if (!Number.isFinite(numericPrice)) return '0.00'
 
-  return (numericPrice * 1.16).toFixed(2)
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(numericPrice * 1.16)
 }
 
 const currentPriceWithTax = computed(() => formatPriceWithTax(currentPrice.value))
