@@ -109,7 +109,14 @@
                 :disabled="isOutOfStock || quantity <= 1"
                 class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
               >-</button>
-              <div class="w-12 h-12 flex items-center justify-center font-bold font-inter text-slate-800">{{ quantity }}</div>
+              <input
+                type="text"
+                :value="tempQuantity"
+                @input="handleQuantityInput"
+                @blur="handleQuantityBlur"
+                :disabled="isOutOfStock"
+                class="w-12 h-12 text-center font-bold font-inter text-slate-800 border-none bg-transparent focus:outline-none p-0"
+              />
               <button 
                 @click="quantity < maxAvailableStock ? quantity++ : null" 
                 :disabled="isOutOfStock || quantity >= maxAvailableStock"
@@ -349,6 +356,36 @@ const specGroups = computed(() => {
 const { addToCart } = useCart()
 const quantity = ref(1)
 const addedToCart = ref(false)
+const tempQuantity = ref('1')
+
+// Sincronizar tempQuantity con cambios en quantity
+watch(quantity, (newVal) => {
+  tempQuantity.value = newVal.toString()
+})
+
+const handleQuantityInput = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const sanitized = input.value.replace(/[^0-9]/g, '')
+  tempQuantity.value = sanitized
+
+  if (sanitized !== '') {
+    let val = parseInt(sanitized, 10)
+    if (val < 1) {
+      val = 1
+    }
+    if (val > maxAvailableStock.value) {
+      val = maxAvailableStock.value
+    }
+    quantity.value = val
+  }
+}
+
+const handleQuantityBlur = () => {
+  if (tempQuantity.value === '' || parseInt(tempQuantity.value, 10) < 1) {
+    quantity.value = 1
+  }
+  tempQuantity.value = quantity.value.toString()
+}
 
 // Manejo de Variaciones
 const selectedOptions = ref<Record<string, string>>({})
