@@ -43,12 +43,14 @@ useSeoMeta({
 const route = useRoute()
 const router = useRouter()
 const orderId = ref<number | null>(null)
+const orderKey = ref('')
 const errorMessage = ref('')
 const attemptCount = ref(0)
 let pollInterval: NodeJS.Timeout | null = null
 
 onMounted(async () => {
   orderId.value = parseInt(route.query.orderId as string)
+  orderKey.value = String(route.query.orderKey || '')
 
   if (!orderId.value) {
     errorMessage.value = 'ID de orden no encontrado'
@@ -62,7 +64,10 @@ onMounted(async () => {
     try {
       // Usar endpoint del servidor (no expone credenciales al cliente)
       const response = await $fetch<any>('/api/checkout/order-status', {
-        params: { orderId: orderId.value }
+        params: {
+          orderId: orderId.value,
+          ...(orderKey.value ? { orderKey: orderKey.value } : {})
+        }
       })
 
       // Si el estado es processing o completed, el pago se hizo

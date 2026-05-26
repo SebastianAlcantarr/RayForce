@@ -4,14 +4,7 @@ export default defineEventHandler(async (event) => {
 
   const token = getCookie(event, 'auth_token')
 
-  if (!token) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'No autenticado'
-    })
-  }
-
-  if (!body.line_items || !body.billing) {
+  if (!body.line_items || !body.billing?.email) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Datos faltantes para crear la orden'
@@ -20,18 +13,24 @@ export default defineEventHandler(async (event) => {
 
   try {
     const credentials = btoa(`${config.wooKey}:${config.wooSecret}`)
+    let customerId: number | null = null
 
-    // Obtener usuario autenticado desde WordPress
-    const currentUser = await $fetch<any>(
-        `${config.wooUrl}/wp-json/wp/v2/users/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
+    if (token) {
+      try {
+        const currentUser = await $fetch<any>(
+          `${config.wooUrl}/wp-json/wp/v2/users/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
           }
-        }
-    )
+        )
 
-    const customerId = currentUser.id
+        customerId = Number(currentUser?.id) || null
+      } catch (authError: any) {
+        console.warn('No se pudo asociar la orden a la sesión actual; se creará como invitado:', authError?.data?.message || authError?.message || authError)
+      }
+    }
 
     const lineItems = body.line_items.map((item: any) => ({
       product_id: parseInt(item.product_id || item.id),
@@ -39,8 +38,6 @@ export default defineEventHandler(async (event) => {
     }))
 
     const orderBody = {
-      customer_id: customerId,
-
       status: 'pending',
       set_paid: false,
 
@@ -69,7 +66,8 @@ export default defineEventHandler(async (event) => {
           total: '0'
         }
       ],
-      customer_note: body.customer_note || undefined
+      customer_note: body.customer_note || undefined,
+      ...(customerId ? { customer_id: customerId } : {})
     }
 
     const order = await $fetch<any>(
@@ -86,6 +84,7 @@ export default defineEventHandler(async (event) => {
 
 
     let redirectUrl = order.payment_url || ''
+    let orderKey = order.order_key || ''
 
     if (redirectUrl.startsWith('/order-pay')) {
       redirectUrl = `${config.wooUrl}/checkout${redirectUrl}`
@@ -93,34 +92,31 @@ export default defineEventHandler(async (event) => {
       redirectUrl = `${config.wooUrl}${redirectUrl}`
     }
 
+    if (!orderKey && redirectUrl) {
+      try {
+        const parsedUrl = new URL(redirectUrl)
+        orderKey = parsedUrl.searchParams.get('key') || ''
+      } catch {
+        orderKey = ''
+      }
+    }
+
     return {
       success: true,
       orderId: order.id,
-      redirectUrl
+      redirectUrl,
+      orderKey,
+      requiresAutologin: Boolean(customerId)
     }
   } catch (error: any) {
     console.error('Error creando orden:', error?.data || error?.message || error)
 
-    // Detectar error específico de JWT issuer mismatch — token viejo de URL anterior
     const errMsg = String(
       error?.data?.message || error?.data?.code || error?.message || ''
     ).toLowerCase()
 
-    const isJwtIssuerError =
-      errMsg.includes('iss do not match') ||
-      errMsg.includes('invalid_token') ||
-      errMsg.includes('jwt_auth_invalid_token') ||
-      errMsg.includes('token is invalid')
-
-    if (isJwtIssuerError) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.',
-      })
-    }
-
     throw createError({
-      statusCode: error?.statusCode || 500,
+      statusCode: errMsg.includes('woocommerce_rest_') ? 400 : error?.statusCode || 500,
       statusMessage:
           error?.data?.message ||
           error?.message ||

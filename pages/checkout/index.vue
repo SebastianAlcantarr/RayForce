@@ -93,6 +93,26 @@
               </div>
             </div>
 
+            <!-- Correo -->
+            <div class="flex flex-col gap-1.5 md:col-span-2">
+              <label class="font-inter text-xs font-bold uppercase tracking-widest text-on-surface-variant flex justify-between">
+                Correo Electrónico <span v-if="showErrors && !isEmailValid" class="text-error text-[10px]">Requerido para confirmar tu pedido</span>
+              </label>
+              <div class="relative group">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 group-focus-within:text-primary transition-colors">mail</span>
+                <input
+                  v-model="form.email"
+                  @blur="touched.email = true"
+                  :class="[
+                    'w-full bg-surface-container/50 border rounded-xl pl-12 pr-4 py-3.5 text-sm font-medium transition-all outline-none',
+                    showErrors && !isEmailValid ? 'border-error/50 bg-error/5 focus:border-error focus:ring-4 focus:ring-error/10' : 'border-outline-variant/30 focus:border-primary focus:ring-4 focus:ring-primary/10 hover:border-outline-variant'
+                  ]"
+                  placeholder="tu@correo.com" type="email"
+                  autocomplete="email"
+                />
+              </div>
+            </div>
+
             <!-- Dirección -->
             <div class="flex flex-col gap-1.5 md:col-span-2">
               <label class="font-inter text-xs font-bold uppercase tracking-widest text-on-surface-variant flex justify-between">
@@ -503,6 +523,7 @@ const showErrors = ref(false) // Activar validación visual solo tras intentar p
 const form = reactive({
   nombre: '',
   apellidos: '',
+  email: '',
   direccion: '',
   ciudad: '',
   estado: '',
@@ -567,6 +588,7 @@ const normalizeStateCode = (state: string | undefined | null) => {
 const touched = reactive({
   nombre: false,
   apellidos: false,
+  email: false,
   direccion: false,
   ciudad: false,
   estado: false,
@@ -631,6 +653,11 @@ const isFiscalEmailValid = computed(() => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fiscalForm.emailFactura.trim())
 })
 
+const isEmailValid = computed(() => {
+  if (!form.email) return false
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())
+})
+
 const triggerFiscalFileInput = () => {
   fiscalFileInput.value?.click()
 }
@@ -692,6 +719,7 @@ const formatSize = (bytes: number) => {
 const isFormValid = computed(() => {
   const baseValid = form.nombre.trim().length >= 2 &&
          form.apellidos.trim().length >= 2 &&
+         isEmailValid.value &&
          form.direccion.trim().length >= 5 &&
          form.ciudad.trim().length >= 2 &&
          mexicoStates.some((state) => state.code === form.estado) &&
@@ -723,6 +751,7 @@ const applyProfileToForm = () => {
 
   form.nombre = auth.user.value.first_name || (sourceAddr as any)?.first_name || ''
   form.apellidos = auth.user.value.last_name || (sourceAddr as any)?.last_name || ''
+  form.email = auth.user.value.email || ''
   form.direccion = (sourceAddr as any)?.address_1 || ''
   form.ciudad = (sourceAddr as any)?.city || ''
   form.estado = normalizeStateCode((sourceAddr as any)?.state)
@@ -782,11 +811,6 @@ const handleCheckout = async () => {
     return
   }
 
-  if (!auth.user.value) {
-    navigateTo('/login?redirect=/checkout')
-    return
-  }
-
   isLoading.value = true
 
   try {
@@ -805,7 +829,7 @@ const handleCheckout = async () => {
         state: form.estado,
         postcode: form.codigoPostal,
         phone: form.telefono,
-        email: auth.user.value.email
+        email: form.email.trim()
       },
       shipping: {
         first_name: form.nombre,
@@ -851,50 +875,55 @@ const handleCheckout = async () => {
       })
 
       // 2. Guardar/actualizar datos fiscales del usuario para futuras compras
-      const profileData = new FormData()
-      profileData.append('rfc', fiscalForm.rfc.toUpperCase().trim())
-      profileData.append('razonSocial', fiscalForm.razonSocial.trim())
-      profileData.append('regimenFiscal', fiscalForm.regimenFiscal)
-      profileData.append('usoCfdi', fiscalForm.usoCfdi)
-      profileData.append('formaPago', fiscalForm.formaPago)
-      profileData.append('emailFactura', fiscalForm.emailFactura.trim())
-      
-      if (selectedFiscalFile.value) {
-        profileData.append('file', selectedFiscalFile.value)
-      } else if (fiscalForm.constanciaUrl) {
-        profileData.append('constanciaUrl', fiscalForm.constanciaUrl)
-      }
+      if (auth.user.value) {
+        const profileData = new FormData()
+        profileData.append('rfc', fiscalForm.rfc.toUpperCase().trim())
+        profileData.append('razonSocial', fiscalForm.razonSocial.trim())
+        profileData.append('regimenFiscal', fiscalForm.regimenFiscal)
+        profileData.append('usoCfdi', fiscalForm.usoCfdi)
+        profileData.append('formaPago', fiscalForm.formaPago)
+        profileData.append('emailFactura', fiscalForm.emailFactura.trim())
 
-      await $fetch('/api/fiscal-data', {
-        method: 'PUT',
-        body: profileData
-      })
+        if (selectedFiscalFile.value) {
+          profileData.append('file', selectedFiscalFile.value)
+        } else if (fiscalForm.constanciaUrl) {
+          profileData.append('constanciaUrl', fiscalForm.constanciaUrl)
+        }
+
+        await $fetch('/api/fiscal-data', {
+          method: 'PUT',
+          body: profileData
+        })
+      }
     }
 
-    auth.updateAddress(
-      {
-        first_name: form.nombre,
-        last_name: form.apellidos,
-        address_1: form.direccion,
-        city: form.ciudad,
-        state: form.estado,
-        postcode: form.codigoPostal,
-        phone: form.telefono,
-        email: auth.user.value.email,
-        country: 'MX',
-      },
-      {
-        first_name: form.nombre,
-        last_name: form.apellidos,
-        address_1: form.direccion,
-        city: form.ciudad,
-        state: form.estado,
-        postcode: form.codigoPostal,
-        country: 'MX',
-      }
-    ).catch((err: any) => console.warn('No se pudo guardar la dirección al perfil:', err))
+    if (auth.user.value) {
+      auth.updateAddress(
+        {
+          first_name: form.nombre,
+          last_name: form.apellidos,
+          address_1: form.direccion,
+          city: form.ciudad,
+          state: form.estado,
+          postcode: form.codigoPostal,
+          phone: form.telefono,
+          email: form.email.trim(),
+          country: 'MX',
+        },
+        {
+          first_name: form.nombre,
+          last_name: form.apellidos,
+          address_1: form.direccion,
+          city: form.ciudad,
+          state: form.estado,
+          postcode: form.codigoPostal,
+          country: 'MX',
+        }
+      ).catch((err: any) => console.warn('No se pudo guardar la dirección al perfil:', err))
+    }
 
-    const autologinRes = await $fetch<{ url: string }>(
+    if (response.requiresAutologin && auth.token.value) {
+      const autologinRes = await $fetch<{ url: string }>(
         '/api/checkout/generate-autologin',
         {
           method: 'POST',
@@ -903,9 +932,13 @@ const handleCheckout = async () => {
             Authorization: `Bearer ${auth.token.value}`
           }
         }
-    )
+      )
 
-    window.location.href = autologinRes.url
+      window.location.href = autologinRes.url
+      return
+    }
+
+    window.location.href = response.redirectUrl
 
   } catch (error: any) {
     console.error('Error en checkout:', error)
@@ -920,11 +953,8 @@ const handleCheckout = async () => {
       serverMsg.toLowerCase().includes('sesión ha expirado') ||
       serverMsg.toLowerCase().includes('invalid_token')
 
-    if (isSessionExpired) {
-      // Limpiar sesión corrupta del localStorage y estado
+    if (isSessionExpired && auth.user.value) {
       auth.logout()
-      navigateTo('/login?redirect=/checkout&expired=1')
-      return
     }
 
     errorMessage.value = serverMsg || 'Hubo un error al procesar tu orden. Por favor intenta de nuevo.'

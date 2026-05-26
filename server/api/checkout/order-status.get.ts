@@ -7,6 +7,8 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
   const query = getQuery(event)
   const orderId = query.orderId
+  const orderKey = String(query.orderKey || '')
+  const token = getCookie(event, 'auth_token')
 
   if (!orderId) {
     throw createError({
@@ -27,6 +29,39 @@ export default defineEventHandler(async (event) => {
       }
     )
 
+    if (orderKey) {
+      if (order.order_key !== orderKey) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: 'No autorizado para consultar esta orden'
+        })
+      }
+    } else if (token) {
+      const me = await $fetch<any>(
+        `${config.wooUrl}/wp-json/wp/v2/users/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      const sameCustomer = Number(order.customer_id || 0) === Number(me?.id || 0)
+      const sameEmail = String(order.billing?.email || '').toLowerCase() === String(me?.email || '').toLowerCase()
+
+      if (!sameCustomer && !sameEmail) {
+        throw createError({
+          statusCode: 403,
+          statusMessage: 'No autorizado para consultar esta orden'
+        })
+      }
+    } else {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Se requiere autenticación o clave de orden'
+      })
+    }
+
     return {
       orderId: order.id,
       status: order.status,
@@ -37,7 +72,7 @@ export default defineEventHandler(async (event) => {
     console.error('Error consultando orden:', error.message)
     throw createError({
       statusCode: error.statusCode || 500,
-      statusMessage: 'Error al consultar el estado de la orden'
+      statusMessage: error.statusMessage || 'Error al consultar el estado de la orden'
     })
   }
 })

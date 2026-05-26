@@ -20,11 +20,12 @@
       >
         Volver al Inicio
       </button>
-      <button
+       <button
+          v-if="auth.isAuthenticated"
           @click="goOrders"
           class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 py-3 rounded-lg font-bold transition-all"
-      >
-        Ver Mis Pedidos
+        >
+          Ver Mis Pedidos
       </button>
     </div>
   </div>
@@ -46,6 +47,7 @@ useSeoMeta({
 const route = useRoute()
 const router = useRouter()
 const { clearCart } = useCart()
+const auth = useAuth()
 const orderId = ref<number | null>(null)
 
 onMounted(() => {
