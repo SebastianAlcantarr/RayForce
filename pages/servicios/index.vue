@@ -177,7 +177,7 @@ const servicios = [
   {
     title: 'Proyectos e Instalaciones eléctricos',
     icon: 'electrical_services',
-    image: '/images/servicios/servicio-1.png',
+    image: '/images/servicios/proyectos-instalaciones-electricas.jpeg',
     description: 'En Rayforce desarrollamos proyectos e instalaciones eléctricas para espacios residenciales, comerciales e industriales, ofreciendo soluciones seguras, eficientes y funcionales para cada tipo de proyecto.',
     bullets: [
       'Proyectos eléctricos residenciales, comerciales e industriales',
