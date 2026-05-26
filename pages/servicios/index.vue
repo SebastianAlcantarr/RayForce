@@ -15,16 +15,25 @@
           v-for="(servicio, index) in servicios" 
           :key="index" 
           @click="selectedServicio = servicio"
-          class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-outline-variant/20 flex flex-col items-start gap-4 cursor-pointer group"
+          class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-outline-variant/20 flex flex-col cursor-pointer group"
         >
-          <div class="w-14 h-14 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-2 transition-transform duration-300 group-hover:scale-110">
-            <span class="material-symbols-outlined text-3xl">{{ servicio.icon }}</span>
+          <div class="w-full h-52 overflow-hidden relative">
+            <img 
+              :src="servicio.image" 
+              :alt="servicio.title" 
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+            <div class="absolute top-4 left-4 w-12 h-12 bg-white/95 backdrop-blur-sm text-primary rounded-xl flex items-center justify-center shadow-sm transition-transform duration-300 group-hover:scale-110">
+              <span class="material-symbols-outlined text-2xl">{{ servicio.icon }}</span>
+            </div>
           </div>
-          <h3 class="text-xl font-bold text-slate-800 group-hover:text-primary transition-colors duration-300">{{ servicio.title }}</h3>
-          <p class="text-slate-500 font-light flex-1 line-clamp-3 leading-relaxed">{{ servicio.description }}</p>
-          <button class="text-primary font-bold text-sm tracking-wide hover:underline mt-4 flex items-center gap-1 group-hover:text-primary-hover">
-            Ver detalles <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
-          </button>
+          <div class="p-8 flex flex-col flex-grow items-start gap-4">
+            <h3 class="text-xl font-bold text-slate-800 group-hover:text-primary transition-colors duration-300 leading-snug">{{ servicio.title }}</h3>
+            <p class="text-slate-500 font-light flex-grow line-clamp-3 leading-relaxed">{{ servicio.description }}</p>
+            <button class="text-primary font-bold text-sm tracking-wide hover:underline mt-2 flex items-center gap-1 group-hover:text-primary-hover">
+              Ver detalles <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -43,18 +52,35 @@
         
         <!-- Modal Card Content -->
         <div 
-          class="relative bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden flex flex-col z-10 animate-fade-in-up"
+          class="relative bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row z-10 animate-fade-in-up max-h-[90vh]"
         >
           <!-- Close Button (Absolute, top right of the modal) -->
           <button 
             @click="selectedServicio = null" 
-            class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center cursor-pointer transition-colors duration-200 z-20"
+            class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100/80 hover:bg-slate-200 hover:text-slate-800 text-slate-600 flex items-center justify-center cursor-pointer transition-colors duration-200 z-20 backdrop-blur-sm"
           >
             <span class="material-symbols-outlined text-xl">close</span>
           </button>
 
-          <!-- Content (Scrollable) -->
-          <div class="w-full p-6 md:p-10 overflow-y-auto max-h-[80vh] flex flex-col justify-between">
+          <!-- Left side: Image (Hidden on small screens) -->
+          <div class="hidden md:block w-1/3 relative shrink-0">
+            <img 
+              :src="selectedServicio.image" 
+              :alt="selectedServicio.title" 
+              class="w-full h-full object-cover absolute inset-0"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent"></div>
+            <div class="absolute bottom-8 left-6 text-white space-y-2 pr-4">
+              <div class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center">
+                <span class="material-symbols-outlined text-2xl text-white">{{ selectedServicio.icon }}</span>
+              </div>
+              <p class="text-xs font-inter uppercase tracking-widest text-blue-200 font-bold">Rayforce</p>
+              <p class="text-[10px] font-light text-slate-300">Ingeniería y Construcción</p>
+            </div>
+          </div>
+
+          <!-- Right side: Content (Scrollable) -->
+          <div class="flex-grow p-6 md:p-10 overflow-y-auto max-h-[90vh] md:max-h-full flex flex-col justify-between">
             <div>
               <!-- Header -->
               <div class="mb-6 pr-12">
@@ -169,7 +195,7 @@ const servicios = [
   {
     title: 'Proyectos arquitectónicos',
     icon: 'home_work',
-    image: '/images/servicios/servicio-2.png',
+    image: '/images/servicios/proyectos-arquitectonicos.jpeg',
     description: 'En Rayforce desarrollamos proyectos arquitectónicos e interiorismo diseñados para crear espacios funcionales, estéticos y bien planeados, adaptados a las necesidades y estilo de cada cliente.',
     bullets: [
       'Diseño arquitectónico residencial, comercial e industrial',
@@ -190,7 +216,7 @@ const servicios = [
   {
     title: 'Proyectos de iluminación',
     icon: 'lightbulb',
-    image: '/images/servicios/servicio-3.png',
+    image: '/images/servicios/proyectos-iluminacion.jpeg',
     description: 'En Rayforce desarrollamos proyectos de iluminación y estudios lumínicos para espacios residenciales, comerciales e industriales, diseñados para lograr funcionalidad, confort visual y eficiencia energética.',
     bullets: [
       'Estudios lumínicos especializados',
@@ -216,7 +242,7 @@ const servicios = [
   {
     title: 'Proyectos ejecutivos',
     icon: 'assignment',
-    image: '/images/servicios/servicio-4.png',
+    image: '/images/servicios/proyectos-ejecutivos.jpeg',
     description: 'En Rayforce desarrollamos proyectos ejecutivos completos y detallados, diseñados para llevar cada proyecto a obra de manera clara, organizada y eficiente.',
     bullets: [
       'Planos arquitectónicos ejecutivos',
@@ -236,7 +262,7 @@ const servicios = [
   {
     title: 'Instalación de subestaciones eléctricas',
     icon: 'power',
-    image: '/images/servicios/servicio-5.png',
+    image: '/images/servicios/instalacion-subestaciones-electricas.jpeg',
     description: 'En Rayforce ofrecemos instalación de subestaciones eléctricas para proyectos comerciales, industriales y desarrollos con alta demanda energética, garantizando un suministro eléctrico seguro, eficiente y confiable.',
     bullets: [
       'Instalación de subestaciones eléctricas',
@@ -256,7 +282,7 @@ const servicios = [
   {
     title: 'Instalaciones hidrosanitarias',
     icon: 'plumbing',
-    image: '/images/servicios/servicio-6.png',
+    image: '/images/servicios/instalaciones-hidrosanitarias.jpeg',
     description: 'En Rayforce desarrollamos instalaciones hidrosanitarias para proyectos residenciales, comerciales e industriales, diseñadas para garantizar un funcionamiento eficiente, seguro y duradero.',
     bullets: [
       'Instalaciones hidráulicas y sanitarias',
@@ -277,7 +303,7 @@ const servicios = [
   {
     title: 'Mantenimiento general',
     icon: 'construction',
-    image: '/images/servicios/servicio-7.png',
+    image: '/images/servicios/mantenimiento-general.jpeg',
     description: 'En Rayforce ofrecemos servicios de mantenimiento general para espacios residenciales, comerciales e industriales, enfocados en conservar instalaciones y equipos en óptimas condiciones de funcionamiento.',
     paragraphs: [
       'Realizamos trabajos preventivos y correctivos que ayudan a detectar fallas, corregir problemas operativos y prolongar la vida útil de cada instalación, reduciendo riesgos y evitando gastos mayores a futuro.',
@@ -288,7 +314,7 @@ const servicios = [
   {
     title: 'Unidad verificadora eléctrica',
     icon: 'fact_check',
-    image: '/images/servicios/servicio-8.png',
+    image: '/images/servicios/unidad-verificadora-electrica.jpeg',
     description: 'En Rayforce brindamos apoyo y gestión relacionados con unidad verificadora eléctrica, ayudando a que proyectos e instalaciones cumplan correctamente con los requerimientos técnicos y normativos necesarios para su validación y puesta en operación.',
     paragraphs: [
       'Nuestro servicio está enfocado en revisar, analizar y preparar instalaciones eléctricas para asegurar que se desarrollen de manera segura, funcional y alineada con las normas aplicables, evitando retrasos, observaciones y costos adicionales durante procesos de verificación.',
@@ -300,7 +326,7 @@ const servicios = [
   {
     title: 'Obras civiles y estructurales',
     icon: 'engineering',
-    image: '/images/servicios/servicio-9.png',
+    image: '/images/servicios/obras-civiles-estructurales.jpeg',
     description: 'En Rayforce desarrollamos obras civiles y estructurales para proyectos residenciales, comerciales e industriales, enfocándonos en crear espacios sólidos, funcionales y correctamente ejecutados.',
     paragraphs: [
       'Realizamos trabajos de construcción, adecuaciones y desarrollo estructural, cuidando cada etapa del proceso para garantizar seguridad, estabilidad y durabilidad a largo plazo.',
@@ -312,7 +338,7 @@ const servicios = [
   {
     title: 'Mantenimiento eléctrico',
     icon: 'build',
-    image: '/images/servicios/servicio-10.png',
+    image: '/images/servicios/mantenimiento-electrico.jpeg',
     description: 'En Rayforce ofrecemos servicios de mantenimiento eléctrico para espacios residenciales, comerciales e industriales, enfocados en garantizar instalaciones seguras, eficientes y en correcto funcionamiento.',
     paragraphs: [
       'Realizamos mantenimiento preventivo y correctivo para prevenir fallas, reducir riesgos y evitar interrupciones que puedan afectar la operación o generar daños en equipos e instalaciones.',
@@ -325,7 +351,7 @@ const servicios = [
   {
     title: 'Ferretería',
     icon: 'hardware',
-    image: '/images/servicios/servicio-11.png',
+    image: '/images/servicios/ferreteria.jpeg',
     description: 'En Rayforce contamos con servicio de ferretería y suministro de materiales para proyectos residenciales, comerciales e industriales, ofreciendo soluciones rápidas, confiables y de calidad para construcción, mantenimiento e instalaciones.',
     paragraphs: [
       'Manejamos herramientas, material eléctrico, luminarias, accesorios y productos especializados de marcas reconocidas como TRUPER y URREA, garantizando resistencia, desempeño y disponibilidad para distintos tipos de proyectos.',
@@ -338,7 +364,7 @@ const servicios = [
   {
     title: 'Suministro de Material Eléctrico',
     icon: 'bolt',
-    image: '/images/servicios/servicio-12.png',
+    image: '/images/servicios/suministro-material-electrico.jpeg',
     description: 'En Rayforce ofrecemos servicio de suministro de material eléctrico para proyectos residenciales, comerciales e industriales, brindando soluciones completas, confiables y adaptadas a las necesidades de cada proyecto.',
     paragraphs: [
       'Contamos con una amplia variedad de materiales, accesorios y equipos eléctricos para instalaciones, mantenimiento y obra, ofreciendo desde componentes esenciales para ejecución eléctrica hasta soluciones de iluminación y acabados para interiores y exteriores.',
