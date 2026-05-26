@@ -215,12 +215,12 @@ export default defineEventHandler(async (event) => {
         },
         body: {
           from: fromEmail,
-          to: ['ventas2@rayforce.com.mx'],
+          to: ['ventas2@rayforce.com.mx', 'admon@rayforce.com.mx', 'm.olea@rayforce.com.mx'],
           subject: `Solicitud de Factura: Orden #${orderId} - ${newFacturacion.rfc}`,
           html: emailHtml,
         },
       })
-      console.log(`Solicitud de factura para orden ${orderId} enviada a ventas2@rayforce.com.mx`)
+      console.log(`Solicitud de factura para orden ${orderId} enviada correctamente`)
     } catch (emailError: any) {
       console.error('Error al enviar correo de facturación vía Resend:', emailError?.data || emailError?.message || emailError)
     }

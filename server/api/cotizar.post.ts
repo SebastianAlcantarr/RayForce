@@ -237,12 +237,12 @@ export default defineEventHandler(async (event) => {
         },
         body: {
           from: fromEmail,
-          to: ['ventas2@rayforce.com.mx'],
+          to: ['ventas2@rayforce.com.mx', 'admon@rayforce.com.mx', 'm.olea@rayforce.com.mx'],
           subject: `Nueva Cotización: ${newQuote.projectType} - ${newQuote.fullName}`,
           html: emailHtml,
         },
       })
-      console.log('Notificación por correo enviada con éxito a ventas2@rayforce.com.mx')
+      console.log('Notificación por correo enviada con éxito')
     } catch (emailError: any) {
       console.error('Error al enviar correo vía Resend:', emailError?.data || emailError?.message || emailError)
       // Swallow error to not break frontend user experience
