@@ -50,3 +50,7 @@ Thumbs.db
 # Temporal migration files
 /_migration/data/
 /_migration/_archivos_temporales/
+
+# Temporary scratch and backups
+/scratch/
+/public/images/marcas_backup/

@@ -138,14 +138,14 @@
     </section>
 
     <!-- Video Section (Admin Editable) -->
-    <section ref="videoSectionRef" v-if="adsConfig?.videoSection?.enabled" class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
+    <section v-if="adsConfig?.videoSection?.enabled" class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
       <div :class="`relative rounded-3xl overflow-hidden shadow-xl bg-${adsConfig.videoSection.backgroundColor} flex flex-col md:flex-row items-center group min-h-[400px]`">
         <div class="w-full md:w-1/2 p-6 md:p-16 text-white flex flex-col justify-center min-h-[300px]">
-          <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4 min-h-[3rem] md:min-h-[4rem] flex items-center">
-            {{ animatedTitle }}<span v-if="isTypingTitle" class="ml-1 w-1 h-[1em] bg-white animate-pulse"></span>
+          <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4 flex items-center">
+            {{ adsConfig.videoSection.title || 'Innovación y Respaldo' }}
           </h2>
-          <p class="text-xl md:text-3xl font-light leading-relaxed min-h-[6rem] md:min-h-[8rem]">
-            {{ animatedSubtitle }}<span v-if="isTypingSubtitle" class="ml-1 w-1 h-[1em] bg-white animate-pulse inline-block align-middle"></span>
+          <p class="text-xl md:text-3xl font-light leading-relaxed">
+            {{ adsConfig.videoSection.subtitle || 'Descubre por qué las mejores empresas confían en Rayforce para sus proyectos.' }}
           </p>
         </div>
         <div class="w-full md:w-1/2 relative min-h-[300px] md:min-h-[500px] bg-black/50 overflow-hidden flex-shrink-0 flex items-center justify-center">
@@ -199,13 +199,17 @@
         </NuxtLink>
       </div>
 
-      <div v-if="productsPending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div v-if="productsPending" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
         <!-- Esqueleto de carga -->
-        <div v-for="i in 4" :key="i" class="animate-pulse bg-white rounded-2xl p-6 border border-outline-variant/10">
-          <div class="bg-slate-200 aspect-[4/5] rounded-xl mb-4"></div>
+        <div v-for="i in 8" :key="i" class="animate-pulse bg-white rounded-2xl p-5 border border-outline-variant/10 flex flex-col">
+          <div class="bg-slate-200 aspect-square rounded-xl mb-5"></div>
+          <div class="h-3 bg-slate-200 rounded w-1/2 mb-2"></div>
           <div class="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
           <div class="h-4 bg-slate-200 rounded w-1/2 mb-6"></div>
-          <div class="h-6 bg-slate-200 rounded w-1/4"></div>
+          <div class="mt-auto flex items-end justify-between">
+            <div class="h-6 bg-slate-200 rounded w-1/3"></div>
+            <div class="w-10 h-10 bg-slate-200 rounded-full"></div>
+          </div>
         </div>
       </div>
       
@@ -296,6 +300,8 @@
             <img
               :src="brand.logo"
               :alt="brand.name"
+              width="168"
+              height="112"
               class="w-full h-full object-cover absolute top-1/2 left-1/2 select-none pointer-events-none"
               :style="{
                 transform: `translate(-50%, -50%) scale(${brand.scale || 0.95})`,
@@ -316,6 +322,8 @@
             <img
               :src="brand.logo"
               :alt="brand.name"
+              width="168"
+              height="112"
               class="w-full h-full object-cover absolute top-1/2 left-1/2 select-none pointer-events-none"
               :style="{
                 transform: `translate(-50%, -50%) scale(${brand.scale || 0.95})`,
@@ -372,6 +380,8 @@
                 <img
                   :src="brand.logo"
                   :alt="brand.name"
+                  width="168"
+                  height="112"
                   class="w-full h-full object-cover absolute top-1/2 left-1/2 select-none pointer-events-none"
                   :style="{
                     transform: `translate(-50%, -50%) scale(${brand.scale || 0.95})`,
@@ -390,7 +400,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
 
 
@@ -401,48 +411,6 @@ useSeoMeta({
 
 // === Fetch Publicidad / Banners (Data configurada en el Admin) ===
 const { data: adsConfig } = await useFetch<any>('/api/config')
-
-// === Animación Video Section ===
-const videoSectionRef = ref<HTMLElement | null>(null)
-const animatedTitle = ref('')
-const animatedSubtitle = ref('')
-const isTypingTitle = ref(false)
-const isTypingSubtitle = ref(false)
-let animationTriggered = false
-let videoObserver: IntersectionObserver | null = null
-
-watch(videoSectionRef, (el) => {
-  if (el && !animationTriggered) {
-    videoObserver = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && !animationTriggered) {
-        animationTriggered = true
-        let title = adsConfig.value?.videoSection?.title || 'Innovación y Respaldo'
-        let sub = adsConfig.value?.videoSection?.subtitle || 'Descubre por qué las mejores empresas confían en Rayforce para sus proyectos.'
-        let i = 0
-        isTypingTitle.value = true
-        const tId = setInterval(() => {
-          animatedTitle.value += title[i] || ''
-          i++
-          if (i >= title.length) {
-            clearInterval(tId)
-            isTypingTitle.value = false
-            let j = 0
-            isTypingSubtitle.value = true
-            const sId = setInterval(() => {
-              animatedSubtitle.value += sub[j] || ''
-              j++
-              if (j >= sub.length) {
-                clearInterval(sId)
-                isTypingSubtitle.value = false
-              }
-            }, 30)
-          }
-        }, 50)
-      }
-    }, { threshold: 0.3 })
-    videoObserver.observe(el)
-  }
-})
 
 // === Carrusel ===
 const activeSlide = ref(0)
@@ -523,26 +491,26 @@ const trustItems = [
 
 // === Lista de Marcas del Carrusel ===
 const brandsList = [
-  { name: 'SURTEK', query: { brand: 267 }, logo: '/images/marcas/1.png', bgColor: '#0356a4', scale: 0.85, color: '#0057B8', category: 'Herramientas y Cerrajería' },
-  { name: 'TRUPER', query: { brand: 261 }, logo: '/images/marcas/2.png', bgColor: '#ee5921', scale: 0.95, color: '#f15a24', category: 'Herramientas Profesionales' },
-  { name: 'URREA', query: { brand: 361 }, logo: '/images/marcas/3.png', bgColor: '#d60e11', scale: 0.95, color: '#e30613', category: 'Herramientas de Alta Exigencia' },
-  { name: 'LITHONIA', query: { brand: 340 }, logo: '/images/marcas/4.png', bgColor: '#024e80', scale: 0.95, color: '#004b87', category: 'Iluminación Industrial y LED' },
-  { name: 'TECNOLITE', query: { brand: 256 }, logo: '/images/marcas/5.png', bgColor: '#111111', scale: 0.80, color: '#0a0a0a', category: 'Iluminación Residencial' },
-  { name: 'ESTEVEZ', query: { brand: 255 }, logo: '/images/marcas/6.png', bgColor: '#115093', scale: 0.80, color: '#c8102e', category: 'Placas y Dispositivos de Lujo' },
-  { name: 'FOY', query: { brand: 351 }, logo: '/images/marcas/7.png', bgColor: '#fdc123', scale: 0.95, color: '#ffc72c', category: 'Herramientas Manuales' },
-  { name: 'FOKASU', query: { brand: 314 }, logo: '/images/marcas/8.png', bgColor: '#ffffff', scale: 0.95, color: '#00a651', category: 'Proyectores y Reflectores LED' },
-  { name: 'VIAKON', query: { brand: 371 }, logo: '/images/marcas/9.png', bgColor: '#b6070c', scale: 0.85, color: '#00509d', category: 'Cables de Energía y Telecom' },
-  { name: 'VOLTECK', query: { brand: 270 }, logo: '/images/marcas/10.png', bgColor: '#203757', scale: 0.80, color: '#1b365d', category: 'Material y Accesorios Eléctricos' },
-  { name: 'SIEMENS', query: { brand: 266 }, logo: '/images/marcas/11.png', bgColor: '#029897', scale: 0.82, color: '#009999', category: 'Equipo y Control Industrial' },
-  { name: 'ANCLO', query: { brand: 257 }, logo: '/images/marcas/12.jpg', bgColor: '#ffffff', scale: 0.82, color: '#d00000', category: 'Soportería y Fijaciones Metálicas' },
-  { name: '3M', query: { brand: 295 }, logo: '/images/marcas/13.jpg', bgColor: '#ffffff', scale: 0.80, color: '#ff0000', category: 'Cintas e Aislantes Eléctricos' },
-  { name: 'SAGLite', query: { brand: 294 }, logo: '/images/marcas/14.jpg', bgColor: '#012059', scale: 0.95, color: '#1c3d5a', category: 'Luminarias LED Especializadas' },
-  { name: 'ARGOS', query: { brand: 329 }, logo: '/images/marcas/15.jpg', bgColor: '#ffffff', scale: 0.95, color: '#e85d04', category: 'Canalizaciones y Tubos Conduit' },
-  { name: 'CONDULAC', query: { brand: 372 }, logo: '/images/marcas/16.jpg', bgColor: '#2b633c', scale: 0.95, color: '#9e2a2b', category: 'Conductores de Cobre' },
-  { name: 'JUPITER', query: { brand: 308 }, logo: '/images/marcas/17.jpg', bgColor: '#ffffff', scale: 0.95, color: '#0077b6', category: 'Tecnología LED y Luminarias' },
-  { name: 'INDIANA', query: { brand: 282 }, logo: '/images/marcas/18.jpg', bgColor: '#f6b01c', scale: 0.95, color: '#2d6a4f', category: 'Cables y Conductores Eléctricos' },
-  { name: 'CONDUMEX', query: { brand: 281 }, logo: '/images/marcas/19.jpg', bgColor: '#ffffff', scale: 0.95, color: '#bd1f2d', category: 'Conductores de Cobre y Energía' },
-  { name: 'SQUARE D', query: { brand: 298 }, logo: '/images/marcas/20.jpg', bgColor: '#001d59', scale: 0.80, color: '#009639', category: 'Interruptores y Centros de Carga' }
+  { name: 'SURTEK', query: { brand: 267 }, logo: '/images/marcas/1.webp', bgColor: '#0356a4', scale: 0.85, color: '#0057B8', category: 'Herramientas y Cerrajería' },
+  { name: 'TRUPER', query: { brand: 261 }, logo: '/images/marcas/2.webp', bgColor: '#ee5921', scale: 0.95, color: '#f15a24', category: 'Herramientas Profesionales' },
+  { name: 'URREA', query: { brand: 361 }, logo: '/images/marcas/3.webp', bgColor: '#d60e11', scale: 0.95, color: '#e30613', category: 'Herramientas de Alta Exigencia' },
+  { name: 'LITHONIA', query: { brand: 340 }, logo: '/images/marcas/4.webp', bgColor: '#024e80', scale: 0.95, color: '#004b87', category: 'Iluminación Industrial y LED' },
+  { name: 'TECNOLITE', query: { brand: 256 }, logo: '/images/marcas/5.webp', bgColor: '#111111', scale: 0.80, color: '#0a0a0a', category: 'Iluminación Residencial' },
+  { name: 'ESTEVEZ', query: { brand: 255 }, logo: '/images/marcas/6.webp', bgColor: '#115093', scale: 0.80, color: '#c8102e', category: 'Placas y Dispositivos de Lujo' },
+  { name: 'FOY', query: { brand: 351 }, logo: '/images/marcas/7.webp', bgColor: '#fdc123', scale: 0.95, color: '#ffc72c', category: 'Herramientas Manuales' },
+  { name: 'FOKASU', query: { brand: 314 }, logo: '/images/marcas/8.webp', bgColor: '#ffffff', scale: 0.95, color: '#00a651', category: 'Proyectores y Reflectores LED' },
+  { name: 'VIAKON', query: { brand: 371 }, logo: '/images/marcas/9.webp', bgColor: '#b6070c', scale: 0.85, color: '#00509d', category: 'Cables de Energía y Telecom' },
+  { name: 'VOLTECK', query: { brand: 270 }, logo: '/images/marcas/10.webp', bgColor: '#203757', scale: 0.80, color: '#1b365d', category: 'Material y Accesorios Eléctricos' },
+  { name: 'SIEMENS', query: { brand: 266 }, logo: '/images/marcas/11.webp', bgColor: '#029897', scale: 0.82, color: '#009999', category: 'Equipo y Control Industrial' },
+  { name: 'ANCLO', query: { brand: 257 }, logo: '/images/marcas/12.webp', bgColor: '#ffffff', scale: 0.82, color: '#d00000', category: 'Soportería y Fijaciones Metálicas' },
+  { name: '3M', query: { brand: 295 }, logo: '/images/marcas/13.webp', bgColor: '#ffffff', scale: 0.80, color: '#ff0000', category: 'Cintas e Aislantes Eléctricos' },
+  { name: 'SAGLite', query: { brand: 294 }, logo: '/images/marcas/14.webp', bgColor: '#012059', scale: 0.95, color: '#1c3d5a', category: 'Luminarias LED Especializadas' },
+  { name: 'ARGOS', query: { brand: 329 }, logo: '/images/marcas/15.webp', bgColor: '#ffffff', scale: 0.95, color: '#e85d04', category: 'Canalizaciones y Tubos Conduit' },
+  { name: 'CONDULAC', query: { brand: 372 }, logo: '/images/marcas/16.webp', bgColor: '#2b633c', scale: 0.95, color: '#9e2a2b', category: 'Conductores de Cobre' },
+  { name: 'JUPITER', query: { brand: 308 }, logo: '/images/marcas/17.webp', bgColor: '#ffffff', scale: 0.95, color: '#0077b6', category: 'Tecnología LED y Luminarias' },
+  { name: 'INDIANA', query: { brand: 282 }, logo: '/images/marcas/18.webp', bgColor: '#f6b01c', scale: 0.95, color: '#2d6a4f', category: 'Cables y Conductores Eléctricos' },
+  { name: 'CONDUMEX', query: { brand: 281 }, logo: '/images/marcas/19.webp', bgColor: '#ffffff', scale: 0.95, color: '#bd1f2d', category: 'Conductores de Cobre y Energía' },
+  { name: 'SQUARE D', query: { brand: 298 }, logo: '/images/marcas/20.webp', bgColor: '#001d59', scale: 0.80, color: '#009639', category: 'Interruptores y Centros de Carga' }
 ]
 </script>
 

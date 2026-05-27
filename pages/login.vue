@@ -188,7 +188,7 @@
       <div class="mt-8 text-center">
         <p class="text-on-surface-variant text-sm">
           ¿Problemas para acceder?
-          <NuxtLink to="/soporte" class="text-primary hover:underline font-bold">
+          <NuxtLink to="/contacto" class="text-primary hover:underline font-bold">
             Contacta Soporte
           </NuxtLink>
         </p>

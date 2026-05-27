@@ -1,0 +1,38 @@
+# Configuración de compresión y caché del navegador para Hostinger
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Imágenes (1 año)
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  
+  # Tipografías y Fuentes (1 año)
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType font/otf "access plus 1 year"
+  
+  # Archivos CSS y Javascript (1 año)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  
+  # Otros (1 mes)
+  ExpiresDefault "access plus 1 month"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Añadir cabecera Cache-Control e Immutable para recursos que no cambian
+  <FilesMatch "\.(js|css|webp|png|jpg|jpeg|gif|ico|woff2|woff|ttf|svg)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  
+  # Evitar que se envíen cookies para recursos estáticos (ahorra ancho de banda)
+  <FilesMatch "\.(css|js|webp|png|jpg|jpeg|gif|ico|woff2|woff|ttf|svg)$">
+    Header unset Set-Cookie
+  </FilesMatch>
+</IfModule>

@@ -43,14 +43,6 @@ export default defineNuxtConfig({
           type: 'image/svg+xml',
           href: '/images/favicon-r.svg'
         },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap',
-        },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap',
-        },
       ],
     },
   },
@@ -85,6 +77,12 @@ runtimeConfig: {
       external: ['xlsx'],
       noExternal: [],
     },
+  },
+
+  routeRules: {
+    '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+    '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+    '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
   },
 
   compatibilityDate: '2024-11-01',
