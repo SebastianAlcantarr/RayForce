@@ -127,6 +127,8 @@
           alt="Promoción" 
           class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000"
           v-if="adsConfig.midBanner.imageUrl"
+          loading="lazy"
+          fetchpriority="low"
         />
         <div class="relative z-20 px-6 md:px-20 text-white max-w-3xl">
           <span class="inline-block px-3 py-1 bg-red-600 text-white rounded font-bold uppercase tracking-widest text-[10px] mb-4 shadow-lg shadow-red-600/30">Promoción Especial</span>
@@ -234,6 +236,7 @@
               :src="product.images?.[0]?.src || '/placeholder.jpg'"
               :alt="product.name"
               class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
             />
           </div>
 
