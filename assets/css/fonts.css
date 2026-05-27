@@ -637,7 +637,7 @@
   font-family: 'Material Symbols Outlined';
   font-style: normal;
   font-weight: 100 700;
-  font-display: swap;
+  font-display: block;
   src: url(/fonts/symbols-1-kJEPBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzBwG-RpA6RzaxHMPdY40KH8nGzv3fzfVJO1Q.woff2) format('woff2');
 }
 
@@ -655,4 +655,7 @@
   direction: ltr;
   -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
 }

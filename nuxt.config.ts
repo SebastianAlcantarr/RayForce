@@ -43,6 +43,27 @@ export default defineNuxtConfig({
           type: 'image/svg+xml',
           href: '/images/favicon-r.svg'
         },
+        {
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          crossorigin: '',
+          href: '/fonts/google-7-UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2'
+        },
+        {
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          crossorigin: '',
+          href: '/fonts/google-34-xn7gYHE41ni1AdIRggexSg.woff2'
+        },
+        {
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          crossorigin: '',
+          href: '/fonts/symbols-1-kJEPBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oDMzBwG-RpA6RzaxHMPdY40KH8nGzv3fzfVJO1Q.woff2'
+        }
       ],
     },
   },
