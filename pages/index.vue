@@ -35,6 +35,8 @@
                 v-if="adsConfig?.carousel?.[`slide${index + 1}Url`]"
                 :src="adsConfig.carousel[`slide${index + 1}Url`]"
                 class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay"
+                :loading="index === 0 ? 'eager' : 'lazy'"
+                :fetchpriority="index === 0 ? 'high' : 'low'"
               />
               
               <!-- Slide Content -->
