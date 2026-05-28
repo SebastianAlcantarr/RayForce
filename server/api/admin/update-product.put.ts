@@ -4,7 +4,7 @@ import type { WooProduct } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { id, name, sku, regular_price, stock_quantity, description, categories, image_id, brand } = body || {}
+  const { id, name, sku, regular_price, stock_quantity, description, categories, image_id, image_ids, brand } = body || {}
 
   if (!id) {
     throw createError({ statusCode: 400, statusMessage: 'ID de producto requerido' })
@@ -32,7 +32,9 @@ export default defineEventHandler(async (event) => {
   if (categories && Array.isArray(categories)) {
     payload.categories = categories.map((catId: number) => ({ id: catId }))
   }
-  if (image_id !== undefined && image_id !== null) {
+  if (image_ids !== undefined && image_ids !== null && Array.isArray(image_ids)) {
+    payload.images = image_ids.map((id: number) => ({ id }))
+  } else if (image_id !== undefined && image_id !== null) {
     payload.images = [{ id: image_id }]
   }
   if (brand !== undefined) {

@@ -189,22 +189,40 @@
         <!-- Columna Izquierda: Imagen y Datos básicos -->
         <div class="flex-1 flex flex-col gap-4">
           <div class="flex gap-4 items-start">
-            <div
-              class="img-upload-zone p-2 min-h-[120px] w-[120px] flex-shrink-0"
-              :class="{ 'img-upload-zone--preview': previewEditUrl || foundProduct.image }"
-              @click="triggerEditImgInput"
-            >
-              <input
-                ref="editImgInput"
-                type="file"
-                accept="image/*"
-                class="hidden"
-                @change="handleEditImgChange"
-              />
-              <img v-if="previewEditUrl || foundProduct.image" :src="previewEditUrl || foundProduct.image" class="img-preview object-cover w-full h-full" alt="Preview" />
-              <div v-else class="img-placeholder text-center">
-                <span class="img-icon text-2xl">🖼️</span>
-                <span class="img-hint text-[10px]">Cambiar imagen</span>
+            <div class="flex flex-col gap-2 w-32 flex-shrink-0">
+              <label class="product-price-label block mb-1">Imágenes (Máx. 3)</label>
+              <div class="flex flex-col gap-2">
+                <!-- Previews -->
+                <div
+                  v-for="(img, idx) in editImages"
+                  :key="idx"
+                  class="relative group border border-outline-variant/20 rounded-lg overflow-hidden h-24 w-full bg-slate-900"
+                >
+                  <img :src="img.src" class="w-full h-full object-cover" alt="Preview" />
+                  <button
+                    type="button"
+                    class="absolute top-1 right-1 bg-red-600/80 hover:bg-red-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors shadow-md"
+                    @click.stop="removeEditImage(idx)"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <!-- Add Button -->
+                <div
+                  v-if="editImages.length < 3"
+                  class="border-2 border-dashed border-outline-variant/30 hover:border-primary rounded-lg h-24 w-full flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-900/40 text-slate-500 hover:text-primary"
+                  @click="triggerEditImgInput"
+                >
+                  <input
+                    ref="editImgInput"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    @change="handleEditImgChange"
+                  />
+                  <span class="text-lg">➕</span>
+                  <span class="text-[9px] font-bold uppercase tracking-wider mt-1">Añadir</span>
+                </div>
               </div>
             </div>
 
@@ -356,26 +374,41 @@
       <form class="product-form" @submit.prevent="submitProduct">
         <div class="form-grid">
 
-          <!-- Image Upload -->
+          <!-- Image Upload (Hasta 3 imágenes) -->
           <div class="form-field form-field--full">
-            <label class="f-label">Imagen del producto</label>
-            <div
-              id="product-img-drop"
-              class="img-upload-zone"
-              :class="{ 'img-upload-zone--preview': previewUrl }"
-              @click="triggerImgInput"
-            >
-              <input
-                ref="imgInput"
-                type="file"
-                accept="image/*"
-                class="hidden"
-                @change="handleImgChange"
-              />
-              <img v-if="previewUrl" :src="previewUrl" class="img-preview" alt="Preview" />
-              <div v-else class="img-placeholder">
-                <span class="img-icon">🖼️</span>
-                <span class="img-hint">Haz clic para subir imagen</span>
+            <label class="f-label mb-2 block">Imágenes del producto (Máx. 3)</label>
+            <div class="grid grid-cols-3 gap-4">
+              <!-- Previews -->
+              <div
+                v-for="(img, idx) in creatorImages"
+                :key="idx"
+                class="relative border border-outline-variant/30 rounded-lg overflow-hidden aspect-video max-h-[160px] bg-slate-900 flex items-center justify-center"
+              >
+                <img :src="img.src" class="w-full h-full object-contain" alt="Preview" />
+                <button
+                  type="button"
+                  class="absolute top-2 right-2 bg-red-600/80 hover:bg-red-700 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm transition-colors shadow-md"
+                  @click.stop="removeCreatorImage(idx)"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <!-- Upload trigger -->
+              <div
+                v-if="creatorImages.length < 3"
+                class="border-2 border-dashed border-outline-variant/30 hover:border-primary rounded-lg aspect-video max-h-[160px] flex flex-col items-center justify-center cursor-pointer transition-colors bg-slate-900/40 text-slate-500 hover:text-primary"
+                @click="triggerImgInput"
+              >
+                <input
+                  ref="imgInput"
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  @change="handleImgChange"
+                />
+                <span class="text-2xl">➕</span>
+                <span class="text-xs font-bold uppercase tracking-wider mt-1">Añadir Imagen</span>
               </div>
             </div>
           </div>
@@ -965,13 +998,13 @@ const brands = ref<Brand[]>([])
 const brandLoading = ref(false)
 
 const editImgInput = ref<HTMLInputElement | null>(null)
-const previewEditUrl = ref<string | null>(null)
-const editImgFile = ref<File | null>(null)
+const editImages = ref<{ id?: number; src: string; file?: File }[]>([])
 
 interface FoundProduct {
   id: number; name: string; sku: string
   stock_quantity: number; regular_price: string; image: string | null; image_id: number | null
   description: string; categories: number[]; brand: number | null
+  images: { id: number; src: string }[]
 }
 const foundProduct = ref<FoundProduct | null>(null)
 
@@ -980,8 +1013,24 @@ function triggerEditImgInput() { editImgInput.value?.click() }
 function handleEditImgChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  editImgFile.value = file
-  previewEditUrl.value = URL.createObjectURL(file)
+  
+  if (editImgInput.value) {
+    editImgInput.value.value = ''
+  }
+
+  if (editImages.value.length >= 3) {
+    notifyError('Puedes agregar un máximo de 3 imágenes.')
+    return
+  }
+
+  editImages.value.push({
+    src: URL.createObjectURL(file),
+    file: file
+  })
+}
+
+function removeEditImage(idx: number) {
+  editImages.value.splice(idx, 1)
 }
 
 function toggleEditCategory(id: number) {
@@ -1006,8 +1055,7 @@ async function searchBySku() {
   skuLoading.value  = true
   skuError.value    = ''
   foundProduct.value = null
-  editImgFile.value = null
-  previewEditUrl.value = null
+  editImages.value = []
 
   try {
     const res = await $fetch<FoundProduct>(`/api/admin/search-product?sku=${encodeURIComponent(skuQuery.value)}`)
@@ -1019,6 +1067,7 @@ async function searchBySku() {
     currentSku.value = res.sku
     currentCategories.value = [...res.categories]
     currentBrand.value = res.brand
+    editImages.value = (res.images || []).map(img => ({ id: img.id, src: img.src }))
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
     skuError.value = e?.statusMessage || 'Producto no encontrado.'
@@ -1035,19 +1084,27 @@ async function saveProductChanges() {
   if (!foundProduct.value) return
   saveLoading.value = true
   try {
-    let image_id = foundProduct.value.image_id
+    const finalImageIds: number[] = []
 
-    // Si hay una nueva imagen seleccionada, subirla primero
-    if (editImgFile.value) {
-      const fd = new FormData()
-      fd.append('file', editImgFile.value, editImgFile.value.name)
-      const uploaded = await $fetch<{ id: number; src: string }>('/api/admin/upload-image', {
-        method: 'POST',
-        body: fd,
+    // Subir en paralelo las nuevas imágenes que tengan un archivo
+    await Promise.all(
+      editImages.value.map(async (img) => {
+        if (img.file) {
+          const fd = new FormData()
+          fd.append('file', img.file, img.file.name)
+          const uploaded = await $fetch<{ id: number; src: string }>('/api/admin/upload-image', {
+            method: 'POST',
+            body: fd,
+          })
+          img.id = uploaded.id
+          img.src = uploaded.src
+          delete img.file
+        }
+        if (img.id) {
+          finalImageIds.push(img.id)
+        }
       })
-      image_id = uploaded.id
-      foundProduct.value.image = uploaded.src // Actualizar la vista local con la nueva URL
-    }
+    )
 
     await $fetch('/api/admin/update-product', {
       method: 'PUT',
@@ -1059,7 +1116,7 @@ async function saveProductChanges() {
         sku: currentSku.value,
         description: currentDescription.value,
         categories: currentCategories.value,
-        image_id: image_id !== foundProduct.value.image_id ? image_id : undefined, // Enviar si cambió
+        image_ids: finalImageIds,
         brand: currentBrand.value,
       },
     })
@@ -1070,9 +1127,15 @@ async function saveProductChanges() {
     foundProduct.value.sku = currentSku.value
     foundProduct.value.description = currentDescription.value
     foundProduct.value.categories = [...currentCategories.value]
-    foundProduct.value.image_id = image_id
     foundProduct.value.brand = currentBrand.value
-    editImgFile.value = null // resetear archivo
+    foundProduct.value.images = editImages.value.map(img => ({ id: img.id!, src: img.src }))
+    if (editImages.value.length > 0) {
+      foundProduct.value.image = editImages.value[0].src
+      foundProduct.value.image_id = editImages.value[0].id ?? null
+    } else {
+      foundProduct.value.image = null
+      foundProduct.value.image_id = null
+    }
 
     success(`Producto actualizado correctamente.`)
   } catch (err: unknown) {
@@ -1110,8 +1173,7 @@ const categories  = ref<Category[]>([])
 const catLoading  = ref(false)
 const createLoading = ref(false)
 const imgInput    = ref<HTMLInputElement | null>(null)
-const previewUrl  = ref<string | null>(null)
-const imgFile     = ref<File | null>(null)
+const creatorImages = ref<{ src: string; file: File }[]>([])
 
 const newProduct = reactive({
   name: '', sku: '', regular_price: '', description: '',
@@ -1134,8 +1196,24 @@ function triggerImgInput() { imgInput.value?.click() }
 function handleImgChange(e: Event) {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
-  imgFile.value = file
-  previewUrl.value = URL.createObjectURL(file)
+
+  if (imgInput.value) {
+    imgInput.value.value = ''
+  }
+
+  if (creatorImages.value.length >= 3) {
+    notifyError('Puedes agregar un máximo de 3 imágenes.')
+    return
+  }
+
+  creatorImages.value.push({
+    src: URL.createObjectURL(file),
+    file: file
+  })
+}
+
+function removeCreatorImage(idx: number) {
+  creatorImages.value.splice(idx, 1)
 }
 
 function toggleCategory(id: number) {
@@ -1147,24 +1225,27 @@ function toggleCategory(id: number) {
 function resetProductForm() {
   newProduct.name = ''; newProduct.sku = ''; newProduct.regular_price = ''
   newProduct.description = ''; newProduct.categories = []
-  imgFile.value = null; previewUrl.value = null
+  creatorImages.value = []
   if (imgInput.value) imgInput.value.value = ''
 }
 
 async function submitProduct() {
   createLoading.value = true
   try {
-    let image_id: number | undefined
+    const imageIds: number[] = []
 
-    if (imgFile.value) {
-      const fd = new FormData()
-      fd.append('file', imgFile.value, imgFile.value.name)
-      const uploaded = await $fetch<{ id: number; src: string }>('/api/admin/upload-image', {
-        method: 'POST',
-        body: fd,
+    // Subir en paralelo todas las imágenes seleccionadas
+    await Promise.all(
+      creatorImages.value.map(async (img) => {
+        const fd = new FormData()
+        fd.append('file', img.file, img.file.name)
+        const uploaded = await $fetch<{ id: number; src: string }>('/api/admin/upload-image', {
+          method: 'POST',
+          body: fd,
+        })
+        imageIds.push(uploaded.id)
       })
-      image_id = uploaded.id
-    }
+    )
 
     const created = await $fetch<{ id: number; name: string; permalink?: string }>('/api/admin/create-product', {
       method: 'POST',
@@ -1174,7 +1255,7 @@ async function submitProduct() {
         regular_price: newProduct.regular_price,
         description:   newProduct.description,
         categories:    newProduct.categories,
-        image_id,
+        image_ids:     imageIds,
       },
     })
 
