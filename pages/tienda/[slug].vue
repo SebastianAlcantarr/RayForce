@@ -35,7 +35,7 @@
           <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">{{ product.name }}</h1>
           <!-- Leyenda de imagen ilustrativa -->
           <p class="font-inter text-[12px] text-blue-700 italic uppercase tracking-wider">
-            * La imagen del producto es ilustrativa y puede no coincidir 100% con el producto real.
+            * La imagen del producto es solo ilustrativa.
           </p>
           <p class="text-primary text-3xl font-black">${{ currentPriceWithTax }}</p>
           <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ currentSku }}</p>
