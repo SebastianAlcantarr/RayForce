@@ -26,9 +26,10 @@ export default defineEventHandler(async (event) => {
 
   try {
     const params: any = {
-      per_page: 100, // Traer hasta 100 pedidos en el rango de fechas
+      per_page: 100,
       orderby: 'date',
       order: 'desc',
+      status: ['processing', 'completed'],
     }
     
     if (after) {
