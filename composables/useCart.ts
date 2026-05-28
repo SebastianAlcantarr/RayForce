@@ -100,20 +100,31 @@ export const useCart = () => {
   }
 
   // Agregar producto al carrito
-  const addToCart = (product: Omit<CartItem, 'quantity'>) => {
+  const addToCart = (product: Omit<CartItem, 'quantity'>, quantityToAdd = 1) => {
     if (product.stock_status === 'outofstock') {
       return false
     }
 
-    const productWithTax = normalizeCartItem({
-      ...product,
-      quantity: 1,
-    })
-    const existingItem = cart.value.items.find(item => item.id === productWithTax.id)
-    
+    const maxStock = typeof product.stock_quantity === 'number' ? product.stock_quantity : 9999
+    const existingItem = cart.value.items.find(item => item.id === product.id)
+    const currentQty = existingItem ? existingItem.quantity : 0
+
+    if (currentQty >= maxStock) {
+      return false
+    }
+
+    const qtyToAdd = Math.min(quantityToAdd, maxStock - currentQty)
+    if (qtyToAdd <= 0) {
+      return false
+    }
+
     if (existingItem) {
-      existingItem.quantity += 1
+      existingItem.quantity += qtyToAdd
     } else {
+      const productWithTax = normalizeCartItem({
+        ...product,
+        quantity: qtyToAdd,
+      })
       cart.value.items.push(productWithTax)
     }
     
@@ -136,7 +147,10 @@ export const useCart = () => {
   const updateQuantity = (productId: string, quantity: number) => {
     const item = cart.value.items.find(i => i.id === productId)
     if (item) {
-      const validQuantity = Math.max(1, Math.floor(quantity))
+      const maxStock = typeof item.stock_quantity === 'number' ? item.stock_quantity : 9999
+      let validQuantity = Math.max(0, Math.floor(quantity))
+      validQuantity = Math.min(validQuantity, maxStock)
+
       if (validQuantity === 0) {
         removeFromCart(productId)
       } else {
@@ -151,9 +165,12 @@ export const useCart = () => {
   const incrementQuantity = (productId: string) => {
     const item = cart.value.items.find(i => i.id === productId)
     if (item) {
-      item.quantity += 1
-      cart.value = { ...cart.value, items: [...cart.value.items] }
-      saveCart()
+      const maxStock = typeof item.stock_quantity === 'number' ? item.stock_quantity : 9999
+      if (item.quantity < maxStock) {
+        item.quantity += 1
+        cart.value = { ...cart.value, items: [...cart.value.items] }
+        saveCart()
+      }
     }
   }
 

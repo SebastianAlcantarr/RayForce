@@ -108,6 +108,7 @@
                 @click="quantity > 1 ? quantity-- : null" 
                 :disabled="isOutOfStock || quantity <= 1"
                 class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                type="button"
               >-</button>
               <input
                 type="text"
@@ -118,9 +119,10 @@
                 class="w-12 h-12 text-center font-bold font-inter text-slate-800 border-none bg-transparent focus:outline-none p-0"
               />
               <button 
-                @click="quantity < maxAvailableStock ? quantity++ : null" 
-                :disabled="isOutOfStock || quantity >= maxAvailableStock"
+                @click="quantity < maxQuantitySelectable ? quantity++ : null" 
+                :disabled="isOutOfStock || quantity >= maxQuantitySelectable"
                 class="w-12 h-12 flex items-center justify-center hover:bg-slate-50 transition-colors text-xl font-light text-slate-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                type="button"
               >+</button>
             </div>
             
@@ -132,9 +134,11 @@
                 addedToCart ? 'bg-green-600 hover:bg-green-700' : 'bg-primary hover:bg-[#004f9f]',
                 isOutOfStock ? 'opacity-60 cursor-not-allowed bg-slate-400 hover:bg-slate-400' : 'active:scale-95'
               ]" 
-              class="flex-1 text-white font-bold h-12 rounded-md transition-all flex items-center justify-center gap-2 shadow-sm">
+              class="flex-1 text-white font-bold h-12 rounded-md transition-all flex items-center justify-center gap-2 shadow-sm"
+              type="button"
+            >
               <span class="material-symbols-outlined text-xl">{{ addedToCart ? 'check_circle' : (isOutOfStock ? 'remove_shopping_cart' : 'shopping_cart') }}</span>
-              {{ isOutOfStock ? 'Agotado' : (addedToCart ? '¡Añadido!' : 'Agregar al Carrito') }}
+              {{ buttonText }}
             </button>
             
             <!-- Botón WhatsApp -->
@@ -353,7 +357,7 @@ const specGroups = computed(() => {
 })
 
 // === Lógica Funcional del MVP ===
-const { addToCart } = useCart()
+const { addToCart, cartItems } = useCart()
 const quantity = ref(1)
 const addedToCart = ref(false)
 const tempQuantity = ref('1')
@@ -373,8 +377,8 @@ const handleQuantityInput = (event: Event) => {
     if (val < 1) {
       val = 1
     }
-    if (val > maxAvailableStock.value) {
-      val = maxAvailableStock.value
+    if (val > maxQuantitySelectable.value) {
+      val = maxQuantitySelectable.value
     }
     quantity.value = val
   }
@@ -383,6 +387,9 @@ const handleQuantityInput = (event: Event) => {
 const handleQuantityBlur = () => {
   if (tempQuantity.value === '' || parseInt(tempQuantity.value, 10) < 1) {
     quantity.value = 1
+  }
+  if (quantity.value > maxQuantitySelectable.value) {
+    quantity.value = maxQuantitySelectable.value
   }
   tempQuantity.value = quantity.value.toString()
 }
@@ -407,12 +414,16 @@ const activeVariation = computed(() => {
   })
 })
 
-const isOutOfStock = computed(() => {
-  if (!product.value) return true
-  if (product.value.type === 'variable' && activeVariation.value) {
-    return activeVariation.value.stock_status === 'outofstock'
-  }
-  return product.value.stock_status === 'outofstock'
+const currentCartItem = computed(() => {
+  if (!product.value) return null
+  const idToCheck = product.value.type === 'variable' && activeVariation.value
+    ? activeVariation.value.id.toString()
+    : product.value.id.toString()
+  return cartItems.value.find(item => item.id === idToCheck)
+})
+
+const currentQtyInCart = computed(() => {
+  return currentCartItem.value ? currentCartItem.value.quantity : 0
 })
 
 const maxAvailableStock = computed(() => {
@@ -423,24 +434,53 @@ const maxAvailableStock = computed(() => {
   return typeof product.value.stock_quantity === 'number' ? product.value.stock_quantity : 9999
 })
 
+const maxQuantitySelectable = computed(() => {
+  const stock = maxAvailableStock.value
+  return Math.max(0, stock - currentQtyInCart.value)
+})
+
+const isOutOfStock = computed(() => {
+  if (!product.value) return true
+  if (product.value.type === 'variable' && activeVariation.value) {
+    return activeVariation.value.stock_status === 'outofstock' || maxQuantitySelectable.value === 0
+  }
+  return product.value.stock_status === 'outofstock' || maxQuantitySelectable.value === 0
+})
+
 watch(isOutOfStock, (out) => {
   if (out) {
     quantity.value = 0
   } else {
-    quantity.value = 1
+    quantity.value = maxQuantitySelectable.value > 0 ? 1 : 0
   }
 }, { immediate: true })
 
 watch(quantity, (newVal) => {
-  if (newVal > maxAvailableStock.value) {
-    quantity.value = maxAvailableStock.value
+  if (newVal > maxQuantitySelectable.value) {
+    quantity.value = maxQuantitySelectable.value
   }
 })
 
-watch(maxAvailableStock, (newMax) => {
+watch(maxQuantitySelectable, (newMax) => {
   if (quantity.value > newMax) {
     quantity.value = newMax
   }
+})
+
+const buttonText = computed(() => {
+  if (product.value?.type === 'variable' && !activeVariation.value) {
+    return 'Selecciona opciones'
+  }
+
+  const isAgotado = product.value?.stock_status === 'outofstock' || 
+    (product.value?.type === 'variable' && activeVariation.value?.stock_status === 'outofstock') ||
+    maxQuantitySelectable.value === 0
+
+  if (isAgotado) {
+    return 'Agotado'
+  }
+
+  return addedToCart.value ? '¡Añadido!' : 'Agregar al Carrito'
 })
 
 const currentPrice = computed(() => {
@@ -516,20 +556,25 @@ const handleAddToCart = async () => {
     }
   }
 
-  if (itemToAdd.stock_status === 'outofstock') {
+  const isAgotado = itemToAdd.stock_status === 'outofstock'
+  if (isAgotado) {
     variationError.value = 'Este producto no tiene existencias.'
     return
   }
 
-  for(let i = 0; i < quantity.value; i++) {
-    addToCart(itemToAdd)
+  if (maxQuantitySelectable.value === 0) {
+    variationError.value = 'Ya tienes todas las existencias disponibles agregadas al carrito.'
+    return
   }
 
-  // Animación visual de éxito sin redirección
-  addedToCart.value = true
-  setTimeout(() => {
-    addedToCart.value = false
-  }, 2500)
+  const success = addToCart(itemToAdd, quantity.value)
+  if (success) {
+    // Animación visual de éxito sin redirección
+    addedToCart.value = true
+    setTimeout(() => {
+      addedToCart.value = false
+    }, 2500)
+  }
 }
 
 const addRelatedToCart = (relProduct: any) => {

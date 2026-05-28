@@ -45,7 +45,12 @@
                 <span class="material-symbols-outlined text-sm">remove</span>
               </button>
               <span class="px-4 text-sm font-bold w-12 text-center">{{ item.quantity < 10 ? '0' + item.quantity : item.quantity }}</span>
-              <button @click="incrementQuantity(item.id)" class="px-3 hover:bg-surface-container-high transition-colors" type="button">
+              <button 
+                @click="incrementQuantity(item.id)" 
+                :disabled="item.quantity >= (typeof item.stock_quantity === 'number' ? item.stock_quantity : 9999)"
+                class="px-3 hover:bg-surface-container-high transition-colors disabled:opacity-30 disabled:cursor-not-allowed" 
+                type="button"
+              >
                 <span class="material-symbols-outlined text-sm">add</span>
               </button>
             </div>

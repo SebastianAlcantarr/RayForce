@@ -110,20 +110,20 @@
                 />
                 <button
                     @click.prevent="handleAddToCart(product)"
-                    :disabled="product.stock_status === 'outofstock'"
+                    :disabled="isAddToCartDisabled(product)"
                     :class="[
                       'absolute bottom-6 right-6 w-12 h-12 text-on-primary rounded-full flex items-center justify-center transition-all duration-300 translate-y-2 group-hover:translate-y-0 hover:scale-110',
-                      product.stock_status === 'outofstock'
+                      isAddToCartDisabled(product)
                         ? 'bg-slate-400 opacity-100 cursor-not-allowed hover:scale-100'
                         : addedProductId === product.id.toString()
                           ? 'bg-green-600 opacity-100'
                           : 'bg-primary opacity-0 group-hover:opacity-100'
                     ]"
                     type="button"
-                    :aria-label="product.stock_status === 'outofstock' ? `${product.name} sin existencias` : (product.type === 'variable' ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`)"
+                    :aria-label="isAddToCartDisabled(product) ? `${product.name} agotado` : (product.type === 'variable' ? `Ver opciones de ${product.name}` : `Agregar ${product.name} al carrito`)"
                 >
                   <span class="material-symbols-outlined">
-                    {{ product.stock_status === 'outofstock' ? 'remove_shopping_cart' : (addedProductId === product.id.toString() ? 'check' : (product.type === 'variable' ? 'visibility' : 'add_shopping_cart')) }}
+                    {{ isAddToCartDisabled(product) ? 'remove_shopping_cart' : (addedProductId === product.id.toString() ? 'check' : (product.type === 'variable' ? 'visibility' : 'add_shopping_cart')) }}
                   </span>
                 </button>
               </div>
@@ -225,11 +225,22 @@ const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
 const products = computed(() => data.value?.items || [])
 const totalPages = computed(() => data.value?.totalPages || 1)
 
-const { addToCart } = useCart()
+const { addToCart, cartItems } = useCart()
 const addedProductId = ref<string | null>(null)
 
+const isAddToCartDisabled = (product: WooProduct) => {
+  if (product.stock_status === 'outofstock') return true
+  if (product.type === 'variable') return false
+  
+  const cartItem = cartItems.value.find(item => item.id === product.id.toString())
+  const currentQty = cartItem ? cartItem.quantity : 0
+  const maxStock = typeof product.stock_quantity === 'number' ? product.stock_quantity : 9999
+  
+  return currentQty >= maxStock
+}
+
 const handleAddToCart = async (product: WooProduct) => {
-  if (product.stock_status === 'outofstock') {
+  if (isAddToCartDisabled(product)) {
     return
   }
 

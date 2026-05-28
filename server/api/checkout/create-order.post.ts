@@ -37,6 +37,47 @@ export default defineEventHandler(async (event) => {
       quantity: parseInt(item.quantity) || 1
     }))
 
+    // 1. Validar el stock real en WooCommerce en tiempo real (evita sobreventas concurrentes)
+    const stockErrors: Array<{ id: string; name: string; requested: number; available: number }> = []
+
+    await Promise.all(lineItems.map(async (item: any) => {
+      try {
+        const prod = await $fetch<any>(
+          `${config.wooUrl}/wp-json/wc/v3/products/${item.product_id}`,
+          {
+            headers: {
+              Authorization: `Basic ${credentials}`
+            }
+          }
+        )
+
+        if (prod && prod.manage_stock) {
+          const availableStock = typeof prod.stock_quantity === 'number' ? prod.stock_quantity : 9999
+          if (item.quantity > availableStock) {
+            stockErrors.push({
+              id: item.product_id.toString(),
+              name: prod.name,
+              requested: item.quantity,
+              available: availableStock
+            })
+          }
+        }
+      } catch (err: any) {
+        console.error(`Error al validar stock del producto ${item.product_id}:`, err?.message || err)
+      }
+    }))
+
+    if (stockErrors.length > 0) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Conflict',
+        message: 'Stock insuficiente para algunos productos',
+        data: {
+          errors: stockErrors
+        }
+      })
+    }
+
     const orderBody = {
       status: 'pending',
       set_paid: false,

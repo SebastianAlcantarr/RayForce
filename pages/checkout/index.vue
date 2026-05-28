@@ -510,7 +510,7 @@ useSeoMeta({
   description: 'Checkout seguro para pedidos industriales Rayforce.',
 })
 
-const { cartItems, subtotal, discountAmount, total, appliedCoupon } = useCart()
+const { cartItems, subtotal, discountAmount, total, appliedCoupon, updateQuantity, removeFromCart } = useCart()
 const auth = useAuth()
 const router = useRouter()
 
@@ -759,6 +759,54 @@ const applyProfileToForm = () => {
   form.telefono = (billingAddr as any)?.phone || ''
 }
 
+const syncCartStock = async () => {
+  if (cartItems.value.length === 0) return
+
+  try {
+    const res = await $fetch<any>('/api/checkout/validate-stock', {
+      method: 'POST',
+      body: {
+        items: cartItems.value.map((item: any) => ({
+          id: item.id,
+          quantity: item.quantity
+        }))
+      }
+    })
+
+    if (res && res.success && res.conflicts) {
+      let stockChanged = false
+      const conflictsList: string[] = []
+
+      res.conflicts.forEach((conflict: any) => {
+        const cartItem = cartItems.value.find(item => item.id === conflict.id)
+        if (cartItem) {
+          if (cartItem.stock_quantity !== conflict.available) {
+            cartItem.stock_quantity = conflict.available
+            stockChanged = true
+          }
+
+          if (conflict.hasConflict) {
+            if (conflict.available === 0) {
+              removeFromCart(conflict.id)
+              conflictsList.push(`"${conflict.name}" (Agotado)`)
+            } else {
+              updateQuantity(conflict.id, conflict.available)
+              conflictsList.push(`"${conflict.name}" (Ajustado a ${conflict.available} uds)`)
+            }
+            stockChanged = true
+          }
+        }
+      })
+
+      if (stockChanged && conflictsList.length > 0) {
+        errorMessage.value = 'El inventario de algunos productos en tu carrito ha cambiado: ' + conflictsList.join(', ') + '. Hemos ajustado tu carrito.'
+      }
+    }
+  } catch (err) {
+    console.error('Error al sincronizar existencias de carrito:', err)
+  }
+}
+
 onMounted(async () => {
   isLoadingProfile.value = true
 
@@ -794,6 +842,10 @@ onMounted(async () => {
         fiscalForm.emailFactura = auth.user.value.email || ''
       }
     }
+
+    // Validar y sincronizar stock real antes de proceder
+    await syncCartStock()
+
   } catch (error) {
     console.error('Error cargando perfil:', error)
   } finally {
@@ -945,6 +997,26 @@ const handleCheckout = async () => {
 
     const statusCode = error?.status || error?.statusCode || 0
     const serverMsg = error?.data?.statusMessage || error?.data?.message || error?.message || ''
+
+    // Si es un error de stock insuficiente (409)
+    const stockErrors = error?.data?.data?.errors
+    if (statusCode === 409 && stockErrors && Array.isArray(stockErrors)) {
+      const conflictsList: string[] = []
+
+      stockErrors.forEach((conflict: any) => {
+        if (conflict.available === 0) {
+          removeFromCart(conflict.id)
+          conflictsList.push(`"${conflict.name}" (Agotado)`)
+        } else {
+          updateQuantity(conflict.id, conflict.available)
+          conflictsList.push(`"${conflict.name}" (Ajustado a ${conflict.available} uds)`)
+        }
+      })
+
+      errorMessage.value = 'El inventario de algunos productos cambió y no es suficiente: ' + conflictsList.join(', ') + '. Tu carrito ha sido actualizado, por favor intenta de nuevo.'
+      isLoading.value = false
+      return
+    }
 
     // Detectar sesión expirada o token JWT inválido (iss mismatch por cambio de URL de WP)
     const isSessionExpired =
