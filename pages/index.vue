@@ -459,12 +459,10 @@ const startTimer = () => {
 
 const nextSlide = () => {
   activeSlide.value = (activeSlide.value + 1) % slides.length
-  startTimer()
 }
 
 const prevSlide = () => {
   activeSlide.value = (activeSlide.value - 1 + slides.length) % slides.length
-  startTimer()
 }
 
 onMounted(() => { startTimer() })

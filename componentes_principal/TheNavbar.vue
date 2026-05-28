@@ -199,12 +199,18 @@ const isSearching = ref(false)
 const showResults = ref(false)
 const searchContainer = ref(null)
 let debounceTimer = null
+let searchAbortController = null
+let searchRequestId = 0
 
 // Real-time search logic
 watch(searchQuery, (newQuery) => {
   clearTimeout(debounceTimer)
+  searchAbortController?.abort()
+  searchAbortController = null
+  const requestId = ++searchRequestId
+  const query = newQuery.trim()
   
-  if (!newQuery || newQuery.length < 2) {
+  if (!query || query.length < 2) {
     searchResults.value = []
     isSearching.value = false
     return
@@ -214,17 +220,20 @@ watch(searchQuery, (newQuery) => {
   showResults.value = true
 
   debounceTimer = setTimeout(async () => {
+    const controller = new AbortController()
+    searchAbortController = controller
+
     try {
-      console.log('Buscando en API interna:', newQuery)
       // Usamos tu propia API interna de Nuxt para evitar CORS y 404
       const response = await $fetch('/api/products', {
         params: { 
-          q: newQuery,
+          q: query,
           limit: 10
-        }
+        },
+        signal: controller.signal,
       })
-      
-      console.log('Resultados internos:', response)
+
+      if (requestId !== searchRequestId) return
 
       if (response && response.items && response.items.length > 0) {
         // Mapeamos el formato de tu API interna al que espera el buscador
@@ -240,10 +249,16 @@ watch(searchQuery, (newQuery) => {
         searchResults.value = []
       }
     } catch (error) {
+      if (error?.name === 'AbortError') return
       console.error('Error en búsqueda interna:', error)
-      searchResults.value = []
+      if (requestId === searchRequestId) {
+        searchResults.value = []
+      }
     } finally {
-      isSearching.value = false
+      if (requestId === searchRequestId) {
+        isSearching.value = false
+        searchAbortController = null
+      }
     }
   }, 400)
 })
@@ -261,6 +276,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('click', handleClickOutside)
+  clearTimeout(debounceTimer)
+  searchAbortController?.abort()
 })
 
 function closeSearch() {

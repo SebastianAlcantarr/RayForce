@@ -71,7 +71,6 @@ export const useAuth = () => {
   const fetchProfile = async () => {
     try {
       const profile = await $fetch('/api/me') as any
-      console.log('Raw profile data from API:', profile)
 
       // Mapear los datos para asegurar la estructura correcta
       const mappedUser: User = {
@@ -87,7 +86,6 @@ export const useAuth = () => {
         shipping: profile?.shipping || null,
       }
 
-      console.log('Mapped profile data:', mappedUser)
       saveAuth(mappedUser)
       return mappedUser
     } catch (error) {
@@ -131,14 +129,10 @@ export const useAuth = () => {
   // Login
   const login = async (username: string, password: string) => {
     try {
-      console.log('Iniciando login con:', { username })
-
       const response = await $fetch('/api/login', {
         method: 'POST',
         body: { username, password },
       })
-
-      console.log('Respuesta de login:', response)
 
       if (response.success && response.token) {
         // Guardar token temporalmente
@@ -146,9 +140,7 @@ export const useAuth = () => {
 
         // Obtener datos del usuario
         try {
-          console.log('Obteniendo perfil del usuario...')
           const userData = await fetchProfile()
-          console.log('Perfil del usuario:', userData)
           saveAuth(userData, response.token)
           return { success: true, user: userData }
         } catch (userError) {
@@ -171,8 +163,6 @@ export const useAuth = () => {
     try {
       const username = fullName.toLowerCase().replace(/\s+/g, '') || email.split('@')[0]
 
-      console.log('Iniciando registro con:', { fullName, email, username })
-
       const response = await $fetch('/api/register', {
         method: 'POST',
         body: {
@@ -182,8 +172,6 @@ export const useAuth = () => {
           username,
         },
       })
-
-      console.log('Respuesta de registro:', response)
 
       if (response.success) {
         return response
@@ -232,4 +220,3 @@ export const useAuth = () => {
     updateAddress,
   }
 }
-
