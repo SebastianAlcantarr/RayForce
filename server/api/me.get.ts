@@ -115,6 +115,10 @@ export default defineEventHandler(async (event) => {
       ? 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
       : (statusCode === 401 ? 'Sesión inválida o expirada' : 'No se pudo obtener el perfil')
 
+    if (statusCode === 401) {
+      deleteCookie(event, 'auth_token')
+    }
+
     throw createError({ statusCode, statusMessage })
   }
 })

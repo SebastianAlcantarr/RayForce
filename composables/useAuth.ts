@@ -26,27 +26,48 @@ export const useAuth = () => {
 
   // Cargar usuario y token al iniciar
   const initAuth = async () => {
-    if (typeof window === 'undefined') return
-
-    // Cargar desde localStorage
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      try {
-        const { user: storedUser, token: storedToken } = JSON.parse(stored)
-        user.value = storedUser
-        token.value = storedToken || null
-      } catch (e) {
-        console.error('Error loading auth:', e)
-        localStorage.removeItem(STORAGE_KEY)
+    // 1. En el servidor (SSR)
+    if (import.meta.server) {
+      const authCookie = useCookie('auth_token')
+      if (authCookie.value) {
+        try {
+          // Reenviar cookies del cliente a la llamada de API local en SSR
+          const headers = useRequestHeaders(['cookie'])
+          await fetchProfile(headers)
+        } catch (error) {
+          console.debug('SSR: No se pudo cargar el perfil desde la cookie:', error)
+        }
       }
+      isLoading.value = false
+      return
     }
 
-    if (needsProfileRefresh(user.value)) {
-      try {
-        await fetchProfile()
-      } catch (error) {
-        console.debug('No se pudo cargar el perfil desde la cookie:', error)
+    // 2. En el cliente
+    // Si el estado del usuario ya se cargó desde el servidor (SSR), no hacemos nada
+    // excepto cargar el token de localStorage si está disponible (esto no afecta la hidratación)
+    if (user.value) {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        try {
+          const { token: storedToken } = JSON.parse(stored)
+          if (storedToken) {
+            token.value = storedToken
+          }
+        } catch (e) {
+          console.error('Error loading token from storage:', e)
+        }
       }
+      isLoading.value = false
+      return
+    }
+
+    // Si user.value es null en el cliente tras el SSR, significa que no estamos autenticados.
+    // Limpiamos localStorage para evitar tener un estado local inconsistente (hydration mismatch)
+    // con una sesión expirada u obsoleta.
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      console.warn('Sesión de localStorage obsoleta o expirada. Limpiando estado local.')
+      logout()
     }
 
     isLoading.value = false
@@ -68,9 +89,13 @@ export const useAuth = () => {
   }
 
   // Obtener perfil del usuario desde el servidor
-  const fetchProfile = async () => {
+  const fetchProfile = async (headers?: any) => {
     try {
-      const profile = await $fetch('/api/me') as any
+      const fetchOptions: any = {}
+      if (headers) {
+        fetchOptions.headers = headers
+      }
+      const profile = await $fetch('/api/me', fetchOptions) as any
 
       // Mapear los datos para asegurar la estructura correcta
       const mappedUser: User = {
@@ -88,8 +113,15 @@ export const useAuth = () => {
 
       saveAuth(mappedUser)
       return mappedUser
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching profile:', error)
+      if (error?.status === 401) {
+        logout()
+        if (typeof window !== 'undefined') {
+          // Intentar borrar la cookie del lado del servidor de manera asíncrona
+          $fetch('/api/logout', { method: 'POST' }).catch(() => {})
+        }
+      }
       throw error
     }
   }
