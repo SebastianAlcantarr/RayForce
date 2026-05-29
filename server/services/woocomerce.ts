@@ -55,7 +55,7 @@ function getConfig(): WooConfig {
 
 
 export interface WooRequestOptions {
-  params?: Record<string, string | number>
+  params?: Record<string, string | number | boolean>
   cache?: RequestCache
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   body?: unknown
@@ -120,6 +120,7 @@ export interface WooProduct {
   attributes?: WooProductAttribute[]
   variations?: WooProduct[]
   brands?: any[]
+  meta_data?: { id?: number; key: string; value: any }[]
 }
 
 export interface WooBrand {

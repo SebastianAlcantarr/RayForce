@@ -147,6 +147,18 @@
               Preguntar
             </a>
           </div>
+
+          <!-- Botón Ficha Técnica -->
+          <div v-if="datasheetUrl" class="mt-4">
+            <a 
+              :href="datasheetUrl" 
+              target="_blank" 
+              class="w-full border-2 border-[#0b1f3f]/20 hover:border-primary text-slate-700 hover:text-primary font-bold h-12 rounded-md transition-all flex items-center justify-center gap-2 shadow-sm bg-white active:scale-95"
+            >
+              <span class="material-symbols-outlined text-xl">description</span>
+              Ficha Técnica del Producto
+            </a>
+          </div>
         </div>
       </section>
 
@@ -599,6 +611,71 @@ const whatsappUrl = computed(() => {
   const message = `Hola, me interesa el producto "${product.value.name}" (SKU: ${product.value.sku || 'N/A'}). ` +
                   `Visto en la tienda: https://rayforce.com.mx/tienda/${slug.value}`
   return `https://wa.me/5216621711371?text=${encodeURIComponent(message)}`
+})
+
+// Helper para normalizar la marca del producto y determinar fallbacks
+const getProductBrand = (prod: any): string | null => {
+  if (!prod) return null
+  
+  // 1. Verificar marcas desde la API de WooCommerce (propiedad 'brands')
+  if (Array.isArray(prod.brands) && prod.brands.length > 0) {
+    const brandName = String(prod.brands[0]?.name || prod.brands[0] || '').toUpperCase()
+    if (brandName) return brandName
+  }
+  
+  // 2. Verificar desde los atributos del producto (ej: marca)
+  if (Array.isArray(prod.attributes)) {
+    const brandAttr = prod.attributes.find((a: any) => a.name?.toLowerCase() === 'marca')
+    if (brandAttr && Array.isArray(brandAttr.options) && brandAttr.options.length > 0) {
+      return String(brandAttr.options[0]).toUpperCase()
+    }
+  }
+  
+  // 3. Fallback por análisis del nombre del producto
+  const nameLower = String(prod.name || '').toLowerCase()
+  if (nameLower.includes('truper')) return 'TRUPER'
+  if (nameLower.includes('urrea')) return 'URREA'
+  if (nameLower.includes('surtek')) return 'SURTEK'
+  if (nameLower.includes('fiero')) return 'FIERO'
+  if (nameLower.includes('foset')) return 'FOSET'
+  if (nameLower.includes('volteck')) return 'VOLTECK'
+  if (nameLower.includes('pretul')) return 'PRETUL'
+  if (nameLower.includes('hermex')) return 'HERMEX'
+  if (nameLower.includes('foy')) return 'FOY'
+  
+  return null
+}
+
+const datasheetUrl = computed(() => {
+  if (!product.value) return null
+
+  // 1. Obtener desde metadatos de WooCommerce si se importó manualmente
+  const metaUrl = product.value.meta_data?.find(
+    (m: any) => m.key === 'ficha_tecnica_url'
+  )?.value
+  if (metaUrl) return String(metaUrl).trim()
+
+  // 2. Fallbacks dinámicos por marca y SKU
+  const brand = getProductBrand(product.value)
+  if (!brand) return null
+
+  const truperBrands = ['TRUPER', 'FIERO', 'FOSET', 'VOLTECK', 'PRETUL', 'HERMEX']
+  const urreaBrands = ['URREA', 'SURTEK', 'FOY']
+  const sku = String(product.value.sku || '').trim()
+
+  if (!sku || sku === 'SIN SKU') return null
+
+  if (truperBrands.includes(brand)) {
+    // Genera el enlace directo al PDF oficial de Truper
+    return `https://www.truper.com/ficha_merca/ficha-print.php?code=${sku}`
+  }
+
+  if (urreaBrands.includes(brand)) {
+    // Redirecciona al buscador del catálogo de herramientas de Urrea (Magento)
+    return `https://urrea.com/catalogsearch/result/?q=${sku}`
+  }
+
+  return null
 })
 </script>
 
