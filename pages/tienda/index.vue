@@ -160,9 +160,21 @@
           >
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
-          <span class="font-inter text-[11px] font-bold tracking-[0.2em] text-on-surface">
-            {{ String(currentPage).padStart(2, '0') }} <span class="text-outline-variant mx-2">-</span> {{ String(totalPages).padStart(2, '0') }}
-          </span>
+          <div class="flex items-center gap-2">
+            <template v-for="(page, index) in pagesToDisplay" :key="page">
+              <span v-if="index > 0 && page - pagesToDisplay[index - 1] > 1" class="text-outline-variant mx-1 font-inter text-[11px]">...</span>
+              <button
+                class="w-10 h-10 flex items-center justify-center border font-inter text-[11px] font-bold rounded-sm transition-all"
+                :class="page === currentPage
+                  ? 'border-primary bg-primary text-white'
+                  : 'border-outline-variant/20 hover:border-primary text-on-surface hover:text-primary'"
+                type="button"
+                @click="goToPage(page)"
+              >
+                {{ String(page).padStart(2, '0') }}
+              </button>
+            </template>
+          </div>
           <button
             class="w-10 h-10 flex items-center justify-center border border-outline-variant/20 hover:border-primary text-on-surface transition-all rounded-sm disabled:opacity-40 disabled:cursor-not-allowed"
             type="button"
@@ -224,6 +236,32 @@ const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
 
 const products = computed(() => data.value?.items || [])
 const totalPages = computed(() => data.value?.totalPages || 1)
+
+const pagesToDisplay = computed(() => {
+  const pages = new Set<number>()
+  if (totalPages.value <= 1) return []
+
+  // Siempre mostrar la primera y la última
+  pages.add(1)
+  pages.add(totalPages.value)
+
+  // Mostrar la anterior a la que estés, la que estés, y la siguiente
+  if (currentPage.value > 1) {
+    pages.add(currentPage.value - 1)
+  }
+  pages.add(currentPage.value)
+  if (currentPage.value < totalPages.value) {
+    pages.add(currentPage.value + 1)
+  }
+
+  return Array.from(pages).sort((a, b) => a - b)
+})
+
+watch(currentPage, () => {
+  if (typeof window !== 'undefined') {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+})
 
 const { addToCart, cartItems } = useCart()
 const addedProductId = ref<string | null>(null)
