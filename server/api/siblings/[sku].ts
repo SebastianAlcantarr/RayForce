@@ -27,18 +27,7 @@ export default defineEventHandler(async (event) => {
   // Ej: "Zapata Ponch C/l 2b Cal. 500-1/2" -> buscar "Zapata Ponch C/l 2b"
   const fullName = currentProduct.name || ''
 
-  // Estrategia 1: usar el atributo principal del producto para buscar hermanos
-  // Los productos simples que antes eran variaciones tienen atributos (ej: Medida = "1/2 pulg")
-  const mainAttr = currentProduct.attributes?.find(
-    (a) => a.options && a.options.length > 0
-  )
-
-  if (!mainAttr) {
-    // Sin atributo, no hay hermanos que mostrar
-    return { siblings: [] }
-  }
-
-  // Estrategia 2: derivar nombre base (quitar última palabra/especificación)
+  // Estrategia: derivar nombre base (quitar última palabra/especificación)
   // Para buscar: "Zapata Ponch C/l 2b Cal." filtramos por ese search term
   // Tomamos las primeras N palabras del nombre para buscar
   const words = fullName.trim().split(/\s+/)
@@ -58,36 +47,79 @@ export default defineEventHandler(async (event) => {
       status: 'publish',
     })
 
-    // Filtrar:
-    // 1. Excluir el producto actual
-    // 2. Solo productos del mismo tipo de atributo (misma familia)
-    // 3. Que tengan el mismo atributo principal
-    const siblings = candidates
-      .filter((p) => {
-        if (p.id === currentProduct.id) return false
-        if (p.sku === sku) return false
+    const allCandidates = [currentProduct, ...candidates.filter(c => c.id !== currentProduct.id)]
 
-        // Verificar que comparte el mismo nombre de atributo
-        const pAttr = p.attributes?.find((a) => a.name === mainAttr.name)
-        return !!pAttr
-      })
-      .slice(0, 8) // máximo 8 hermanos
-      .map((p) => ({
+    // Encontrar el mejor atributo para agrupar por:
+    // Analizamos qué atributo del producto actual varía más entre todos los candidatos
+    let bestAttr = null
+    let maxUniqueValues = 0
+
+    if (currentProduct.attributes && currentProduct.attributes.length > 0) {
+      for (const attr of currentProduct.attributes) {
+        const values = new Set<string>()
+        for (const cand of allCandidates) {
+          const candAttr = cand.attributes?.find(a => a.name === attr.name)
+          const val = candAttr?.options?.[0]
+          if (val) {
+            values.add(val.toLowerCase().trim())
+          }
+        }
+        // Queremos el atributo con mayor variedad de valores únicos (que diferencie a los hermanos)
+        if (values.size > maxUniqueValues) {
+          maxUniqueValues = values.size
+          bestAttr = attr
+        }
+      }
+    }
+
+    // Fallback al primer atributo si no se encuentra ninguno con variación
+    const mainAttr = bestAttr || currentProduct.attributes?.find(
+      (a) => a.options && a.options.length > 0
+    )
+
+    if (!mainAttr) {
+      return { siblings: [] }
+    }
+
+    const currentVal = mainAttr.options?.[0] || ''
+    const seenAttrValues = new Set<string>()
+    if (currentVal) {
+      seenAttrValues.add(currentVal.toLowerCase().trim())
+    }
+
+    // Filtrar y mapear los hermanos, garantizando valores de atributos únicos
+    const siblings: any[] = []
+    for (const p of candidates) {
+      if (p.id === currentProduct.id) continue
+      if (p.sku === sku) continue
+
+      // Verificar que comparte el mismo nombre de atributo
+      const pAttr = p.attributes?.find((a) => a.name === mainAttr.name)
+      if (!pAttr) continue
+
+      const val = pAttr.options?.[0] || p.name
+      const valKey = val.toLowerCase().trim()
+
+      // Evitar renderizar botones con etiquetas duplicadas en el frontend
+      if (seenAttrValues.has(valKey)) continue
+      seenAttrValues.add(valKey)
+
+      siblings.push({
         id: p.id,
         slug: p.slug,
         name: p.name,
         sku: p.sku,
         price: p.price,
         image: p.images?.[0]?.src || null,
-        // El valor del atributo principal de este hermano (ej: "3/4 pulg")
-        attrValue: p.attributes?.find((a) => a.name === mainAttr.name)?.options?.[0] || p.name,
+        attrValue: val,
         attrName: mainAttr.name,
         stock_status: p.stock_status,
-      }))
+      })
+    }
 
     return {
-      siblings,
-      currentAttrValue: mainAttr.options?.[0] || '',
+      siblings: siblings.slice(0, 8),
+      currentAttrValue: currentVal,
       attrName: mainAttr.name,
     }
   } catch (e) {

@@ -66,7 +66,6 @@ def check_truper_datasheet(sku):
     """Realiza una petición HEAD rápida para verificar si existe una ficha técnica en Truper."""
     url = f"https://www.truper.com/ficha_merca/ficha-print.php?code={sku}"
     try:
-        # Petición HEAD rápida con allow_redirects=False para verificar 200 vs 302
         r = requests.head(url, allow_redirects=False, timeout=10)
         if r.status_code == 200:
             return url
@@ -151,6 +150,9 @@ def main():
     overwrite_input = input("¿Deseas auditar y verificar TODOS los productos, incluyendo los que ya tienen ficha? (S/N, default N): ").strip().upper()
     overwrite_existing = overwrite_input == "S"
     
+    auto_save_input = input("¿Deseas aplicar cambios automáticamente en WooCommerce al encontrarlos? (S/N, default S): ").strip().upper()
+    auto_save = auto_save_input != "N"
+    
     print("\nObteniendo todos los productos publicados de WooCommerce...")
     all_products = []
     page = 1
@@ -177,6 +179,8 @@ def main():
     to_update = []
     skipped_existing = 0
     skipped_no_sku = 0
+    updated_realtime = 0
+    errors_realtime = 0
     
     print("Iniciando auditoría de SKUs uno por uno...")
     print("-" * 60)
@@ -207,14 +211,13 @@ def main():
         found_url = None
         source = None
         
-        # Determinar prioridad de búsqueda por marca para evitar colisiones incorrectas
+        # Determinar prioridad de búsqueda por marca para evitar colisiones
         search_order = []
         if brand in TRUPER_BRANDS:
             search_order = [("Truper", check_truper_datasheet), ("Urrea", check_urrea_datasheet)]
         elif brand in URREA_BRANDS:
             search_order = [("Urrea", check_urrea_datasheet), ("Truper", check_truper_datasheet)]
         else:
-            # Si no hay marca definida, probar primero Truper (es mucho más rápida por ser petición HEAD)
             search_order = [("Truper", check_truper_datasheet), ("Urrea", check_urrea_datasheet)]
             
         for provider_name, check_fn in search_order:
@@ -230,29 +233,64 @@ def main():
             else:
                 action = "Actualizar" if existing_url else "Agregar"
                 print(f"  -> ¡Coincidencia encontrada en {source}! ({action}): {found_url}")
-                to_update.append({
-                    "id": pid,
-                    "sku": sku,
-                    "name": name,
-                    "brand": brand,
-                    "pdf_url": found_url,
-                    "source": source,
-                    "action": action
-                })
+                
+                if auto_save:
+                    print(f"  -> Guardando en WooCommerce...", end="", flush=True)
+                    update_body = {
+                        "meta_data": [
+                            {
+                                "key": "ficha_tecnica_url",
+                                "value": found_url
+                            }
+                        ]
+                    }
+                    try:
+                        res = requests.put(
+                            f"{BASE_API}/products/{pid}",
+                            auth=AUTH,
+                            json=update_body,
+                            timeout=30
+                        )
+                        if res.status_code == 200:
+                            print(" OK (Guardado)")
+                            updated_realtime += 1
+                        else:
+                            print(f" ERROR: {res.status_code} - {res.text[:100]}")
+                            errors_realtime += 1
+                    except Exception as e:
+                        print(f" EXCEPCIÓN: {e}")
+                        errors_realtime += 1
+                else:
+                    to_update.append({
+                        "id": pid,
+                        "sku": sku,
+                        "name": name,
+                        "brand": brand,
+                        "pdf_url": found_url,
+                        "source": source,
+                        "action": action
+                    })
         else:
             print("  -> Ficha técnica no encontrada en Truper ni Urrea.")
             
-        # Retardo prudente para no saturar las llamadas externas de scraping de Urrea/Truper
-        time.sleep(0.2)
+        time.sleep(0.25)
         
     print("\n" + "=" * 60)
-    print("RESUMEN DE AUDITORÍA")
+    print("RESUMEN DE PROCESO")
     print("=" * 60)
-    print(f"Productos sin SKU saltados         : {skipped_no_sku}")
-    print(f"Productos con ficha ya registrada : {skipped_existing} (saltados)")
-    print(f"Nuevas fichas técnicas encontradas : {len(to_update)}")
+    print(f"Productos sin SKU saltados           : {skipped_no_sku}")
+    print(f"Productos con ficha ya registrada   : {skipped_existing} (saltados)")
+    if auto_save:
+        print(f"Actualizaciones hechas en tiempo real: {updated_realtime}")
+        print(f"Errores al guardar en tiempo real   : {errors_realtime}")
+    else:
+        print(f"Nuevas fichas técnicas encontradas   : {len(to_update)}")
     print("-" * 60)
     
+    if auto_save:
+        print("\nEl proceso ha finalizado correctamente con las actualizaciones en tiempo real.")
+        return
+        
     if not to_update:
         print("\nNo se encontraron nuevas fichas técnicas para agregar o actualizar.")
         return
