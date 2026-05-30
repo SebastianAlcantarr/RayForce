@@ -9,6 +9,46 @@
  */
 import { getProducts } from '~/server/services/woocomerce'
 
+function cleanAndTokenize(name: string, ignoreValues: string[] = []): Set<string> {
+  const cleaned = (name || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  
+  const finalIgnore = new Set<string>()
+  for (const val of ignoreValues) {
+    if (!val) continue
+    const valClean = val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    finalIgnore.add(valClean)
+    const parts = valClean.split(/[^a-z0-9]+/g).filter(Boolean)
+    parts.forEach(p => finalIgnore.add(p))
+  }
+
+  const stopWords = new Set([
+    "pulgadas", "pulg", "pulgas", "mm", "ml", "a", "v", "w", 
+    "de", "para", "con", "y", "en", "el", "la", "los", "las", "x"
+  ])
+
+  const words = cleaned.split(/[^a-z0-9]+/g).filter(Boolean)
+  const filteredWords = words.filter(w => {
+    if (w.length <= 1) return false
+    if (stopWords.has(w)) return false
+    if (finalIgnore.has(w)) return false
+    return true
+  })
+  
+  return new Set(filteredWords)
+}
+
+function getJaccardSimilarity(setA: Set<string>, setB: Set<string>): number {
+  if (setA.size === 0 || setB.size === 0) return 0
+  let intersectionCount = 0
+  for (const item of setA) {
+    if (setB.has(item)) {
+      intersectionCount++
+    }
+  }
+  const unionSize = setA.size + setB.size - intersectionCount
+  return intersectionCount / unionSize
+}
+
 export default defineEventHandler(async (event) => {
   const sku = getRouterParam(event, 'sku')
 
@@ -47,7 +87,38 @@ export default defineEventHandler(async (event) => {
       status: 'publish',
     })
 
-    const allCandidates = [currentProduct, ...candidates.filter(c => c.id !== currentProduct.id)]
+    // Recopilar valores a ignorar del producto actual
+    const currentIgnoreValues: string[] = []
+    if (currentProduct.attributes) {
+      for (const attr of currentProduct.attributes) {
+        if (attr.options) {
+          currentIgnoreValues.push(...attr.options)
+        }
+      }
+    }
+    const currentTokens = cleanAndTokenize(currentProduct.name, currentIgnoreValues)
+
+    // Filtrar candidatos por similitud base (Jaccard)
+    const validCandidates = candidates.filter(cand => {
+      if (cand.id === currentProduct.id) return false
+      if (cand.sku === sku) return false
+
+      const candIgnoreValues: string[] = []
+      if (cand.attributes) {
+        for (const attr of cand.attributes) {
+          if (attr.options) {
+            candIgnoreValues.push(...attr.options)
+          }
+        }
+      }
+      const candTokens = cleanAndTokenize(cand.name, candIgnoreValues)
+      const sim = getJaccardSimilarity(currentTokens, candTokens)
+      
+      // Permitir candidatos con una similitud del nombre base de al menos 0.75
+      return sim >= 0.75
+    })
+
+    const allCandidates = [currentProduct, ...validCandidates]
 
     // Encontrar el mejor atributo para agrupar por:
     // Analizamos qué atributo del producto actual varía más entre todos los candidatos
@@ -89,10 +160,7 @@ export default defineEventHandler(async (event) => {
 
     // Filtrar y mapear los hermanos, garantizando valores de atributos únicos
     const siblings: any[] = []
-    for (const p of candidates) {
-      if (p.id === currentProduct.id) continue
-      if (p.sku === sku) continue
-
+    for (const p of validCandidates) {
       // Verificar que comparte el mismo nombre de atributo
       const pAttr = p.attributes?.find((a) => a.name === mainAttr.name)
       if (!pAttr) continue
