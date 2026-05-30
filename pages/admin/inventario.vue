@@ -262,6 +262,18 @@
                 </select>
               </div>
               
+              <div class="ficha-edit-row mt-3">
+                <label for="ficha-edit-input" class="product-price-label">Ficha Técnica (URL):</label>
+                <input
+                  id="ficha-edit-input"
+                  v-model="currentFichaTecnicaUrl"
+                  type="text"
+                  class="f-input w-full mt-1 !py-1.5 !px-2.5 text-sm"
+                  placeholder="https://ejemplo.com/ficha.pdf"
+                  style="height: 36px; background-color: #1e293b;"
+                />
+              </div>
+              
               <div class="stock-control mt-4 items-start">
                 <div class="stock-label">Stock actual</div>
                 <div class="stock-counter">
@@ -431,6 +443,11 @@
           <div class="form-field form-field--full">
             <label for="new-desc" class="f-label">Descripción corta</label>
             <textarea id="new-desc" v-model="newProduct.description" class="f-input f-textarea" rows="3" placeholder="Descripción del producto…" />
+          </div>
+
+          <div class="form-field form-field--full">
+            <label for="new-ficha" class="f-label">Ficha Técnica (URL)</label>
+            <input id="new-ficha" v-model="newProduct.ficha_tecnica_url" type="text" class="f-input" placeholder="https://ejemplo.com/ficha.pdf" />
           </div>
 
           <div class="form-field form-field--full">
@@ -992,6 +1009,7 @@ const currentName = ref('')
 const currentSku = ref('')
 const currentCategories = ref<number[]>([])
 const currentBrand = ref<number | null>(null)
+const currentFichaTecnicaUrl = ref('')
 
 interface Brand { id: number; name: string; slug: string }
 const brands = ref<Brand[]>([])
@@ -1005,6 +1023,7 @@ interface FoundProduct {
   stock_quantity: number; regular_price: string; image: string | null; image_id: number | null
   description: string; categories: number[]; brand: number | null
   images: { id: number; src: string }[]
+  ficha_tecnica_url?: string
 }
 const foundProduct = ref<FoundProduct | null>(null)
 
@@ -1067,6 +1086,7 @@ async function searchBySku() {
     currentSku.value = res.sku
     currentCategories.value = [...res.categories]
     currentBrand.value = res.brand
+    currentFichaTecnicaUrl.value = res.ficha_tecnica_url || ''
     editImages.value = (res.images || []).map(img => ({ id: img.id, src: img.src }))
   } catch (err: unknown) {
     const e = err as { statusMessage?: string }
@@ -1118,6 +1138,7 @@ async function saveProductChanges() {
         categories: currentCategories.value,
         image_ids: finalImageIds,
         brand: currentBrand.value,
+        ficha_tecnica_url: currentFichaTecnicaUrl.value,
       },
     })
     
@@ -1128,6 +1149,7 @@ async function saveProductChanges() {
     foundProduct.value.description = currentDescription.value
     foundProduct.value.categories = [...currentCategories.value]
     foundProduct.value.brand = currentBrand.value
+    foundProduct.value.ficha_tecnica_url = currentFichaTecnicaUrl.value
     foundProduct.value.images = editImages.value.map(img => ({ id: img.id!, src: img.src }))
     if (editImages.value.length > 0) {
       foundProduct.value.image = editImages.value[0].src
@@ -1178,6 +1200,7 @@ const creatorImages = ref<{ src: string; file: File }[]>([])
 const newProduct = reactive({
   name: '', sku: '', regular_price: '', description: '',
   categories: [] as number[],
+  ficha_tecnica_url: '',
 })
 
 async function loadCategories() {
@@ -1225,6 +1248,7 @@ function toggleCategory(id: number) {
 function resetProductForm() {
   newProduct.name = ''; newProduct.sku = ''; newProduct.regular_price = ''
   newProduct.description = ''; newProduct.categories = []
+  newProduct.ficha_tecnica_url = ''
   creatorImages.value = []
   if (imgInput.value) imgInput.value.value = ''
 }
@@ -1250,12 +1274,13 @@ async function submitProduct() {
     const created = await $fetch<{ id: number; name: string; permalink?: string }>('/api/admin/create-product', {
       method: 'POST',
       body: {
-        name:          newProduct.name,
-        sku:           newProduct.sku,
-        regular_price: newProduct.regular_price,
-        description:   newProduct.description,
-        categories:    newProduct.categories,
-        image_ids:     imageIds,
+        name:              newProduct.name,
+        sku:               newProduct.sku,
+        regular_price:     newProduct.regular_price,
+        description:       newProduct.description,
+        categories:        newProduct.categories,
+        image_ids:         imageIds,
+        ficha_tecnica_url: newProduct.ficha_tecnica_url,
       },
     })
 

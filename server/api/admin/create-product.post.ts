@@ -4,7 +4,7 @@ import type { WooProduct } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { name, sku, regular_price, categories, image_id, image_ids, description } = body || {}
+  const { name, sku, regular_price, categories, image_id, image_ids, description, ficha_tecnica_url } = body || {}
 
   if (!name || !sku || !regular_price) {
     throw createError({ statusCode: 400, statusMessage: 'Nombre, SKU y precio son obligatorios' })
@@ -30,6 +30,15 @@ export default defineEventHandler(async (event) => {
     payload.images = image_ids.map((id: number) => ({ id }))
   } else if (image_id) {
     payload.images = [{ id: image_id }]
+  }
+
+  if (ficha_tecnica_url !== undefined && ficha_tecnica_url !== null && String(ficha_tecnica_url).trim() !== '') {
+    payload.meta_data = [
+      {
+        key: 'ficha_tecnica_url',
+        value: String(ficha_tecnica_url).trim(),
+      }
+    ]
   }
 
   try {

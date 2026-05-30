@@ -4,7 +4,7 @@ import type { WooProduct } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { id, name, sku, regular_price, stock_quantity, description, categories, image_id, image_ids, brand } = body || {}
+  const { id, name, sku, regular_price, stock_quantity, description, categories, image_id, image_ids, brand, ficha_tecnica_url } = body || {}
 
   if (!id) {
     throw createError({ statusCode: 400, statusMessage: 'ID de producto requerido' })
@@ -39,6 +39,14 @@ export default defineEventHandler(async (event) => {
   }
   if (brand !== undefined) {
     payload.brands = brand !== null ? [{ id: Number(brand) }] : []
+  }
+  if (ficha_tecnica_url !== undefined && ficha_tecnica_url !== null) {
+    payload.meta_data = [
+      {
+        key: 'ficha_tecnica_url',
+        value: String(ficha_tecnica_url).trim(),
+      }
+    ]
   }
 
   try {

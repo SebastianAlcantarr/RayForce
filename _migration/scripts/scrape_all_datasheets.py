@@ -1,7 +1,7 @@
 import os
 import re
-import requests
 import time
+import requests
 from requests.auth import HTTPBasicAuth
 
 # Cargar .env manualmente desde el directorio raíz del proyecto
@@ -34,33 +34,49 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
-def get_products_by_brand(brand_id):
-    """Obtiene todos los productos de un brand_id en WooCommerce."""
-    products = []
-    page = 1
-    while True:
-        r = requests.get(
-            f"{BASE_API}/products",
-            auth=AUTH,
-            params={"brand": brand_id, "per_page": 100, "page": page, "status": "any"},
-            timeout=30
-        )
-        if not r.ok:
-            print(f"Error cargando productos para marca {brand_id}: {r.text}")
-            break
-        items = r.json()
-        if not items:
-            break
-        products.extend(items)
-        page += 1
-    return products
+# Grupos de marcas
+TRUPER_BRANDS = ['TRUPER', 'FIERO', 'FOSET', 'VOLTECK', 'PRETUL', 'HERMEX']
+URREA_BRANDS = ['URREA', 'SURTEK', 'FOY']
 
-def scrape_pdf_url(sku):
-    """Busca en catálogo de Urrea la ficha técnica PDF para un SKU usando búsqueda inversa por marcado."""
+def get_product_brand(p):
+    # 1. Brands taxonomy
+    brands = p.get("brands", [])
+    if brands:
+        name = brands[0].get("name", "").upper()
+        if name:
+            return name
+            
+    # 2. Marca attribute
+    attrs = p.get("attributes", [])
+    for attr in attrs:
+        if attr.get("name", "").lower() == "marca":
+            options = attr.get("options", [])
+            if options:
+                return str(options[0]).upper()
+                
+    # 3. Name keywords
+    name_lower = p.get("name", "").lower()
+    for kw in ['truper', 'urrea', 'surtek', 'fiero', 'foset', 'volteck', 'pretul', 'hermex', 'foy']:
+        if kw in name_lower:
+            return kw.upper()
+            
+    return None
+
+def check_truper_datasheet(sku):
+    """Realiza una petición HEAD rápida para verificar si existe una ficha técnica en Truper."""
+    url = f"https://www.truper.com/ficha_merca/ficha-print.php?code={sku}"
+    try:
+        # Petición HEAD rápida con allow_redirects=False para verificar 200 vs 302
+        r = requests.head(url, allow_redirects=False, timeout=10)
+        if r.status_code == 200:
+            return url
+    except Exception:
+        pass
+    return None
+
+def check_urrea_datasheet(sku):
+    """Busca en catálogo de Urrea la ficha técnica PDF para un SKU usando búsqueda y raspado de página."""
     sku_clean = str(sku).strip()
-    if not sku_clean or sku_clean == "SIN SKU":
-        return None
-        
     search_url = f"https://urrea.com/catalogsearch/result/?q={sku_clean}"
     try:
         r = requests.get(search_url, headers=HEADERS, timeout=15)
@@ -70,7 +86,6 @@ def scrape_pdf_url(sku):
         html = r.text
         
         # 1. Buscar enlace del detalle del producto
-        # Buscamos primero usando la etiqueta de SKU del producto en Magento
         sku_pattern = rf'<span class="sku-item-text">\s*{re.escape(sku_clean)}\s*</span>'
         match = re.search(sku_pattern, html, re.IGNORECASE)
         
@@ -119,100 +134,151 @@ def scrape_pdf_url(sku):
             
         if pdf_match:
             pdf_url = pdf_match.group(1)
-            # Asegurar que sea URL absoluta si viene relativa
             if pdf_url.startswith("//"):
                 pdf_url = "https:" + pdf_url
             elif pdf_url.startswith("/"):
                 pdf_url = "https://urrea.com" + pdf_url
             return pdf_url
-    except Exception as e:
+    except Exception:
         pass
     return None
 
 def main():
-    brand_ids = {
-        "361": "URREA",
-        "267": "SURTEK",
-        "351": "FOY"
-    }
+    print("============================================================")
+    print("AUDITORÍA E IMPORTACIÓN AVANZADA DE FICHAS TÉCNICAS")
+    print("============================================================")
     
+    overwrite_input = input("¿Deseas auditar y verificar TODOS los productos, incluyendo los que ya tienen ficha? (S/N, default N): ").strip().upper()
+    overwrite_existing = overwrite_input == "S"
+    
+    print("\nObteniendo todos los productos publicados de WooCommerce...")
     all_products = []
-    print("Obteniendo productos de marcas Urrea/Surtek/Foy de WooCommerce...")
-    for bid, bname in brand_ids.items():
-        prods = get_products_by_brand(bid)
-        print(f"  Marca {bname} (ID {bid}): {len(prods)} productos encontrados.")
-        all_products.extend(prods)
-        
-    print(f"\nTotal de productos a procesar: {len(all_products)}")
+    page = 1
+    while True:
+        r = requests.get(
+            f"{BASE_API}/products",
+            auth=AUTH,
+            params={"per_page": 100, "page": page, "status": "publish"},
+            timeout=30
+        )
+        if not r.ok:
+            print(f"Error cargando productos: {r.text}")
+            break
+        items = r.json()
+        if not items:
+            break
+        all_products.extend(items)
+        page += 1
+        print(f"  Pág {page-1} cargada. Total acumulado: {len(all_products)} productos.")
+
+    total_products = len(all_products)
+    print(f"\nTotal productos publicados cargados: {total_products}\n")
     
-    # 2. Scrapear URLs de PDFs
     to_update = []
-    print("\nBuscando fichas técnicas en urrea.com...")
+    skipped_existing = 0
+    skipped_no_sku = 0
+    
+    print("Iniciando auditoría de SKUs uno por uno...")
+    print("-" * 60)
+    
     for idx, p in enumerate(all_products, 1):
-        sku = p.get("sku", "").strip()
         pid = p.get("id")
+        sku = p.get("sku", "").strip()
         name = p.get("name", "")
+        brand = get_product_brand(p)
         
-        # Buscar si ya tiene una ficha técnica en meta_data
+        if not sku or sku == "SIN SKU":
+            skipped_no_sku += 1
+            continue
+            
+        # Comprobar si ya tiene una ficha técnica en meta_data
         existing_url = None
         if p.get("meta_data"):
             meta = next((m for m in p["meta_data"] if m.get("key") == "ficha_tecnica_url"), None)
             if meta:
-                existing_url = meta.get("value")
+                existing_url = str(meta.get("value", "")).strip()
                 
-        print(f"[{idx}/{len(all_products)}] Analizando ID {pid} | SKU: {sku} | {name}...")
-        
-        if not sku or sku == "SIN SKU":
-            print("  -> Saltado (Sin SKU)")
+        if existing_url and not overwrite_existing:
+            skipped_existing += 1
             continue
             
-        pdf_url = scrape_pdf_url(sku)
-        if pdf_url:
-            if existing_url == pdf_url:
-                print(f"  -> Ya tiene la ficha técnica correcta: {pdf_url}")
+        print(f"[{idx}/{total_products}] SKU: {sku} | Marca detectada: {brand or 'Ninguna'} | {name[:40]}...")
+        
+        found_url = None
+        source = None
+        
+        # Determinar prioridad de búsqueda por marca para evitar colisiones incorrectas
+        search_order = []
+        if brand in TRUPER_BRANDS:
+            search_order = [("Truper", check_truper_datasheet), ("Urrea", check_urrea_datasheet)]
+        elif brand in URREA_BRANDS:
+            search_order = [("Urrea", check_urrea_datasheet), ("Truper", check_truper_datasheet)]
+        else:
+            # Si no hay marca definida, probar primero Truper (es mucho más rápida por ser petición HEAD)
+            search_order = [("Truper", check_truper_datasheet), ("Urrea", check_urrea_datasheet)]
+            
+        for provider_name, check_fn in search_order:
+            result = check_fn(sku)
+            if result:
+                found_url = result
+                source = provider_name
+                break
+                
+        if found_url:
+            if existing_url == found_url:
+                print(f"  -> Ya tiene asignada la misma URL: {found_url}")
             else:
                 action = "Actualizar" if existing_url else "Agregar"
-                print(f"  -> ¡Ficha encontrada! ({action}): {pdf_url}")
+                print(f"  -> ¡Coincidencia encontrada en {source}! ({action}): {found_url}")
                 to_update.append({
                     "id": pid,
-                    "name": name,
                     "sku": sku,
-                    "pdf_url": pdf_url,
+                    "name": name,
+                    "brand": brand,
+                    "pdf_url": found_url,
+                    "source": source,
                     "action": action
                 })
         else:
-            print("  -> Ficha técnica no encontrada en urrea.com")
+            print("  -> Ficha técnica no encontrada en Truper ni Urrea.")
             
-        # Espera prudente entre consultas para no ser bloqueados
-        time.sleep(0.3)
+        # Retardo prudente para no saturar las llamadas externas de scraping de Urrea/Truper
+        time.sleep(0.2)
         
+    print("\n" + "=" * 60)
+    print("RESUMEN DE AUDITORÍA")
+    print("=" * 60)
+    print(f"Productos sin SKU saltados         : {skipped_no_sku}")
+    print(f"Productos con ficha ya registrada : {skipped_existing} (saltados)")
+    print(f"Nuevas fichas técnicas encontradas : {len(to_update)}")
+    print("-" * 60)
+    
     if not to_update:
-        print("\nNo hay fichas técnicas nuevas o actualizadas para importar.")
+        print("\nNo se encontraron nuevas fichas técnicas para agregar o actualizar.")
         return
         
-    print(f"\nSe encontraron {len(to_update)} productos para actualizar/agregar ficha técnica:")
+    print("\nDetalle de productos a actualizar:")
     for idx, item in enumerate(to_update, 1):
-        print(f"[{idx}] ID: {item['id']} | SKU: {item['sku']} | {item['name']}")
-        print(f"    Ficha Técnica: {item['pdf_url']}")
-        print("-" * 55)
+        print(f"[{idx}] ID: {item['id']} | SKU: {item['sku']} | {item['name'][:50]}")
+        print(f"    Marca: {item['brand'] or '—'} | Origen: {item['source']} ({item['action']})")
+        print(f"    URL: {item['pdf_url']}")
+        print("-" * 60)
         
-    confirm = input(f"\n¿Deseas aplicar estos {len(to_update)} cambios en WooCommerce? (escribe 'SI' para confirmar): ").strip()
+    confirm = input(f"\n¿Deseas aplicar estos {len(to_update)} cambios en WooCommerce? (SI para confirmar): ").strip()
     if confirm.upper() != "SI":
         print("Operación cancelada. No se modificó ningún producto.")
         return
         
-    print("\nActualizando metadatos de productos en WooCommerce...")
+    print("\nActualizando productos en WooCommerce...")
     updated_count = 0
     error_count = 0
     
     for idx, item in enumerate(to_update, 1):
         pid = item["id"]
         pdf_url = item["pdf_url"]
-        print(f"[{idx}/{len(to_update)}] Actualizando ID {pid}...", end="", flush=True)
+        sku = item["sku"]
+        print(f"[{idx}/{len(to_update)}] SKU: {sku} | ID {pid}...", end="", flush=True)
         
-        # Formatear el metadato
-        # En WooCommerce, para agregar o actualizar meta_data por REST API pasamos:
-        # meta_data = [{"key": "ficha_tecnica_url", "value": pdf_url}]
         update_body = {
             "meta_data": [
                 {
@@ -233,7 +299,7 @@ def main():
                 print(" OK")
                 updated_count += 1
             else:
-                print(f" ERROR: {r.status_code} - {r.text[:100]}")
+                print(f" ERROR: {r.status_code} - {r.text[:120]}")
                 error_count += 1
         except Exception as e:
             print(f" EXCEPCIÓN: {e}")

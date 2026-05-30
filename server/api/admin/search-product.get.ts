@@ -18,6 +18,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const p = products[0]
+  const fichaTecnicaUrl = p.meta_data?.find((m: any) => m.key === 'ficha_tecnica_url')?.value ?? ''
+
   return {
     id: p.id,
     name: p.name,
@@ -31,5 +33,6 @@ export default defineEventHandler(async (event) => {
     categories: (p.categories || []).map((c: any) => c.id),
     brand: p.brands?.[0]?.id ?? null,
     status: p.status,
+    ficha_tecnica_url: String(fichaTecnicaUrl).trim(),
   }
 })
