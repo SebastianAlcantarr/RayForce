@@ -232,11 +232,14 @@
           <span v-if="product.sale_price" class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10">OFERTA</span>
 
           <div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5">
-            <img
+            <NuxtImg
               :src="product.images?.[0]?.src || '/placeholder.jpg'"
               :alt="product.name"
               class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+              format="webp"
               loading="lazy"
+              width="280"
+              height="280"
             />
           </div>
 

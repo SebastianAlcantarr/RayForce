@@ -182,7 +182,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div v-for="item in order.line_items?.slice(0,4)" :key="item.id" class="flex items-center gap-3 bg-surface-container/20 p-2 rounded-lg border border-outline-variant/10">
                         <div class="w-12 h-12 bg-white rounded-md border border-outline-variant/20 overflow-hidden flex-shrink-0 flex items-center justify-center p-1">
-                          <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-contain" />
+                          <NuxtImg v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-contain" format="webp" loading="lazy" width="48" height="48" />
                           <span v-else class="material-symbols-outlined text-outline-variant">image</span>
                         </div>
                         <div class="min-w-0">

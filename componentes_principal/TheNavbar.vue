@@ -59,7 +59,7 @@
                   @click="closeSearch"
                 >
                   <div class="w-12 h-12 flex-shrink-0 bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10">
-                    <img :src="product.image_url" :alt="product.title" class="w-full h-full object-contain p-1 group-hover/item:scale-110 transition-transform duration-300" />
+                    <NuxtImg :src="product.image_url" :alt="product.title" class="w-full h-full object-contain p-1 group-hover/item:scale-110 transition-transform duration-300" format="webp" loading="lazy" width="48" height="48" />
                   </div>
                   <div class="ml-4 flex-grow">
                     <h4 class="text-sm font-bold text-on-surface line-clamp-1 group-hover/item:text-primary transition-colors" v-html="product.title"></h4>
@@ -145,7 +145,7 @@
                   @click="closeSearch(); isMenuOpen = false"
                 >
                   <div class="w-10 h-10 flex-shrink-0 bg-surface-container rounded-lg overflow-hidden border border-outline-variant/10">
-                    <img :src="product.image_url" :alt="product.title" class="w-full h-full object-contain p-1 group-hover/item:scale-110 transition-transform duration-300" />
+                    <NuxtImg :src="product.image_url" :alt="product.title" class="w-full h-full object-contain p-1 group-hover/item:scale-110 transition-transform duration-300" format="webp" loading="lazy" width="40" height="40" />
                   </div>
                   <div class="ml-3 flex-grow">
                     <h4 class="text-xs font-bold text-on-surface line-clamp-1 group-hover/item:text-primary transition-colors" v-html="product.title"></h4>

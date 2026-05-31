@@ -15,7 +15,7 @@
        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
          <div class="space-y-4">
            <div class="bg-surface-container-low rounded-xl p-6 mb-4">
-             <img :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" />
+              <NuxtImg :src="mainImage" :alt="product.name" class="w-full max-h-[520px] object-contain" format="webp" loading="lazy" width="640" height="520" />
            </div>
           <div v-if="galleryImages.length > 1" class="flex gap-3 overflow-x-auto">
             <button
@@ -26,7 +26,7 @@
               :class="index === selectedImageIndex ? 'border-primary' : 'border-outline-variant/30'"
               @click="selectedImageIndex = index"
             >
-              <img :src="image.src" :alt="image.alt || product.name" class="w-full h-full object-cover" />
+               <NuxtImg :src="image.src" :alt="image.alt || product.name" class="w-full h-full object-cover" format="webp" loading="lazy" width="80" height="80" />
             </button>
           </div>
         </div>
@@ -236,10 +236,14 @@
           >
             <span v-if="relProduct.sale_price" class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10">OFERTA</span>
             <div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5">
-              <img
+              <NuxtImg
                 :src="relProduct.images?.[0]?.src || '/placeholder.jpg'"
                 :alt="relProduct.name"
                 class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                format="webp"
+                loading="lazy"
+                width="260"
+                height="260"
               />
             </div>
             <div class="flex-1 flex flex-col">

@@ -8,8 +8,13 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxtjs/tailwindcss',
-    '@nuxtjs/sitemap'
+    '@nuxtjs/sitemap',
+    '@nuxt/image'
   ],
+
+  image: {
+    domains: ['rayforce.com.mx']
+  },
 
   sitemap: {
     exclude: [

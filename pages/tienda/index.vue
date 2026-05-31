@@ -103,10 +103,14 @@
               class="block"
             >
               <div class="aspect-square bg-surface-container-highest overflow-hidden relative mb-6">
-                <img
+                <NuxtImg
                     :alt="product.name"
                     class="w-full h-full object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700"
                     :src="product.images?.[0]?.src || '/placeholder.jpg'"
+                    format="webp"
+                    loading="lazy"
+                    width="360"
+                    height="360"
                 />
                 <button
                     @click.prevent="handleAddToCart(product)"

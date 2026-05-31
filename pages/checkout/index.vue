@@ -426,7 +426,7 @@
 
               <div v-for="item in cartItems" :key="item.id" class="flex gap-4 p-3 bg-surface-container/20 rounded-2xl border border-outline-variant/5">
                 <div class="w-20 h-20 bg-white rounded-xl border border-outline-variant/10 overflow-hidden flex-shrink-0 p-2 flex items-center justify-center">
-                  <img class="max-w-full max-h-full object-contain" :alt="item.name" :src="item.image" />
+                  <NuxtImg class="max-w-full max-h-full object-contain" :alt="item.name" :src="item.image" format="webp" loading="lazy" width="80" height="80" />
                 </div>
                 <div class="flex-grow flex flex-col justify-between py-1 min-w-0">
                   <div>

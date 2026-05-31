@@ -303,9 +303,9 @@ export async function searchProducts(query: string, page = 1) {
   })
 }
 
-export async function getCategories() {
+export async function getCategories(params: Record<string, string | number> = {}) {
   return wooFetch<WooCategory[]>('/products/categories', {
-    params: { per_page: 100, hide_empty: 1 },
+    params: { per_page: 100, hide_empty: 1, ...params },
   })
 }
 

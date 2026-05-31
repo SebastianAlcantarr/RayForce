@@ -23,10 +23,14 @@
         <div v-for="item in cartItems" :key="item.id" class="flex flex-col md:grid md:grid-cols-6 gap-6 items-center">
           <div class="col-span-3 flex items-center gap-8 w-full">
             <div class="w-32 h-32 bg-surface-container-highest flex-shrink-0 relative overflow-hidden group">
-              <img
+              <NuxtImg
                 class="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500"
                 :alt="item.name"
                 :src="item.image"
+                format="webp"
+                loading="lazy"
+                width="128"
+                height="128"
               />
             </div>
             <div class="space-y-1">
@@ -190,4 +194,3 @@ const formatPrice = (value) => {
   }).format(num)
 }
 </script>
-
