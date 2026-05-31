@@ -59,6 +59,7 @@ export interface WooRequestOptions {
   cache?: RequestCache
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
   body?: unknown
+  timeout?: number
 }
 
 /**
@@ -174,6 +175,7 @@ async function wooFetchResponse(endpoint: string, options: WooRequestOptions = {
     },
     cache: options.cache || 'no-store',
     body: options.body ? JSON.stringify(options.body) : undefined,
+    signal: AbortSignal.timeout(options.timeout ?? 15000)
   })
 
   if (!response.ok) {

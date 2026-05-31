@@ -104,6 +104,13 @@ runtimeConfig: {
     '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
     '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
     '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+
+    // Cache en servidor de lo que casi no cambia, para no pegarle a Hostinger en cada vista
+    '/api/categories': { cache: { maxAge: 1800 } },        // 30 min
+    '/api/product/**': { cache: { maxAge: 300 } },         // 5 min — detalle de producto
+    '/api/products/related': { cache: { maxAge: 300 } },   // 5 min
+    '/api/siblings/**': { cache: { maxAge: 300 } },        // 5 min
+
   },
 
   compatibilityDate: '2024-11-01',
