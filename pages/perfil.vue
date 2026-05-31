@@ -276,15 +276,6 @@
                             >
                               <span class="material-symbols-outlined text-lg">{{ step.icon }}</span>
                             </div>
-
-                            <!-- Pulsing animation for active step -->
-                            <span 
-                              v-if="step.active && !step.error" 
-                              class="absolute top-0 right-0 flex h-3.5 w-3.5"
-                            >
-                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-primary"></span>
-                            </span>
                           </div>
 
                           <!-- Step Details -->

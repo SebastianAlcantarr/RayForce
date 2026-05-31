@@ -214,6 +214,11 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    // Disparar notificaciones (como factura o nuevo pedido) si se marca como pagado o completado
+    await checkAndTriggerOrderNotifications(updated).catch(err => {
+      console.error('Error al disparar notificaciones de pedido:', err)
+    })
+
     return {
       success: true,
       order: {

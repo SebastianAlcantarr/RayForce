@@ -43,8 +43,7 @@ export const useAuth = () => {
     }
 
     // 2. En el cliente
-    // Si el estado del usuario ya se cargó desde el servidor (SSR), no hacemos nada
-    // excepto cargar el token de localStorage si está disponible (esto no afecta la hidratación)
+    // Si el usuario ya está cargado por el SSR, cargamos el token correspondiente
     if (user.value) {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
@@ -61,13 +60,27 @@ export const useAuth = () => {
       return
     }
 
-    // Si user.value es null en el cliente tras el SSR, significa que no estamos autenticados.
-    // Limpiamos localStorage para evitar tener un estado local inconsistente (hydration mismatch)
-    // con una sesión expirada u obsoleta.
+    // Si user.value es null (ej: redirigido de pasarela de pago o recarga de página donde el SSR no lo obtuvo),
+    // intentamos recuperar la sesión desde localStorage en el cliente y validarla en segundo plano.
     const stored = localStorage.getItem(STORAGE_KEY)
     if (stored) {
-      console.warn('Sesión de localStorage obsoleta o expirada. Limpiando estado local.')
-      logout()
+      try {
+        const { user: storedUser, token: storedToken } = JSON.parse(stored)
+        if (storedUser && storedToken) {
+          user.value = storedUser
+          token.value = storedToken
+          
+          // Validar el perfil en el fondo para asegurar que la sesión de WooCommerce siga activa
+          fetchProfile().catch((err: any) => {
+            console.warn('Sesión recuperada inválida en WooCommerce, cerrando sesión:', err)
+          })
+        } else {
+          logout()
+        }
+      } catch (e) {
+        console.error('Error al restaurar sesión desde localStorage:', e)
+        logout()
+      }
     }
 
     isLoading.value = false
