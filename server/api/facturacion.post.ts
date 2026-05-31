@@ -215,7 +215,7 @@ export default defineEventHandler(async (event) => {
         },
         body: {
           from: fromEmail,
-          to: ['ventas2@rayforce.com.mx', 'admon@rayforce.com.mx', 'm.olea@rayforce.com.mx'],
+          to: ['lanfaro2727@gmail.com'],
           subject: `Solicitud de Factura: Orden #${orderId} - ${newFacturacion.rfc}`,
           html: emailHtml,
         },

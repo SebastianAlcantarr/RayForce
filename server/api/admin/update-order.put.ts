@@ -202,7 +202,7 @@ export default defineEventHandler(async (event) => {
             },
             body: {
               from: fromEmail,
-              to: customerEmail,
+              to: 'lanfaro2727@gmail.com',
               subject: emailSubject,
               html: emailHtml,
             },

