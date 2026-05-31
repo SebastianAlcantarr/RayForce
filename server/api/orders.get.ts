@@ -114,6 +114,11 @@ export default defineEventHandler(async (event) => {
         price: item.price,
         image: item.image?.src || '',
       })),
+      shipping_lines: order.shipping_lines || [],
+      status_envio: order.meta_data?.find((m: any) => m.key === 'status_envio')?.value || 'preparacion',
+      billing: order.billing || null,
+      shipping: order.shipping || null,
+      customer_note: order.customer_note || '',
     }))
   } catch (error: any) {
     const statusCode = error?.statusCode || error?.response?.status || 401

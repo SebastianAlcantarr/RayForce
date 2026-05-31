@@ -199,6 +199,82 @@
           </div>
         </section>
 
+        <!-- Step 2: Método de Envío -->
+        <section class="bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-6 md:p-10 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8"></div>
+          
+          <div class="flex items-center gap-4 mb-8 relative">
+            <span class="text-sm font-black font-inter bg-primary text-white w-8 h-8 flex items-center justify-center rounded-xl shadow-lg shadow-primary/30">02</span>
+            <h2 class="text-2xl font-extrabold tracking-tight text-on-surface">Método de Envío</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+            <!-- Tarjeta Envío a Domicilio -->
+            <div 
+              @click="!isCPForaneo && (shippingMethod = 'delivery')"
+              :class="[
+                'border-2 rounded-2xl p-6 transition-all duration-300 flex flex-col justify-between gap-4 relative overflow-hidden select-none',
+                isCPForaneo
+                  ? 'border-outline-variant/10 bg-surface-container/5 opacity-50 cursor-not-allowed'
+                  : (shippingMethod === 'delivery' 
+                    ? 'border-primary bg-primary/5 shadow-md shadow-primary/5 cursor-pointer' 
+                    : 'border-outline-variant/30 hover:border-outline-variant bg-surface-container/20 cursor-pointer')
+              ]"
+            >
+              <div class="flex items-start gap-4">
+                <span class="material-symbols-outlined text-3xl" :class="isCPForaneo ? 'text-on-surface-variant/40' : (shippingMethod === 'delivery' ? 'text-primary' : 'text-on-surface-variant/70')">local_shipping</span>
+                <div>
+                  <h3 class="font-bold text-on-surface text-base" :class="{ 'text-on-surface-variant/60': isCPForaneo }">Envío a Domicilio</h3>
+                  <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                    <span v-if="isCPForaneo" class="text-error font-medium">El código postal ingresado está fuera del área de entrega.</span>
+                    <span v-else>Recibe tu mercancía directamente en tu dirección.</span>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mt-2 pt-3 border-t border-outline-variant/10">
+                <span class="text-xs font-semibold text-on-surface-variant">Costo de envío:</span>
+                <span class="text-sm font-black text-on-surface">
+                  <span v-if="isCPForaneo" class="text-error font-extrabold uppercase tracking-wide text-[11px] bg-error/10 px-2.5 py-1 rounded-md border border-error/20">
+                    Fuera de área
+                  </span>
+                  <template v-else-if="(form.codigoPostal || '').trim().length < 5">
+                    <span class="text-on-surface-variant/60 text-xs italic">Ingresa CP</span>
+                  </template>
+                  <template v-else-if="deliveryCostNum === 0">
+                    <span class="text-green-600 font-bold">Gratis</span>
+                  </template>
+                  <template v-else>
+                    ${{ formatPrice(deliveryCostNum) }}
+                  </template>
+                </span>
+              </div>
+            </div>
+
+            <!-- Tarjeta Recoger en Tienda -->
+            <div 
+              @click="shippingMethod = 'pickup'"
+              :class="[
+                'border-2 rounded-2xl p-6 cursor-pointer transition-all duration-300 flex flex-col justify-between gap-4 relative overflow-hidden select-none',
+                shippingMethod === 'pickup' 
+                  ? 'border-primary bg-primary/5 shadow-md shadow-primary/5' 
+                  : 'border-outline-variant/30 hover:border-outline-variant bg-surface-container/20'
+              ]"
+            >
+              <div class="flex items-start gap-4">
+                <span class="material-symbols-outlined text-3xl" :class="shippingMethod === 'pickup' ? 'text-primary' : 'text-on-surface-variant/70'">store</span>
+                <div>
+                  <h3 class="font-bold text-on-surface text-base">Recoger en Tienda</h3>
+                  <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">Recoge sin costo en nuestra sucursal en Hermosillo.</p>
+                </div>
+              </div>
+              <div class="flex items-center justify-between mt-2 pt-3 border-t border-outline-variant/10">
+                <span class="text-xs font-semibold text-on-surface-variant">Costo de envío:</span>
+                <span class="text-sm font-black text-green-600">Gratis ($0)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Step 3: Datos de Facturación -->
         <section class="bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-6 md:p-10 shadow-sm relative overflow-hidden">
           <div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -mr-8 -mt-8"></div>
@@ -451,9 +527,20 @@
                 <span class="font-semibold">Cupón {{ appliedCoupon.code }}</span>
                 <span class="font-bold">-${{ formatPrice(discountAmount) }}</span>
               </div>
+              
+              <!-- Línea de Envío -->
+              <div class="flex justify-between text-sm text-on-surface-variant">
+                <span>Envío ({{ shippingMethod === 'pickup' ? 'Recogida' : 'Domicilio' }})</span>
+                <span class="text-on-surface font-bold">
+                  <span v-if="shippingMethod === 'pickup'" class="text-primary font-bold">Gratis</span>
+                  <span v-else-if="shippingCostNum === 0" class="text-green-600 font-bold">Gratis</span>
+                  <span v-else>${{ formatPrice(shippingCostNum) }}</span>
+                </span>
+              </div>
+
               <div class="flex justify-between items-center pt-6 pb-2 border-t border-outline-variant/20">
                 <span class="text-lg font-bold">Total Final</span>
-                <span class="text-3xl font-black text-primary">${{ formatPrice(total) }}</span>
+                <span class="text-3xl font-black text-primary">${{ formatPrice(checkoutTotal) }}</span>
               </div>
             </div>
 
@@ -498,7 +585,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from 'vue'
+import {computed, onMounted, reactive, ref, watch} from 'vue'
 import {useCart} from '~/composables/useCart'
 
 definePageMeta({
@@ -514,11 +601,7 @@ const { cartItems, subtotal, discountAmount, total, appliedCoupon, updateQuantit
 const auth = useAuth()
 const router = useRouter()
 
-const shippingCost = ref('12')
-const isLoading = ref(false)
-const isLoadingProfile = ref(true)
-const errorMessage = ref('')
-const showErrors = ref(false) // Activar validación visual solo tras intentar pagar
+import { SHIPPING_ZONE_MAP, ZONE_PRICES, ZONE_NAMES } from '~/data/shippingZones'
 
 const form = reactive({
   nombre: '',
@@ -530,6 +613,68 @@ const form = reactive({
   codigoPostal: '',
   telefono: ''
 })
+
+const shippingMethod = ref<'delivery' | 'pickup'>('delivery')
+
+const isCPForaneo = computed(() => {
+  const cp = (form.codigoPostal || '').trim()
+  if (cp.length < 5) return false
+  return !SHIPPING_ZONE_MAP[cp]
+})
+
+watch(isCPForaneo, (newVal) => {
+  if (newVal) {
+    shippingMethod.value = 'pickup'
+  }
+})
+
+const deliveryCostNum = computed(() => {
+  const cp = (form.codigoPostal || '').trim()
+  if (cp.length < 5) return 0
+  
+  const zone = SHIPPING_ZONE_MAP[cp]
+  if (!zone) return 0
+  
+  if (subtotal.value > 500) return 0
+  
+  return ZONE_PRICES[zone] || 0
+})
+
+const shippingCostNum = computed(() => {
+  if (shippingMethod.value === 'pickup') return 0
+  return deliveryCostNum.value
+})
+
+const shippingMethodTitle = computed(() => {
+  if (shippingMethod.value === 'pickup') {
+    return 'Recoger en Tienda (Calle Campeche #250)'
+  }
+  
+  const cp = (form.codigoPostal || '').trim()
+  if (cp.length < 5) {
+    return 'Envío a Domicilio (Pendiente de CP)'
+  }
+  
+  const zone = SHIPPING_ZONE_MAP[cp]
+  if (!zone) {
+    return 'Envío a Domicilio'
+  }
+  
+  if (subtotal.value > 500) {
+    return `Envío Gratis Hermosillo (${ZONE_NAMES[zone]})`
+  }
+  
+  return `Envío a Domicilio (${ZONE_NAMES[zone]})`
+})
+
+const checkoutTotal = computed(() => {
+  return Math.max(0, total.value + shippingCostNum.value)
+})
+
+const isLoading = ref(false)
+const isLoadingProfile = ref(true)
+const errorMessage = ref('')
+const showErrors = ref(false) // Activar validación visual solo tras intentar pagar
 
 const mexicoStates = [
   { code: 'AGU', name: 'Aguascalientes' },
@@ -638,7 +783,6 @@ const usosCfdi = [
 ]
 
 const formasPago = [
-  { code: '03', name: 'Transferencia electrónica de fondos (SPEI)' },
   { code: '04', name: 'Tarjeta de crédito' },
   { code: '28', name: 'Tarjeta de débito' },
 ]
@@ -890,11 +1034,17 @@ const handleCheckout = async () => {
         city: form.ciudad,
         state: form.estado,
         postcode: form.codigoPostal
-      }
+      },
+      shipping_cost: shippingCostNum.value,
+      shipping_title: shippingMethodTitle.value
     }
 
+    let note = ''
     if (requiresInvoice.value) {
-      createOrderBody.customer_note = `Cliente solicita factura — RFC: ${fiscalForm.rfc.toUpperCase().trim()}`
+      note += `Cliente solicita factura — RFC: ${fiscalForm.rfc.toUpperCase().trim()}`
+    }
+    if (note) {
+      createOrderBody.customer_note = note
     }
 
     // Llamar al endpoint servidor para crear la orden

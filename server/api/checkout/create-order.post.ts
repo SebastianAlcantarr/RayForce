@@ -102,9 +102,9 @@ export default defineEventHandler(async (event) => {
 
       shipping_lines: [
         {
-          method_id: 'flat_rate',
-          method_title: 'Envío',
-          total: '0'
+          method_id: body.shipping_cost === 0 && body.shipping_title?.toLowerCase().includes('recoger') ? 'local_pickup' : 'flat_rate',
+          method_title: body.shipping_title || 'Envío',
+          total: String(body.shipping_cost || 0)
         }
       ],
       customer_note: body.customer_note || undefined,

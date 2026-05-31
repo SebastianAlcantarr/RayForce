@@ -208,6 +208,13 @@
 
                     <div class="space-y-2 mt-auto">
                       <button
+                        @click="toggleOrderExpand(order.id)"
+                        class="w-full text-center flex items-center justify-center gap-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
+                      >
+                        <span>{{ expandedOrders[order.id] ? 'Ocultar Detalle' : 'Seguimiento' }}</span>
+                        <span class="material-symbols-outlined text-sm transition-transform duration-300" :class="{ 'rotate-180': expandedOrders[order.id] }">expand_more</span>
+                      </button>
+                      <button
                         v-if="order.status === 'pending'"
                         @click="handleDeleteOrder(order)"
                         :disabled="isDeletingOrder[order.id]"
@@ -221,6 +228,124 @@
                 <!-- Error on delete -->
                 <div v-if="deleteErrors[order.id]" class="bg-error/10 text-error text-xs font-bold p-3 text-center border-t border-error/20">
                   {{ deleteErrors[order.id] }}
+                </div>
+
+                <!-- Expanded details & tracking section -->
+                <div v-if="expandedOrders[order.id]" class="border-t border-outline-variant/20 p-5 md:p-8 bg-surface-container/10 space-y-8">
+                  <!-- Stepper Visual -->
+                  <div class="space-y-4">
+                    <h4 class="text-sm font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                      <span class="material-symbols-outlined text-sm">local_shipping</span> Seguimiento del Paquete
+                    </h4>
+                    
+                    <div class="relative py-4">
+                      <!-- Progress timeline line -->
+                      <div class="hidden md:block absolute top-[28px] left-[10%] right-[10%] h-1 bg-outline-variant/30 rounded-full z-0">
+                        <div 
+                          class="h-full bg-primary rounded-full transition-all duration-500" 
+                          :style="{ width: getTimelinePercentage(order) }"
+                        ></div>
+                      </div>
+
+                      <div class="flex flex-col md:flex-row md:justify-between gap-6 md:gap-0 relative z-10">
+                        <div 
+                          v-for="(step, idx) in getTrackingSteps(order)" 
+                          :key="idx" 
+                          class="flex md:flex-col items-start md:items-center text-left md:text-center group gap-4 md:gap-2 flex-1 relative"
+                        >
+                          <!-- Step Indicator Icon -->
+                          <div class="relative flex items-center justify-center md:mx-auto">
+                            <!-- Vertical line for mobile -->
+                            <div 
+                              v-if="idx < getTrackingSteps(order).length - 1" 
+                              class="md:hidden absolute top-10 left-5 bottom-[-24px] w-0.5 bg-outline-variant/30"
+                              :class="{ 'bg-primary': step.completed }"
+                            ></div>
+
+                            <div 
+                              class="w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 font-bold text-sm"
+                              :class="[
+                                step.error 
+                                  ? 'border-error bg-error/15 text-error' 
+                                  : (step.completed 
+                                    ? 'border-primary bg-primary text-white shadow-md shadow-primary/20' 
+                                    : (step.active 
+                                      ? 'border-primary bg-surface-container-lowest text-primary ring-4 ring-primary/10' 
+                                      : 'border-outline-variant bg-surface-container-lowest text-outline-variant'))
+                              ]"
+                            >
+                              <span class="material-symbols-outlined text-lg">{{ step.icon }}</span>
+                            </div>
+
+                            <!-- Pulsing animation for active step -->
+                            <span 
+                              v-if="step.active && !step.error" 
+                              class="absolute top-0 right-0 flex h-3.5 w-3.5"
+                            >
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-primary"></span>
+                            </span>
+                          </div>
+
+                          <!-- Step Details -->
+                          <div class="flex-grow pt-1 md:pt-2">
+                            <h5 
+                              class="text-xs font-bold" 
+                              :class="[
+                                step.error ? 'text-error' : (step.completed ? 'text-on-surface' : (step.active ? 'text-primary' : 'text-on-surface-variant/60'))
+                              ]"
+                            >
+                              {{ step.label }}
+                            </h5>
+                            <p class="text-[10px] text-on-surface-variant/80 mt-0.5 max-w-[140px] md:mx-auto leading-relaxed">
+                              {{ step.desc }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Delivery/Pickup Address & Details -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-outline-variant/15">
+                    <div>
+                      <h4 class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Detalles de Entrega</h4>
+                      <div class="bg-surface-container/20 p-4 rounded-xl border border-outline-variant/10 text-sm space-y-2">
+                        <p class="font-bold flex items-center gap-1.5 text-on-surface text-xs">
+                          <span class="material-symbols-outlined text-sm">local_shipping</span>
+                          {{ isPickupOrder(order) ? 'Recoger en Sucursal' : 'Envío a Domicilio' }}
+                        </p>
+                        
+                        <div class="text-[11px] text-on-surface-variant space-y-1 mt-2">
+                          <template v-if="isPickupOrder(order)">
+                            <p class="font-bold text-on-surface">Sucursal Rayforce Hermosillo:</p>
+                            <p>Calle Campeche #250, entre Monteverde e Ignacio Romero, Hermosillo, Sonora.</p>
+                            <p class="mt-2 text-primary font-bold">Horarios: Lunes a Viernes 8:00 AM - 6:00 PM, Sábados 8:00 AM - 1:00 PM</p>
+                          </template>
+                          <template v-else-if="order.shipping">
+                            <p class="font-bold text-on-surface">Dirección de Envío:</p>
+                            <p>{{ order.shipping.first_name }} {{ order.shipping.last_name }}</p>
+                            <p>{{ order.shipping.address_1 }}</p>
+                            <p>{{ order.shipping.city }}, {{ order.shipping.state }} CP {{ order.shipping.postcode }}</p>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-3">Resumen de Pago</h4>
+                      <div class="bg-surface-container/20 p-4 rounded-xl border border-outline-variant/10 text-xs space-y-2">
+                        <div class="flex justify-between">
+                          <span class="text-on-surface-variant">Método de pago:</span>
+                          <span class="font-bold text-on-surface">{{ order.payment_method_title }}</span>
+                        </div>
+                        <div v-if="order.customer_note" class="pt-2 border-t border-outline-variant/10 text-[11px] text-on-surface-variant">
+                          <p class="font-bold">Instrucciones / Notas:</p>
+                          <p class="italic mt-1">"{{ order.customer_note }}"</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
               </div>
@@ -827,6 +952,131 @@ const getStatusLabel = (status: string) => {
   return labels[status] || status
 }
 
+const expandedOrders = ref<Record<number, boolean>>({})
+
+const toggleOrderExpand = (id: number) => {
+  expandedOrders.value[id] = !expandedOrders.value[id]
+}
+
+const isPickupOrder = (order: any) => {
+  const methodId = order.shipping_lines?.[0]?.method_id || ''
+  return methodId.toLowerCase().includes('pickup') || methodId.toLowerCase().includes('recoger')
+}
+
+interface TrackingStep {
+  label: string
+  desc: string
+  completed: boolean
+  active: boolean
+  error?: boolean
+  icon: string
+}
+
+const getTrackingSteps = (order: any): TrackingStep[] => {
+  const isPickup = isPickupOrder(order)
+  const status = order.status
+  const statusEnvio = order.status_envio || 'preparacion'
+
+  if (status === 'cancelled' || status === 'failed') {
+    return [
+      { label: 'Pedido Cancelado', desc: 'El pedido fue cancelado o no pudo procesarse.', active: true, completed: false, error: true, icon: 'cancel' }
+    ]
+  }
+
+  if (isPickup) {
+    const step1 = { 
+      label: 'Pedido Recibido', 
+      desc: 'Tu pedido ha sido registrado en nuestro sistema.',
+      completed: ['pending', 'processing', 'completed', 'on-hold'].includes(status), 
+      active: status === 'pending',
+      icon: 'receipt'
+    }
+    
+    const step2 = {
+      label: 'Pago Confirmado',
+      desc: status === 'on-hold' ? 'Pago en espera de verificación.' : 'Tu pago ha sido validado.',
+      completed: ['processing', 'completed'].includes(status),
+      active: status === 'processing' && statusEnvio === 'preparacion',
+      icon: 'payments'
+    }
+
+    const step3 = {
+      label: 'Listo en Tienda',
+      desc: 'Tus productos están listos en Campeche #250.',
+      completed: ['completed'].includes(status) || statusEnvio === 'listo_recogida',
+      active: status === 'processing' && statusEnvio === 'listo_recogida',
+      icon: 'store'
+    }
+
+    const step4 = {
+      label: 'Entregado',
+      desc: 'Has retirado tus mercancías de tienda.',
+      completed: status === 'completed',
+      active: status === 'completed',
+      icon: 'assignment_turned_in'
+    }
+
+    return [step1, step2, step3, step4]
+  } else {
+    const step1 = {
+      label: 'Pedido Recibido',
+      desc: 'Tu pedido ha sido registrado en nuestro sistema.',
+      completed: ['pending', 'processing', 'completed', 'on-hold'].includes(status),
+      active: status === 'pending',
+      icon: 'receipt'
+    }
+
+    const step2 = {
+      label: 'Pago Confirmado',
+      desc: status === 'on-hold' ? 'Pago en espera de verificación.' : 'Tu pago ha sido acreditado.',
+      completed: ['processing', 'completed'].includes(status),
+      active: status === 'processing' && statusEnvio === 'preparacion',
+      icon: 'credit_score'
+    }
+
+    const step3 = {
+      label: 'Preparando Pedido',
+      desc: 'Reuniendo y empacando tu mercancía en nuestro almacén.',
+      completed: ['completed'].includes(status) || ['en_ruta', 'entregado'].includes(statusEnvio),
+      active: status === 'processing' && statusEnvio === 'preparacion',
+      icon: 'inventory_2'
+    }
+
+    const step4 = {
+      label: 'En Camino',
+      desc: 'Tu paquete va a tu domicilio en uno de nuestros vehículos.',
+      completed: ['completed'].includes(status) || statusEnvio === 'entregado',
+      active: status === 'processing' && statusEnvio === 'en_ruta',
+      icon: 'local_shipping'
+    }
+
+    const step5 = {
+      label: 'Entregado',
+      desc: 'El pedido ha sido entregado en tu domicilio.',
+      completed: status === 'completed',
+      active: status === 'completed',
+      icon: 'home'
+    }
+
+    return [step1, step2, step3, step4, step5]
+  }
+}
+
+const getTimelinePercentage = (order: any) => {
+  const steps = getTrackingSteps(order)
+  if (steps.length <= 1) return '0%'
+  
+  let lastIndex = 0
+  for (let i = steps.length - 1; i >= 0; i--) {
+    if (steps[i].completed || steps[i].active) {
+      lastIndex = i
+      break
+    }
+  }
+  
+  return `${(lastIndex / (steps.length - 1)) * 100}%`
+}
+
 const getStatusClasses = (status: string) => {
   const classes: Record<string, string> = {
     pending: 'bg-yellow-500/10 text-yellow-600 border border-yellow-500/20',
@@ -953,7 +1203,6 @@ const usosCfdi = [
 ]
 
 const formasPago = [
-  { code: '03', name: 'Transferencia electrónica de fondos (SPEI)' },
   { code: '04', name: 'Tarjeta de crédito' },
   { code: '28', name: 'Tarjeta de débito' },
 ]

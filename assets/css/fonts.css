@@ -657,5 +657,5 @@
   -webkit-font-smoothing: antialiased;
   width: 1em;
   height: 1em;
-  overflow: hidden;
+  overflow: visible;
 }

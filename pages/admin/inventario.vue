@@ -808,6 +808,299 @@
         </div>
       </div>
     </div>
+
+    <!-- ═══════════════════════════════════════ -->
+    <!-- MÓDULO 7: Gestión de Pedidos            -->
+    <!-- ═══════════════════════════════════════ -->
+    <div v-show="activeTab === 'pedidos'" class="module-card">
+      <div class="module-header flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="module-title">📦 Gestión de Pedidos</div>
+          <div class="module-sub">Administra los pedidos de tus clientes, verifica el estado del pago y actualiza el seguimiento de entrega.</div>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+          <input
+            v-model="adminOrdersSearch"
+            type="text"
+            class="f-input !py-2 !px-3 text-sm w-full md:w-64"
+            placeholder="Buscar por folio, email..."
+            @keyup.enter="loadAdminOrders(true)"
+          />
+          <button class="btn-primary" @click="loadAdminOrders(true)" :disabled="adminOrdersLoading">
+            Buscar
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="adminOrdersLoading" class="text-center py-12 text-slate-500">
+        <div class="spinner-sm mb-2" />
+        <p>Cargando pedidos...</p>
+      </div>
+
+      <!-- Table of Orders -->
+      <div v-else-if="adminOrders.length > 0" class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Fecha</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Total</th>
+              <th>Pago</th>
+              <th>Envío</th>
+              <th style="text-align:right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="order in adminOrders" :key="order.id">
+              <td>
+                <span class="font-bold text-slate-200">#{{ order.number || order.id }}</span>
+              </td>
+              <td>
+                <span class="text-xs text-slate-400">{{ formatDate(order.date_created) }}</span>
+              </td>
+              <td>
+                <div class="text-xs text-slate-300 font-medium">
+                  {{ order.billing?.first_name }} {{ order.billing?.last_name }}
+                </div>
+                <div class="text-[10px] text-slate-500 font-mono">{{ order.billing?.email || 'N/A' }}</div>
+              </td>
+              <td>
+                <span 
+                  class="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                  :class="isPickupOrder(order) ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'"
+                >
+                  {{ isPickupOrder(order) ? 'Pickup' : 'Delivery' }}
+                </span>
+              </td>
+              <td>
+                <span class="font-bold text-primary">{{ formatCurrency(order.total) }}</span>
+              </td>
+              <td>
+                <span :class="getStatusClasses(order.status)" class="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full">
+                  {{ getStatusLabel(order.status) }}
+                </span>
+              </td>
+              <td>
+                <span 
+                  class="text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full"
+                  :class="getShippingStatusClasses(order.status_envio)"
+                >
+                  {{ getShippingStatusLabel(order.status_envio, isPickupOrder(order)) }}
+                </span>
+              </td>
+              <td style="text-align:right">
+                <button class="btn-ghost !py-1.5 !px-3 text-xs" @click="openOrderModal(order)">
+                  Gestionar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="empty-state">
+        <span>📦</span>
+        <p>No se encontraron pedidos.</p>
+        <button class="btn-primary mt-4" @click="loadAdminOrders(true)">Cargar todos los pedidos</button>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div v-if="adminOrders.length > 0" class="flex justify-between items-center mt-6">
+        <span class="text-xs text-slate-500">Página {{ adminOrdersPage }}</span>
+        <div class="flex gap-2">
+          <button 
+            class="btn-ghost !py-1.5 !px-3 text-xs" 
+            :disabled="adminOrdersPage === 1 || adminOrdersLoading"
+            @click="prevOrdersPage"
+          >
+            ◀ Anterior
+          </button>
+          <button 
+            class="btn-ghost !py-1.5 !px-3 text-xs" 
+            :disabled="!hasMoreOrders || adminOrdersLoading"
+            @click="nextOrdersPage"
+          >
+            Siguiente ▶
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Gestión de Pedido -->
+    <div v-if="orderModalOpen && selectedOrder" class="coupon-modal-overlay">
+      <div class="coupon-modal !max-w-4xl">
+        <div class="coupon-modal-header">
+          <h3>Detalle y Gestión de Pedido #{{ selectedOrder.number || selectedOrder.id }}</h3>
+          <button class="modal-close-btn" @click="closeOrderModal">✕</button>
+        </div>
+        <div class="coupon-modal-body animate-fade-in">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Columna 1: Información del Cliente y Entrega -->
+            <div class="lg:col-span-1 space-y-4">
+              <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/40">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Información del Cliente</h4>
+                <div class="space-y-2 text-sm text-slate-300">
+                  <p><strong class="text-slate-400">Nombre:</strong> {{ selectedOrder.billing?.first_name }} {{ selectedOrder.billing?.last_name }}</p>
+                  <p><strong class="text-slate-400">Email:</strong> {{ selectedOrder.billing?.email || 'N/A' }}</p>
+                  <p><strong class="text-slate-400">Teléfono:</strong> {{ selectedOrder.billing?.phone || 'N/A' }}</p>
+                  <p><strong class="text-slate-400">Método de Pago:</strong> {{ selectedOrder.payment_method_title || 'N/A' }}</p>
+                </div>
+              </div>
+
+              <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/40">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Instrucciones de Entrega</h4>
+                <div class="space-y-2 text-xs text-slate-300">
+                  <p class="font-bold flex items-center gap-1 text-sm mb-2" :class="isPickupOrder(selectedOrder) ? 'text-orange-400' : 'text-blue-400'">
+                    <span>{{ isPickupOrder(selectedOrder) ? '🏪 Recogida en tienda' : '🚚 Envío a domicilio' }}</span>
+                  </p>
+                  <template v-if="isPickupOrder(selectedOrder)">
+                    <p class="italic text-slate-400">El cliente recogerá el pedido en la sucursal de Hermosillo.</p>
+                  </template>
+                  <template v-else-if="selectedOrder.shipping">
+                    <p><strong class="text-slate-400">Dirección:</strong> {{ selectedOrder.shipping.address_1 }}</p>
+                    <p><strong class="text-slate-400">Ciudad:</strong> {{ selectedOrder.shipping.city }}, {{ selectedOrder.shipping.state }}</p>
+                    <p><strong class="text-slate-400">C.P.:</strong> {{ selectedOrder.shipping.postcode }}</p>
+                    <p><strong class="text-slate-400">País:</strong> {{ selectedOrder.shipping.country }}</p>
+                  </template>
+                </div>
+              </div>
+
+              <div v-if="selectedOrder.customer_note" class="bg-yellow-950/20 p-4 rounded-xl border border-yellow-900/30">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-yellow-500 mb-2">Nota del Cliente</h4>
+                <p class="text-xs italic text-slate-300">"{{ selectedOrder.customer_note }}"</p>
+              </div>
+            </div>
+
+            <!-- Columna 2: Productos y Total -->
+            <div class="lg:col-span-2 space-y-4">
+              <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/40">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Productos Comprados</h4>
+                <div class="max-h-60 overflow-y-auto space-y-2 pr-2">
+                  <div v-for="item in selectedOrder.line_items" :key="item.id" class="flex items-center justify-between bg-slate-800/40 p-3 rounded-lg border border-slate-700/20">
+                    <div class="flex items-center gap-3 w-3/4">
+                      <div class="w-10 h-10 bg-white rounded border border-slate-700 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
+                        <img v-if="item.image" :src="item.image" :alt="item.name" class="w-full h-full object-contain" />
+                        <span v-else class="text-xs text-slate-500">🖼️</span>
+                      </div>
+                      <div class="min-w-0">
+                        <p class="text-xs font-bold text-slate-200 line-clamp-1" :title="item.name">{{ item.name }}</p>
+                        <p class="text-[10px] text-slate-400">SKU: {{ item.sku || 'N/A' }}</p>
+                      </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                      <p class="text-xs font-bold text-slate-300">{{ item.quantity }} x {{ formatCurrency(item.price) }}</p>
+                      <p class="text-xs font-bold text-primary">{{ formatCurrency(parseFloat(item.price) * item.quantity) }}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center pt-4 border-t border-slate-700/40 mt-4">
+                  <span class="text-sm font-bold text-slate-400">Total a Pagar:</span>
+                  <span class="text-xl font-black text-primary">{{ formatCurrency(selectedOrder.total) }}</span>
+                </div>
+              </div>
+
+              <!-- Panel de Gestión de Estado -->
+              <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/40 space-y-4">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Gestión de Estatus</h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="form-field">
+                    <label class="f-label">Estado (Pago)</label>
+                    <select v-model="editingOrderStatus" class="f-input" style="height: 42px; background-color: #0f172a;">
+                      <option value="pending">Pendiente de pago</option>
+                      <option value="processing">Procesando (Pagado)</option>
+                      <option value="on-hold">En espera</option>
+                      <option value="completed">Completado</option>
+                      <option value="cancelled">Cancelado</option>
+                      <option value="failed">Fallido</option>
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label class="f-label">Estado del Envío / Entrega</label>
+                    <select v-model="editingStatusEnvio" class="f-input" style="height: 42px; background-color: #0f172a;">
+                      <option value="preparacion">Preparando Pedido</option>
+                      <option v-if="!isPickupOrder(selectedOrder)" value="en_ruta">En Camino (En Ruta)</option>
+                      <option v-if="isPickupOrder(selectedOrder)" value="listo_recogida">Listo para Recogida</option>
+                      <option value="entregado">Entregado</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Panel de Transiciones Rápidas -->
+                <div class="pt-4 border-t border-slate-700/40">
+                  <span class="text-[11px] font-bold uppercase text-slate-500 mb-2 block">Acciones Rápidas</span>
+                  <div class="flex flex-wrap gap-2">
+                    <button 
+                      v-if="['pending', 'on-hold'].includes(editingOrderStatus)"
+                      type="button"
+                      class="btn-primary !py-1.5 !px-3 text-xs !bg-blue-600 hover:!bg-blue-700" 
+                      @click="updateOrderStatus('processing', 'preparacion')"
+                      :disabled="orderSaving"
+                    >
+                      💳 Confirmar Pago y Preparar
+                    </button>
+
+                    <button 
+                      v-if="editingOrderStatus === 'processing' && editingStatusEnvio === 'preparacion' && !isPickupOrder(selectedOrder)"
+                      type="button"
+                      class="btn-primary !py-1.5 !px-3 text-xs !bg-indigo-600 hover:!bg-indigo-700" 
+                      @click="updateOrderStatus('processing', 'en_ruta')"
+                      :disabled="orderSaving"
+                    >
+                      🚚 Marcar En Camino
+                    </button>
+
+                    <button 
+                      v-if="editingOrderStatus === 'processing' && editingStatusEnvio === 'preparacion' && isPickupOrder(selectedOrder)"
+                      type="button"
+                      class="btn-primary !py-1.5 !px-3 text-xs !bg-orange-600 hover:!bg-orange-700" 
+                      @click="updateOrderStatus('processing', 'listo_recogida')"
+                      :disabled="orderSaving"
+                    >
+                      🏪 Marcar Listo en Tienda
+                    </button>
+
+                    <button 
+                      v-if="editingOrderStatus === 'processing'"
+                      type="button"
+                      class="btn-primary !py-1.5 !px-3 text-xs !bg-green-600 hover:!bg-green-700" 
+                      @click="updateOrderStatus('completed', 'entregado')"
+                      :disabled="orderSaving"
+                    >
+                      ✅ Marcar como Entregado
+                    </button>
+
+                    <button 
+                      v-if="['pending', 'processing', 'on-hold'].includes(editingOrderStatus)"
+                      type="button"
+                      class="btn-ghost !py-1.5 !px-3 text-xs !text-red-400 !border-red-950/40 hover:!bg-red-950/20" 
+                      @click="updateOrderStatus('cancelled')"
+                      :disabled="orderSaving"
+                    >
+                      ❌ Cancelar Pedido
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="coupon-modal-footer">
+            <button class="btn-ghost" @click="closeOrderModal" :disabled="orderSaving">Cerrar</button>
+            <button class="btn-primary" :disabled="orderSaving" @click="updateOrderStatus()">
+              <span v-if="orderSaving" class="spinner-sm" />
+              <span v-else>💾 Guardar Cambios</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -828,6 +1121,7 @@ const tabs = [
   { id: 'exportador',icon: '📊', label: 'Exportador CONTPAQi' },
   { id: 'publicidad',icon: '📢', label: 'Publicidad (Banners)' },
   { id: 'cupones',   icon: '🎟️', label: 'Cupones de Descuento' },
+  { id: 'pedidos',    icon: '📦', label: 'Gestión de Pedidos' },
 ]
 const activeTab = ref<string>('buzon')
 
@@ -1444,12 +1738,205 @@ async function copyCouponCode(code: string) {
   }
 }
 
+// ════════════════════════════════════════════════
+// MÓDULO 7: Gestión de Pedidos
+// ════════════════════════════════════════════════
+const adminOrders = ref<any[]>([])
+const adminOrdersLoading = ref(false)
+const adminOrdersSearch = ref('')
+const adminOrdersPage = ref(1)
+const hasMoreOrders = ref(true)
+
+const selectedOrder = ref<any | null>(null)
+const orderModalOpen = ref(false)
+const orderSaving = ref(false)
+
+const editingOrderStatus = ref('')
+const editingStatusEnvio = ref('')
+const isPopulatingModal = ref(false)
+
+watch(editingStatusEnvio, (newVal) => {
+  if (isPopulatingModal.value || !selectedOrder.value) return
+  if (newVal !== 'entregado' && editingOrderStatus.value === 'completed') {
+    editingOrderStatus.value = 'processing'
+  } else if (newVal === 'entregado' && editingOrderStatus.value !== 'completed') {
+    editingOrderStatus.value = 'completed'
+  }
+})
+
+watch(editingOrderStatus, (newVal) => {
+  if (isPopulatingModal.value || !selectedOrder.value) return
+  if (newVal === 'completed' && editingStatusEnvio.value !== 'entregado') {
+    editingStatusEnvio.value = 'entregado'
+  } else if (newVal === 'processing' && editingStatusEnvio.value === 'entregado') {
+    editingStatusEnvio.value = isPickupOrder(selectedOrder.value) ? 'listo_recogida' : 'en_ruta'
+  }
+})
+
+async function loadAdminOrders(resetPage = false) {
+  if (resetPage) {
+    adminOrdersPage.value = 1
+  }
+  adminOrdersLoading.value = true
+  try {
+    const res = await $fetch<any[]>(`/api/admin/orders?page=${adminOrdersPage.value}&search=${encodeURIComponent(adminOrdersSearch.value)}`)
+    adminOrders.value = res || []
+    hasMoreOrders.value = (res || []).length === 20
+  } catch (err: any) {
+    notifyError(`Error al cargar pedidos: ${err?.statusMessage || err}`)
+  } finally {
+    adminOrdersLoading.value = false
+  }
+}
+
+function prevOrdersPage() {
+  if (adminOrdersPage.value > 1) {
+    adminOrdersPage.value--
+    loadAdminOrders()
+  }
+}
+
+function nextOrdersPage() {
+  if (hasMoreOrders.value) {
+    adminOrdersPage.value++
+    loadAdminOrders()
+  }
+}
+
+function openOrderModal(order: any) {
+  isPopulatingModal.value = true
+  selectedOrder.value = order
+  editingOrderStatus.value = order.status
+  editingStatusEnvio.value = order.status_envio || 'preparacion'
+  orderModalOpen.value = true
+  nextTick(() => {
+    isPopulatingModal.value = false
+  })
+}
+
+function closeOrderModal() {
+  orderModalOpen.value = false
+  selectedOrder.value = null
+}
+
+async function updateOrderStatus(status?: string, statusEnvio?: string) {
+  if (!selectedOrder.value) return
+  
+  const statusToUpdate = status || editingOrderStatus.value
+  const statusEnvioToUpdate = statusEnvio || editingStatusEnvio.value
+  
+  orderSaving.value = true
+  try {
+    const res = await $fetch<any>('/api/admin/update-order', {
+      method: 'PUT',
+      body: {
+        id: selectedOrder.value.id,
+        status: statusToUpdate,
+        status_envio: statusEnvioToUpdate
+      }
+    })
+    
+    if (res.success) {
+      const idx = adminOrders.value.findIndex(o => o.id === selectedOrder.value.id)
+      if (idx !== -1) {
+        adminOrders.value[idx].status = statusToUpdate
+        adminOrders.value[idx].status_envio = statusEnvioToUpdate
+      }
+      
+      selectedOrder.value.status = statusToUpdate
+      selectedOrder.value.status_envio = statusEnvioToUpdate
+      editingOrderStatus.value = statusToUpdate
+      editingStatusEnvio.value = statusEnvioToUpdate
+      
+      success('Pedido actualizado con éxito.')
+    }
+  } catch (err: any) {
+    notifyError(`Error al actualizar el pedido: ${err?.statusMessage || err}`)
+  } finally {
+    orderSaving.value = false
+  }
+}
+
+const isPickupOrder = (order: any) => {
+  if (!order || !order.shipping_lines) return false
+  const methodId = order.shipping_lines?.[0]?.method_id || ''
+  return methodId.toLowerCase().includes('pickup') || methodId.toLowerCase().includes('recoger')
+}
+
+const formatCurrency = (price: string | number) => {
+  const num = typeof price === 'string' ? parseFloat(price) : price
+  if (isNaN(num)) return '$0.00'
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(num)
+}
+
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return '—'
+  try {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })
+  } catch {
+    return dateStr
+  }
+}
+
+const getStatusLabel = (status: string) => {
+  const labels: Record<string, string> = {
+    pending: 'Pendiente de pago',
+    processing: 'Procesando (Pagado)',
+    'on-hold': 'En espera',
+    completed: 'Completado',
+    cancelled: 'Cancelado',
+    refunded: 'Reembolsado',
+    failed: 'Fallido',
+    trash: 'Eliminado',
+  }
+  return labels[status] || status
+}
+
+const getStatusClasses = (status: string) => {
+  const classes: Record<string, string> = {
+    pending: 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20',
+    processing: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+    'on-hold': 'bg-orange-500/10 text-orange-400 border border-orange-500/20',
+    completed: 'bg-green-500/10 text-green-400 border border-green-500/20',
+    cancelled: 'bg-slate-500/10 text-slate-400 border border-slate-500/20',
+    refunded: 'bg-purple-500/10 text-purple-400 border border-purple-500/20',
+    failed: 'bg-red-500/10 text-red-400 border border-red-500/20',
+  }
+  return classes[status] || 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+}
+
+const getShippingStatusLabel = (statusEnvio: string, isPickup: boolean) => {
+  const labels: Record<string, string> = {
+    preparacion: 'Preparación',
+    en_ruta: 'En Ruta',
+    listo_recogida: 'Listo para Recogida',
+    entregado: 'Entregado'
+  }
+  
+  if (statusEnvio === 'preparacion') {
+    return isPickup ? 'Listo para Preparar' : 'Preparación'
+  }
+  return labels[statusEnvio] || statusEnvio
+}
+
+const getShippingStatusClasses = (statusEnvio: string) => {
+  const classes: Record<string, string> = {
+    preparacion: 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20',
+    en_ruta: 'bg-blue-500/10 text-blue-400 border border-blue-500/20',
+    listo_recogida: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20',
+    entregado: 'bg-green-500/10 text-green-400 border border-green-500/20',
+  }
+  return classes[statusEnvio] || 'bg-slate-500/10 text-slate-400 border border-slate-500/20'
+}
+
 // ── Inicialización ────────────────────────────
 onMounted(() => { 
   loadCategories() 
   loadBrands()
   loadAdsConfig()
   loadCoupons()
+  loadAdminOrders()
 })
 </script>
 
@@ -1756,5 +2243,11 @@ onMounted(() => {
   display: flex; gap: 10px; justify-content: flex-end;
   padding: 16px 24px; border-top: 1px solid #334155;
   background: #0f172a;
+}
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
 }
 </style>
