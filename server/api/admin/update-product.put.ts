@@ -33,9 +33,15 @@ export default defineEventHandler(async (event) => {
     payload.categories = categories.map((catId: number) => ({ id: catId }))
   }
   if (image_ids !== undefined && image_ids !== null && Array.isArray(image_ids)) {
-    payload.images = image_ids.map((id: number) => ({ id }))
+    payload.images = image_ids
+      .map((id: any) => Number(id))
+      .filter((id: number) => !isNaN(id) && id > 0)
+      .map((id: number) => ({ id }))
   } else if (image_id !== undefined && image_id !== null) {
-    payload.images = [{ id: image_id }]
+    const parsedId = Number(image_id)
+    if (!isNaN(parsedId) && parsedId > 0) {
+      payload.images = [{ id: parsedId }]
+    }
   }
   if (brand !== undefined) {
     payload.brands = brand !== null ? [{ id: Number(brand) }] : []
@@ -49,6 +55,7 @@ export default defineEventHandler(async (event) => {
     ]
   }
 
+  console.log('WooCommerce Update Product Payload:', JSON.stringify(payload, null, 2))
   try {
     const updated = await wooFetch<WooProduct>(`/products/${id}`, {
       method: 'PUT',

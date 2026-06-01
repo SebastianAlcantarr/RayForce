@@ -1399,9 +1399,7 @@ async function saveProductChanges() {
   if (!foundProduct.value) return
   saveLoading.value = true
   try {
-    const finalImageIds: number[] = []
-
-    // Subir en paralelo las nuevas imágenes que tengan un archivo
+    // 1. Subir en paralelo las nuevas imágenes que tengan un archivo
     await Promise.all(
       editImages.value.map(async (img) => {
         if (img.file) {
@@ -1415,11 +1413,13 @@ async function saveProductChanges() {
           img.src = uploaded.src
           delete img.file
         }
-        if (img.id) {
-          finalImageIds.push(img.id)
-        }
       })
     )
+
+    // 2. Construir la lista ordenada de IDs válidos
+    const finalImageIds = editImages.value
+      .map(img => Number(img.id))
+      .filter(id => !isNaN(id) && id > 0)
 
     await $fetch('/api/admin/update-product', {
       method: 'PUT',
@@ -1551,10 +1551,8 @@ function resetProductForm() {
 async function submitProduct() {
   createLoading.value = true
   try {
-    const imageIds: number[] = []
-
-    // Subir en paralelo todas las imágenes seleccionadas
-    await Promise.all(
+    // Subir en paralelo todas las imágenes seleccionadas y obtener sus IDs en orden correcto
+    const imageIds = await Promise.all(
       creatorImages.value.map(async (img) => {
         const fd = new FormData()
         fd.append('file', img.file, img.file.name)
@@ -1562,7 +1560,7 @@ async function submitProduct() {
           method: 'POST',
           body: fd,
         })
-        imageIds.push(uploaded.id)
+        return Number(uploaded.id)
       })
     )
 

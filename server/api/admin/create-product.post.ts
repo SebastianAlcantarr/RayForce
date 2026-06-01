@@ -27,9 +27,15 @@ export default defineEventHandler(async (event) => {
   }
 
   if (image_ids && Array.isArray(image_ids) && image_ids.length > 0) {
-    payload.images = image_ids.map((id: number) => ({ id }))
+    payload.images = image_ids
+      .map((id: any) => Number(id))
+      .filter((id: number) => !isNaN(id) && id > 0)
+      .map((id: number) => ({ id }))
   } else if (image_id) {
-    payload.images = [{ id: image_id }]
+    const parsedId = Number(image_id)
+    if (!isNaN(parsedId) && parsedId > 0) {
+      payload.images = [{ id: parsedId }]
+    }
   }
 
   if (ficha_tecnica_url !== undefined && ficha_tecnica_url !== null && String(ficha_tecnica_url).trim() !== '') {
