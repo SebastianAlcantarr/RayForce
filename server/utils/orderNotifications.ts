@@ -299,53 +299,68 @@ export async function sendInvoiceNotification(order: any, fiscalData: any) {
   }
 }
 
+let fileLock = Promise.resolve()
+
+async function runLocked<T>(fn: () => Promise<T>): Promise<T> {
+  const next = fileLock.then(fn, fn)
+  fileLock = next.then(() => {}, () => {})
+  return next
+}
+
 // Revisa el estado de la orden y dispara las notificaciones si no han sido enviadas previamente
 export async function checkAndTriggerOrderNotifications(order: any) {
   const status = order.status
   const orderId = order.id
   const dataDir = path.join(process.cwd(), 'server', 'data')
 
-  // 1. Notificación de nuevo pedido
-  // Se envía para pedidos pagados (processing/completed) o en espera de pago manual (on-hold)
-  if (status === 'processing' || status === 'completed' || status === 'on-hold') {
-    await fs.mkdir(dataDir, { recursive: true })
-    const sentOrdersPath = path.join(dataDir, 'sent_orders.json')
-    let sentOrders: number[] = []
-    try {
-      const fileContent = await fs.readFile(sentOrdersPath, 'utf-8')
-      sentOrders = JSON.parse(fileContent)
-    } catch (e) {}
+  const dateStr = order.date_created_gmt || order.date_created || ''
+  const orderDate = dateStr ? new Date(dateStr.endsWith('Z') ? dateStr : `${dateStr}Z`) : new Date()
+  const isRecent = !isNaN(orderDate.getTime()) && (Date.now() - orderDate.getTime() < 48 * 60 * 60 * 1000)
 
-    if (!sentOrders.includes(orderId)) {
-      const success = await sendNewOrderNotification(order)
-      if (success) {
-        sentOrders.push(orderId)
-        await fs.writeFile(sentOrdersPath, JSON.stringify(sentOrders, null, 2), 'utf-8')
-      }
-    }
-  }
+  await runLocked(async () => {
+    // 1. Notificación de nuevo pedido
+    // Se envía para pedidos recientes pagados (processing/completed) o en espera de pago manual (on-hold)
+    if (isRecent && (status === 'processing' || status === 'completed' || status === 'on-hold')) {
+      await fs.mkdir(dataDir, { recursive: true })
+      const sentOrdersPath = path.join(dataDir, 'sent_orders.json')
+      let sentOrders: number[] = []
+      try {
+        const fileContent = await fs.readFile(sentOrdersPath, 'utf-8')
+        sentOrders = JSON.parse(fileContent)
+      } catch (e) {}
 
-  // 2. Notificación de factura (si fue solicitada)
-  // Solo se envía si el pedido ya está pagado (processing o completed)
-  if (status === 'processing' || status === 'completed') {
-    await fs.mkdir(dataDir, { recursive: true })
-    const facturacionesPath = path.join(dataDir, 'facturaciones.json')
-    let facturaciones: any[] = []
-    try {
-      const fileContent = await fs.readFile(facturacionesPath, 'utf-8')
-      facturaciones = JSON.parse(fileContent)
-    } catch (e) {}
-
-    const invoiceIdx = facturaciones.findIndex(f => String(f.orderId) === String(orderId))
-    if (invoiceIdx !== -1) {
-      const invoice = facturaciones[invoiceIdx]
-      if (!invoice.emailEnviado) {
-        const success = await sendInvoiceNotification(order, invoice)
+      const sentOrderIds = sentOrders.map(id => Number(id))
+      if (!sentOrderIds.includes(Number(orderId))) {
+        const success = await sendNewOrderNotification(order)
         if (success) {
-          facturaciones[invoiceIdx].emailEnviado = true
-          await fs.writeFile(facturacionesPath, JSON.stringify(facturaciones, null, 2), 'utf-8')
+          sentOrders.push(Number(orderId))
+          await fs.writeFile(sentOrdersPath, JSON.stringify(sentOrders, null, 2), 'utf-8')
         }
       }
     }
-  }
+
+    // 2. Notificación de factura (si fue solicitada)
+    // Solo se envía si el pedido ya está pagado (processing o completed)
+    if (status === 'processing' || status === 'completed') {
+      await fs.mkdir(dataDir, { recursive: true })
+      const facturacionesPath = path.join(dataDir, 'facturaciones.json')
+      let facturaciones: any[] = []
+      try {
+        const fileContent = await fs.readFile(facturacionesPath, 'utf-8')
+        facturaciones = JSON.parse(fileContent)
+      } catch (e) {}
+
+      const invoiceIdx = facturaciones.findIndex(f => String(f.orderId) === String(orderId))
+      if (invoiceIdx !== -1) {
+        const invoice = facturaciones[invoiceIdx]
+        if (!invoice.emailEnviado) {
+          const success = await sendInvoiceNotification(order, invoice)
+          if (success) {
+            facturaciones[invoiceIdx].emailEnviado = true
+            await fs.writeFile(facturacionesPath, JSON.stringify(facturaciones, null, 2), 'utf-8')
+          }
+        }
+      }
+    }
+  })
 }

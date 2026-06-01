@@ -89,14 +89,18 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    const filteredOrders = (orders || []).filter((order: any) => order.status !== 'checkout-draft')
+    const filteredOrders = (orders || []).filter((order: any) => order.status !== 'checkout-draft');
 
-    // Disparar comprobación de notificaciones en segundo plano para cada orden pagada
-    filteredOrders.forEach((order: any) => {
-      checkAndTriggerOrderNotifications(order).catch((err: any) => {
-        console.error(`Error triggering background notification for order #${order.id}:`, err)
-      })
-    })
+    // Disparar comprobación de notificaciones en segundo plano para cada orden de forma secuencial
+    (async () => {
+      for (const order of filteredOrders) {
+        try {
+          await checkAndTriggerOrderNotifications(order)
+        } catch (err: any) {
+          console.error(`Error triggering background notification for order #${order.id}:`, err)
+        }
+      }
+    })()
 
     // Mapear las órdenes a un formato limpio
     return filteredOrders.map((order: any) => ({
