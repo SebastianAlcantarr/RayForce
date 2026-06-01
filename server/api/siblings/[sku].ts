@@ -50,6 +50,10 @@ function getJaccardSimilarity(setA: Set<string>, setB: Set<string>): number {
 }
 
 export default defineEventHandler(async (event) => {
+  setHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate')
+  setHeader(event, 'Pragma', 'no-cache')
+  setHeader(event, 'Expires', '0')
+
   const sku = getRouterParam(event, 'sku')
 
   if (!sku) {
