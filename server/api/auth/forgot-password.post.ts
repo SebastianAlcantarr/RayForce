@@ -162,7 +162,7 @@ export default defineEventHandler(async (event) => {
         'Content-Type': 'application/json'
       },
       body: {
-        from: config.resendFrom,
+        from: `Rayforce <${config.resendFrom}>`,
         to: 'lanfaro2727@gmail.com',
         subject: 'Recupera tu contraseña en Rayforce',
         html: emailHtml

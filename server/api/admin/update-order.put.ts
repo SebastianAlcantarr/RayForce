@@ -119,8 +119,8 @@ export default defineEventHandler(async (event) => {
 
       if (shouldSendEmail) {
         const itemsRowsHtml = (updated.line_items || []).map((item: any) => {
-          const priceNum = parseFloat(item.price || '0')
-          const totalItem = formatCurrency(priceNum * item.quantity)
+          const lineTotalIncTax = parseFloat(item.total || '0') + parseFloat(item.total_tax || '0')
+          const totalItem = formatCurrency(lineTotalIncTax)
           return `
             <tr style="border-bottom: 1px solid #f1f5f9;">
               <td style="padding: 12px 0; font-size: 14px; color: #1e293b;">
@@ -201,7 +201,7 @@ export default defineEventHandler(async (event) => {
               'Content-Type': 'application/json',
             },
             body: {
-              from: fromEmail,
+              from: `Rayforce <${fromEmail}>`,
               to: 'lanfaro2727@gmail.com',
               subject: emailSubject,
               html: emailHtml,

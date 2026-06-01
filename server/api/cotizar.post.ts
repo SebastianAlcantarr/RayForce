@@ -236,7 +236,7 @@ export default defineEventHandler(async (event) => {
           'Content-Type': 'application/json',
         },
         body: {
-          from: fromEmail,
+          from: `Rayforce <${fromEmail}>`,
           to: ['lanfaro2727@gmail.com'],
           subject: `Nueva Cotización: ${newQuote.projectType} - ${newQuote.fullName}`,
           html: emailHtml,

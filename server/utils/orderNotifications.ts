@@ -56,8 +56,8 @@ export async function sendNewOrderNotification(order: any) {
 
   // Filas de productos
   const itemsRowsHtml = (order.line_items || []).map((item: any) => {
-    const priceNum = parseFloat(item.price || '0')
-    const totalItem = formatCurrency(priceNum * item.quantity)
+    const lineTotalIncTax = parseFloat(item.total || '0') + parseFloat(item.total_tax || '0')
+    const totalItem = formatCurrency(lineTotalIncTax)
     return `
       <tr style="border-bottom: 1px solid #f1f5f9;">
         <td style="padding: 12px 0; font-size: 14px; color: #1e293b;">
@@ -152,7 +152,7 @@ export async function sendNewOrderNotification(order: any) {
         'Content-Type': 'application/json',
       },
       body: {
-        from: fromEmail,
+        from: `Rayforce <${fromEmail}>`,
         to: RAYFORCE_RECIPIENT,
         subject: `Nuevo Pedido Recibido: Orden ${orderNumber} - ${customerName}`,
         html: emailHtml,
@@ -261,7 +261,7 @@ export async function sendInvoiceNotification(order: any, fiscalData: any) {
         'Content-Type': 'application/json',
       },
       body: {
-        from: fromEmail,
+        from: `Rayforce <${fromEmail}>`,
         to: RAYFORCE_RECIPIENT,
         subject: `Solicitud de Factura: Orden #${orderId} - ${fiscalData.rfc}`,
         html: emailHtml,
