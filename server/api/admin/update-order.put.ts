@@ -226,7 +226,7 @@ export default defineEventHandler(async (event) => {
             },
             body: {
               from: `Rayforce <${fromEmail}>`,
-              to: 'lanfaro2727@gmail.com',
+              to: customerEmail,
               subject: emailSubject,
               html: emailHtml,
             },

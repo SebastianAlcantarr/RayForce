@@ -160,7 +160,7 @@ export default defineEventHandler(async (event) => {
     },
     body: {
       from: `Rayforce <${config.resendFrom}>`,
-      to: 'lanfaro2727@gmail.com',
+      to: email,
       subject: 'Verifica tu cuenta en Rayforce',
       html: emailHtml
     }
