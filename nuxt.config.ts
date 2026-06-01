@@ -13,7 +13,7 @@ export default defineNuxtConfig({
   ],
 
   image: {
-    domains: ['rayforce.com.mx']
+    domains: ['rayforce.com.mx', 'wp.rayforce.com.mx']
   },
 
   sitemap: {

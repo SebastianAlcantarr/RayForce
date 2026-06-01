@@ -296,10 +296,12 @@ const slug = computed(() => String(route.params.slug || ''))
 
 const { data: product, pending, error } = await useFetch<WooProduct>(
   () => `/api/product/${encodeURIComponent(slug.value)}`,
+  { getCachedData: () => null }
 )
 
 const { data: relatedProducts, pending: relatedPending } = await useFetch<any>(
-  () => product.value ? `/api/products/related?id=${product.value.id}` : null
+  () => product.value ? `/api/products/related?id=${product.value.id}` : null,
+  { getCachedData: () => null }
 )
 
 // === Hermanos (siblings): otras variantes del mismo producto ===

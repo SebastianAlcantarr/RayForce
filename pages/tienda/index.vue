@@ -211,7 +211,7 @@ const currentPage = computed(() => {
 
 const perPage = 20
 
-const { data: categoriesData } = await useFetch<any[]>('/api/categories')
+const { data: categoriesData } = await useFetch<any[]>('/api/categories', { getCachedData: () => null })
 const categoriesList = computed(() => categoriesData.value || [])
 
 const filterByCategory = (categoryId: number | null) => {
@@ -235,7 +235,8 @@ const { data, pending, error } = await useFetch<WooPaginatedResult<WooProduct>>(
     const cat = route.query.category ? `&category=${route.query.category}` : ''
     const brand = route.query.brand ? `&brand=${route.query.brand}` : ''
     return `/api/products?page=${currentPage.value}&perPage=${perPage}${q}${cat}${brand}`
-  }
+  },
+  { getCachedData: () => null }
 )
 
 const products = computed(() => data.value?.items || [])
