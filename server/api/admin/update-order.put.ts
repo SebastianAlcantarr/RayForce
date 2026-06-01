@@ -118,7 +118,7 @@ export default defineEventHandler(async (event) => {
       }
 
       if (shouldSendEmail) {
-        const itemsRowsHtml = (updated.line_items || []).map((item: any) => {
+        const productRows = (updated.line_items || []).map((item: any) => {
           const lineTotalIncTax = parseFloat(item.total || '0') + parseFloat(item.total_tax || '0')
           const totalItem = formatCurrency(lineTotalIncTax)
           return `
@@ -132,6 +132,30 @@ export default defineEventHandler(async (event) => {
             </tr>
           `
         }).join('')
+
+        const shippingCostNum = parseFloat(updated.shipping_total || '0') + parseFloat(updated.shipping_tax || '0')
+        const totalPaidNum = parseFloat(updated.total || '0')
+        const itemsSubtotalNum = totalPaidNum - shippingCostNum
+
+        const itemsSubtotal = formatCurrency(itemsSubtotalNum)
+        const shippingCost = formatCurrency(shippingCostNum)
+        const totalPaid = formatCurrency(totalPaidNum)
+
+        const itemsRowsHtml = `
+          ${productRows}
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td colspan="2" style="padding: 12px 0; text-align: right; font-size: 14px; color: #475569; font-weight: 600;">Subtotal (con IVA):</td>
+            <td style="padding: 12px 0; text-align: right; font-size: 14px; color: #1e293b; font-weight: 600;">${itemsSubtotal}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e2e8f0;">
+            <td colspan="2" style="padding: 12px 0; text-align: right; font-size: 14px; color: #475569; font-weight: 600;">Costo de Envío:</td>
+            <td style="padding: 12px 0; text-align: right; font-size: 14px; color: #1e293b; font-weight: 600;">${shippingCost}</td>
+          </tr>
+          <tr style="border-bottom: 2px solid #13069f;">
+            <td colspan="2" style="padding: 12px 0; text-align: right; font-size: 14px; color: #13069f; font-weight: 700;">Total de la Compra:</td>
+            <td style="padding: 12px 0; text-align: right; font-size: 16px; color: #13069f; font-weight: 700;">${totalPaid}</td>
+          </tr>
+        `
 
         const emailHtml = `
 <!DOCTYPE html>
