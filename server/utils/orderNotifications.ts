@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 // Recipiente para notificaciones de Rayforce durante pruebas
-const RAYFORCE_RECIPIENT = ['lanfaro2727@gmail.com']
+const RAYFORCE_RECIPIENT = ['lanfaro2727@gmail.com','sebastianalcantar323@gmail.com','martinysebastian@gmail.com']
 
 // Helper to format currency
 function formatCurrency(price: string | number) {
