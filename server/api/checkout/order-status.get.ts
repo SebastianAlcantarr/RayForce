@@ -62,10 +62,9 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Disparar notificaciones en segundo plano si el pedido está pagado (procesando o completado)
-    await checkAndTriggerOrderNotifications(order).catch(err => {
-      console.error('Error al disparar notificaciones de pedido:', err)
-    })
+    await checkAndTriggerOrderNotifications(order).catch((err) => {
+  console.error(' Error en checkAndTriggerOrderNotifications:', err)
+})
 
     return {
       orderId: order.id,
