@@ -62,6 +62,11 @@ export default defineEventHandler(async (event) => {
       body: payload,
     })
 
+    // Invalidador de caché para que se vea reflejado inmediatamente en tienda
+    if (updated.slug) {
+      await invalidateProductCache(updated.slug, updated.sku)
+    }
+
     return {
       id: updated.id,
       name: updated.name,
