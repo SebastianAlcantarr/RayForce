@@ -237,7 +237,7 @@ export default defineEventHandler(async (event) => {
         },
         body: {
           from: `Rayforce <${fromEmail}>`,
-          to: ['lanfaro2727@gmail.com'],
+          to: ['ventas2@rayforce.com.mx', 'admon@rayforce.com.mx', 'm.olea@rayforce.com.mx'],
           subject: `Nueva Cotización: ${newQuote.projectType} - ${newQuote.fullName}`,
           html: emailHtml,
         },
