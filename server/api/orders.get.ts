@@ -89,6 +89,15 @@ export default defineEventHandler(async (event) => {
       }
     }
 
+    // Disparar comprobación de notificaciones en segundo plano para cada orden pagada
+    if (Array.isArray(orders)) {
+      orders.forEach((order: any) => {
+        checkAndTriggerOrderNotifications(order).catch((err: any) => {
+          console.error(`Error triggering background notification for order #${order.id}:`, err)
+        })
+      })
+    }
+
     // Mapear las órdenes a un formato limpio
     return (orders || []).map((order: any) => ({
       id: order.id,

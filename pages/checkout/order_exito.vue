@@ -50,11 +50,21 @@ const { clearCart } = useCart()
 const auth = useAuth()
 const orderId = ref<number | null>(null)
 
-onMounted(() => {
+onMounted(async () => {
   orderId.value = parseInt(route.query.id as string)
 
   // Limpia el carrito después de pago exitoso
   clearCart()
+
+  if (orderId.value) {
+    try {
+      await $fetch('/api/checkout/order-status', {
+        params: { orderId: orderId.value }
+      })
+    } catch (err) {
+      console.warn('Error fetching order status in success page:', err)
+    }
+  }
 })
 
 const goHome = () => router.push('/')
