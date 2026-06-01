@@ -17,16 +17,15 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const orders = await wooFetch<any[]>('/orders', { params })
+    const rawOrders = await wooFetch<any[]>('/orders', { params })
+    const orders = Array.isArray(rawOrders) ? rawOrders.filter((order: any) => order.status !== 'checkout-draft') : []
 
     // Disparar comprobación de notificaciones en segundo plano para cada orden pagada
-    if (Array.isArray(orders)) {
-      orders.forEach((order: any) => {
-        checkAndTriggerOrderNotifications(order).catch((err: any) => {
-          console.error(`Error triggering background notification for order #${order.id}:`, err)
-        })
+    orders.forEach((order: any) => {
+      checkAndTriggerOrderNotifications(order).catch((err: any) => {
+        console.error(`Error triggering background notification for order #${order.id}:`, err)
       })
-    }
+    })
 
     // Mapear el listado completo para el panel
     return orders.map((order: any) => ({
