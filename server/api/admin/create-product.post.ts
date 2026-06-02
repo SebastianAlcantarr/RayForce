@@ -53,6 +53,9 @@ export default defineEventHandler(async (event) => {
       body: payload,
     })
 
+    // Limpiar el caché de listados para incluir el nuevo producto
+    clearProductsCache()
+
     return {
       id: created.id,
       name: created.name,

@@ -1,13 +1,7 @@
 import { getProductsList, type WooPaginatedResult, type WooProduct } from '~/server/services/woocomerce'
+import { productsCache } from '~/server/utils/cache'
 
 const CACHE_TTL_MS = 10 * 60 * 1000
-
-interface CacheEntry<T> {
-  expiresAt: number
-  data: T
-}
-
-const productsCache = new Map<string, CacheEntry<WooPaginatedResult<WooProduct>>>()
 
 // Cache the total number of products to calculate total pages dynamically
 let cachedTotalProducts = 2400
@@ -74,6 +68,11 @@ function seededShuffle<T>(array: T[], seed: number): T[] {
 }
 
 export default defineEventHandler(async (event) => {
+  // Desactivar caché a nivel de red (CDN / navegador)
+  setHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate')
+  setHeader(event, 'Pragma', 'no-cache')
+  setHeader(event, 'Expires', '0')
+
   const query = getQuery(event)
   const page = Math.max(Number(query.page) || 1, 1)
   const perPageRaw = Number(query.perPage ?? query.limit) || 20

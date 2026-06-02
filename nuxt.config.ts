@@ -110,6 +110,14 @@ runtimeConfig: {
     '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
     '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
 
+    // Desactivar caché CDN/LiteSpeed para la tienda y APIs de productos
+    '/tienda': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } },
+    '/tienda/**': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } },
+    '/api/product/**': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } },
+    '/api/siblings/**': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } },
+    '/api/products': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } },
+    '/api/products/**': { headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate', 'Pragma': 'no-cache', 'Expires': '0' } },
+
     // Cache en servidor de lo que casi no cambia, para no pegarle a Hostinger en cada vista
     '/api/categories': { cache: { maxAge: 1800 } },        // 30 min
   },

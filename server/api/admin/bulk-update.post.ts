@@ -120,6 +120,9 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  // Invalida el caché de las listas de productos en memoria
+  clearProductsCache()
+
   const updated = results.filter((r) => r.status === 'updated').length
   const notFound = results.filter((r) => r.status === 'not_found').length
   const errors = results.filter((r) => r.status === 'error').length

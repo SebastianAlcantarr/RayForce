@@ -1,9 +1,26 @@
+import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
+
+interface CacheEntry<T> {
+  expiresAt: number
+  data: T
+}
+
+// Mapa compartido en memoria para la lista de productos
+export const productsCache = new Map<string, CacheEntry<WooPaginatedResult<WooProduct>>>()
+
+export function clearProductsCache() {
+  productsCache.clear()
+  console.log('[Cache Invalidator] Caché en memoria de listas de productos vaciado.')
+}
 
 /**
  * Invalida el caché de Nitro para el detalle de un producto, sus productos relacionados y sus hermanos.
  */
 export async function invalidateProductCache(slug: string, sku?: string) {
   try {
+    // Limpiar caché de listas en memoria
+    clearProductsCache()
+
     const cache = useStorage('cache')
     const keys = await cache.getKeys()
     
@@ -27,7 +44,7 @@ export async function invalidateProductCache(slug: string, sku?: string) {
       )
       
       const isRelatedMatch = keyLower.includes('api:products:related') || 
-                            keyLower.includes('api/products/related')
+                             keyLower.includes('api/products/related')
 
       if (isProductMatch || isSiblingsMatch || isRelatedMatch) {
         await cache.removeItem(key)
@@ -41,3 +58,4 @@ export async function invalidateProductCache(slug: string, sku?: string) {
     console.error('[Cache Invalidator] Error al invalidar el caché del producto:', err)
   }
 }
+

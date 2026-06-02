@@ -1212,39 +1212,59 @@ async function parseFile(file: File) {
   const XLSX = await import('xlsx')
   const wb = XLSX.read(arrayBuffer, { type: 'array' })
   const ws = wb.Sheets[wb.SheetNames[0]]
+  
   // Buscar la fila que contiene los headers reales (CONTPAQi tiene cabeceras antes)
   let headerRow = 0
   const allRows = XLSX.utils.sheet_to_json(ws, { defval: '', header: 1 }) as unknown as string[][]
   for (let i = 0; i < Math.min(10, allRows.length); i++) {
-    const row = allRows[i].map((c) => String(c ?? '').toUpperCase())
-    if (row.some((c) => c.includes('PRODUCT') || c.includes('CÓDIGO') || c.includes('CODIGO') || c.includes('SKU'))) {
+    const row = allRows[i].map((c) => String(c ?? '').trim().toUpperCase())
+    
+    // Un header real debe tener tokens exactos como 'CÓDIGO', 'CODIGO', 'SKU', 'PRODUCTO', 'PRODUCT'
+    // Evitamos coincidencias parciales con frases de reporte como "Los Producto Grabados..."
+    const hasExactSkuHeader = row.some((c) => c === 'CÓDIGO' || c === 'CODIGO' || c === 'SKU' || c === 'PRODUCTO' || c === 'PRODUCT')
+    
+    // Omitir filas que son claramente títulos o notas de reportes de CONTPAQi
+    const isReportMetadata = row.some((c) => c.includes('GRABADOS') || c.includes('MONEDA') || c.includes('CONTPAQ') || c.includes('VIGENCIA'))
+    
+    if (hasExactSkuHeader && !isReportMetadata) {
       headerRow = i
       break
     }
   }
 
-  const rows = XLSX.utils.sheet_to_json<Record<string, string>>(ws, { defval: '', range: headerRow })
+  const rawRows = XLSX.utils.sheet_to_json<Record<string, any>>(ws, { defval: '', range: headerRow })
 
-  if (rows.length === 0) {
+  if (rawRows.length === 0) {
     notifyError('El archivo está vacío o no tiene el formato correcto.')
     return
   }
 
-  parsedHeaders.value = Object.keys(rows[0])
+  // Limpiar llaves y valores (remover espacios en blanco extra)
+  const cleanedRows = rawRows.map((row) => {
+    const newRow: Record<string, string> = {}
+    for (const [k, v] of Object.entries(row)) {
+      const cleanKey = String(k || '').trim()
+      const cleanVal = String(v === undefined || v === null ? '' : v).trim()
+      if (cleanKey) {
+        newRow[cleanKey] = cleanVal
+      }
+    }
+    return newRow
+  })
+
+  parsedHeaders.value = Object.keys(cleanedRows[0])
 
   // Auto-detectar columnas comunes de CONTPAQi
   const headers = parsedHeaders.value.map((h) => h.toUpperCase())
-  colMap.sku   = parsedHeaders.value[headers.findIndex((h) => h.includes('PRODUCTO') || h.includes('CÓDIGO') || h.includes('CODIGO') || h.includes('SKU'))] ?? ''
-  colMap.price = parsedHeaders.value[headers.findIndex((h) => h.includes('PRECIO') || h.includes('PRICE'))] ?? ''
+  colMap.sku   = parsedHeaders.value[headers.findIndex((h) => h === 'CÓDIGO' || h === 'CODIGO' || h === 'SKU' || h === 'PRODUCTO' || h === 'PRODUCT' || h.includes('PRODUCT') || h.includes('CÓDIGO') || h.includes('CODIGO') || h.includes('SKU'))] ?? ''
+  colMap.price = parsedHeaders.value[headers.findIndex((h) => h.includes('PRECIO') || h.includes('PRICE') || h.includes('LISTA PRECIOS'))] ?? ''
   colMap.stock = parsedHeaders.value[headers.findIndex((h) => h.includes('INVENTARIO') || h.includes('EXIST') || h.includes('STOCK') || h.includes('CANTIDAD'))] ?? ''
 
   // Filtrar filas vacías o con metadatos/totales
   const skuColumn = colMap.sku
-  const cleanedRows = rows.filter((row) => {
+  const finalRows = cleanedRows.filter((row) => {
     const rawSku = String(row[skuColumn] || '').trim()
-    // Si el SKU está vacío, lo omitimos
     if (!rawSku) return false
-    // Si contiene texto de cabecera/metadatos de CONTPAQi, lo omitimos
     const upperSku = rawSku.toUpperCase()
     if (upperSku.includes('ALMACÉN') || upperSku.includes('ALMACEN') || upperSku.includes('NOMBRE') || upperSku.includes('CÓDIGO') || upperSku.includes('CODIGO')) {
       return false
@@ -1252,7 +1272,7 @@ async function parseFile(file: File) {
     return true
   })
 
-  parsedRows.value = cleanedRows
+  parsedRows.value = finalRows
 }
 
 function resetUpload() {
