@@ -21,6 +21,14 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Se requiere un array "items" no vacío' })
   }
 
+  // Helper para normalizar SKUs removiendo acentos, tildes (como la Ñ -> N) y espacios
+  const cleanSku = (s: string) => 
+    String(s || '')
+      .trim()
+      .toUpperCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+
   // 1. Obtener todos los productos de WooCommerce para construir el mapa SKU -> ID
   const skuToIdMap = new Map<string, number>()
   try {
@@ -39,7 +47,7 @@ export default defineEventHandler(async (event) => {
       } else {
         for (const p of products) {
           if (p.sku) {
-            skuToIdMap.set(p.sku.trim().toUpperCase(), p.id)
+            skuToIdMap.set(cleanSku(p.sku), p.id)
           }
         }
         page++
@@ -65,8 +73,8 @@ export default defineEventHandler(async (event) => {
       continue
     }
 
-    const skuUpper = sku.toUpperCase()
-    const productId = skuToIdMap.get(skuUpper)
+    const skuNormalized = cleanSku(sku)
+    const productId = skuToIdMap.get(skuNormalized)
 
     if (!productId) {
       results.push({ sku, status: 'not_found', message: 'SKU no encontrado' })
@@ -111,7 +119,7 @@ export default defineEventHandler(async (event) => {
       // Marcar estos SKUs del lote con error
       const chunkIds = new Set(chunk.map(c => c.id))
       for (const res of results) {
-        const prodId = skuToIdMap.get(res.sku.toUpperCase())
+        const prodId = skuToIdMap.get(cleanSku(res.sku))
         if (prodId && chunkIds.has(prodId)) {
           res.status = 'error'
           res.message = `Error al guardar lote en WooCommerce: ${msg}`
