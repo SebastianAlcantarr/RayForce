@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 // Recipiente para notificaciones de Rayforce durante pruebas
-const RAYFORCE_RECIPIENT = ['lanfaro2727@gmail.com','sebastianalcantar323@gmail.com','martinysebastian@gmail.com']
+const RAYFORCE_RECIPIENT = ['ventas2@rayforce.com.mx', 'admon@rayforce.com.mx', 'm.olea@rayforce.com.mx']
 
 // Helper to format currency
 function formatCurrency(price: string | number) {
@@ -31,10 +31,10 @@ export async function sendNewOrderNotification(order: any) {
   const paymentMethod = order.payment_method_title || 'N/A'
 
   // Determinar método de transporte y detalles
-  const isPickup = order.shipping_lines?.[0]?.method_id?.toLowerCase()?.includes('pickup') || 
-                   order.shipping_lines?.[0]?.method_title?.toLowerCase()?.includes('recoger')
+  const isPickup = order.shipping_lines?.[0]?.method_id?.toLowerCase()?.includes('pickup') ||
+    order.shipping_lines?.[0]?.method_title?.toLowerCase()?.includes('recoger')
   const deliveryMethod = isPickup ? 'Recoger en Sucursal' : 'Envío a Domicilio'
-  
+
   let deliveryDetailsHtml = ''
   if (isPickup) {
     deliveryDetailsHtml = `
@@ -303,7 +303,7 @@ let fileLock = Promise.resolve()
 
 async function runLocked<T>(fn: () => Promise<T>): Promise<T> {
   const next = fileLock.then(fn, fn)
-  fileLock = next.then(() => {}, () => {})
+  fileLock = next.then(() => { }, () => { })
   return next
 }
 
@@ -311,7 +311,7 @@ async function markOrderMeta(orderId: number, key: string, value: string) {
   const config = useRuntimeConfig()
   const wooUrl = String(config.wooUrl || '').replace(/\/+$/, '')
   const credentials = Buffer.from(`${config.wooKey}:${config.wooSecret}`).toString('base64')
-  
+
   try {
     await $fetch(`${wooUrl}/wp-json/wc/v3/orders/${orderId}`, {
       method: 'PUT',
@@ -370,7 +370,7 @@ export async function checkAndTriggerOrderNotifications(order: any) {
         try {
           const fileContent = await fs.readFile(facturacionesPath, 'utf-8')
           facturaciones = JSON.parse(fileContent)
-        } catch (e) {}
+        } catch (e) { }
 
         const invoiceIdx = facturaciones.findIndex(f => String(f.orderId) === String(orderId))
         if (invoiceIdx !== -1) {
