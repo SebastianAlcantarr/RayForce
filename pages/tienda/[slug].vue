@@ -352,24 +352,53 @@ const mainImage = computed(() => {
   return galleryImages.value[selectedImageIndex.value]?.src || '/placeholder.jpg'
 })
 
+const assignedBrandName = computed(() => {
+  if (!product.value) return null
+
+  // 1. Verificar marcas desde la API de WooCommerce (propiedad 'brands')
+  if (Array.isArray(product.value.brands) && product.value.brands.length > 0) {
+    const brandObj = product.value.brands[0]
+    const name = typeof brandObj === 'object' && brandObj ? brandObj.name : brandObj
+    if (name) return String(name).trim()
+  }
+
+  // 2. Verificar desde los atributos del producto (ej: marca)
+  if (Array.isArray(product.value.attributes)) {
+    const brandAttr = product.value.attributes.find((a: any) => a.name?.toLowerCase() === 'marca')
+    if (brandAttr && Array.isArray(brandAttr.options) && brandAttr.options.length > 0) {
+      return String(brandAttr.options[0]).trim()
+    }
+  }
+
+  return null
+})
+
 const specGroups = computed(() => {
   if (!product.value) return []
+
+  const infoItems = [
+    { label: 'SKU', value: currentSku.value },
+    { label: 'Tipo', value: product.value.type || '-' },
+    { label: 'Estado', value: product.value.status === 'publish' ? 'Disponible' : product.value.status || '-' },
+  ]
+
+  if (assignedBrandName.value) {
+    infoItems.push({ label: 'Marca', value: assignedBrandName.value })
+  }
 
   return [
     {
       title: 'Información del Producto',
-      items: [
-        { label: 'SKU', value: currentSku.value },
-        { label: 'Tipo', value: product.value.type || '-' },
-        { label: 'Estado', value: product.value.status === 'publish' ? 'Disponible' : product.value.status || '-' },
-      ],
+      items: infoItems,
     },
     {
       title: 'Atributos Generales',
-      items: product.value.attributes?.map((attribute) => ({
-        label: attribute.name,
-        value: attribute.options?.join(', ') || '-',
-      })) || [],
+      items: product.value.attributes
+        ?.filter((attribute) => attribute.name?.toLowerCase() !== 'marca')
+        ?.map((attribute) => ({
+          label: attribute.name,
+          value: attribute.options?.join(', ') || '-',
+        })) || [],
     },
   ]
 })
