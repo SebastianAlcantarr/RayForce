@@ -4,7 +4,7 @@ import type { WooProduct } from '~/server/services/woocomerce'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { name, sku, regular_price, categories, image_id, image_ids, description, ficha_tecnica_url } = body || {}
+  const { name, sku, regular_price, categories, image_id, image_ids, description, brand, ficha_tecnica_url } = body || {}
 
   if (!name || !sku || !regular_price) {
     throw createError({ statusCode: 400, statusMessage: 'Nombre, SKU y precio son obligatorios' })
@@ -38,6 +38,10 @@ export default defineEventHandler(async (event) => {
     }
   }
 
+  if (brand !== undefined && brand !== null && brand !== '') {
+    payload.brands = [{ id: Number(brand) }]
+  }
+
   if (ficha_tecnica_url !== undefined && ficha_tecnica_url !== null && String(ficha_tecnica_url).trim() !== '') {
     payload.meta_data = [
       {
@@ -61,6 +65,7 @@ export default defineEventHandler(async (event) => {
       name: created.name,
       sku: created.sku,
       permalink: created.permalink,
+      brand: created.brands?.[0]?.id ?? null,
     }
   } catch (err: any) {
     let statusMessage = err.statusMessage || err.message || 'Error desconocido'

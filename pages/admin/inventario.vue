@@ -451,6 +451,21 @@
           </div>
 
           <div class="form-field form-field--full">
+            <label for="new-brand" class="f-label">Marca</label>
+            <div v-if="brandLoading" class="text-slate-500 text-xs py-1">Cargando marcas…</div>
+            <select
+              v-else
+              id="new-brand"
+              v-model="newProduct.brand"
+              class="f-input w-full mt-1 !py-1.5 !px-2.5 text-sm"
+              style="height: 42px; background-color: #1e293b;"
+            >
+              <option :value="null">— Sin Marca —</option>
+              <option v-for="b in brands" :key="b.id" :value="b.id">{{ b.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-field form-field--full">
             <label class="f-label">Categorías</label>
             <div v-if="catLoading" class="text-slate-500 text-sm py-2">Cargando categorías…</div>
             <div v-else class="cat-grid">
@@ -1515,6 +1530,7 @@ const creatorImages = ref<{ src: string; file: File }[]>([])
 const newProduct = reactive({
   name: '', sku: '', regular_price: '', description: '',
   categories: [] as number[],
+  brand: null as number | null,
   ficha_tecnica_url: '',
 })
 
@@ -1563,6 +1579,7 @@ function toggleCategory(id: number) {
 function resetProductForm() {
   newProduct.name = ''; newProduct.sku = ''; newProduct.regular_price = ''
   newProduct.description = ''; newProduct.categories = []
+  newProduct.brand = null
   newProduct.ficha_tecnica_url = ''
   creatorImages.value = []
   if (imgInput.value) imgInput.value.value = ''
@@ -1592,6 +1609,7 @@ async function submitProduct() {
         regular_price:     newProduct.regular_price,
         description:       newProduct.description,
         categories:        newProduct.categories,
+        brand:             newProduct.brand,
         image_ids:         imageIds,
         ficha_tecnica_url: newProduct.ficha_tecnica_url,
       },

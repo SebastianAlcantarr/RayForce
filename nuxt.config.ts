@@ -123,4 +123,8 @@ runtimeConfig: {
   },
 
   compatibilityDate: '2024-11-01',
+
+  experimental: {
+    appManifest: false,
+  },
 })
