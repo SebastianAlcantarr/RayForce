@@ -37,7 +37,10 @@
           <p class="font-inter text-[12px] text-blue-700 italic uppercase tracking-wider">
             * La imagen del producto es solo ilustrativa.
           </p>
-          <p class="text-primary text-3xl font-black">${{ currentPriceWithTax }}</p>
+          <p class="text-primary text-3xl font-black flex items-baseline gap-2">
+            <span>${{ currentPriceWithTax }}</span>
+            <span class="text-xs text-slate-500 font-normal normal-case">(IVA incluido)</span>
+          </p>
           <p class="font-inter text-xs uppercase tracking-widest text-outline-variant">SKU: {{ currentSku }}</p>
           
           <!-- Variaciones (Chips) -->

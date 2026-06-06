@@ -252,9 +252,9 @@
             </h3>
             <div class="mt-auto flex items-end justify-between">
               <div>
-                <span v-if="product.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ product.regular_price }}</span>
+                <span v-if="product.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ formatPrice(product.regular_price) }}</span>
                 <span v-if="product.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full">Opciones</span>
-                <p v-else class="text-primary font-black text-xl">${{ product.price }}</p>
+                <p v-else class="text-primary font-black text-xl">${{ formatPrice(product.price) }}</p>
               </div>
               <div
                 :class="[
@@ -518,6 +518,15 @@ const brandsList = [
   { name: 'CONDUMEX', query: { brand: 281 }, logo: '/images/marcas/19.webp', bgColor: '#ffffff', scale: 0.95, color: '#bd1f2d', category: 'Conductores de Cobre y Energía' },
   { name: 'SQUARE D', query: { brand: 298 }, logo: '/images/marcas/20.webp', bgColor: '#001d59', scale: 0.80, color: '#009639', category: 'Interruptores y Centros de Carga' }
 ]
+
+const formatPrice = (price: string | number | undefined | null) => {
+  const numericPrice = typeof price === 'number' ? price : parseFloat(price || '0')
+  if (isNaN(numericPrice)) return '0.00'
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(numericPrice * 1.16)
+}
 </script>
 
 <style scoped>
