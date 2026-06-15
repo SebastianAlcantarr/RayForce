@@ -4,7 +4,26 @@ import { resolve } from 'node:path'
 export default defineEventHandler((event) => {
   const filePath = resolve(process.cwd(), 'data/config.json')
   
-  const defaultCarousel = { slide1Url: '', slide2Url: '', slide3Url: '' }
+  const defaultCarousel = {
+    slide1Url: '',
+    slide1Badge: '',
+    slide1Title: '',
+    slide1Desc: '',
+    slide1BtnText: '',
+    slide1BtnLink: '',
+    slide2Url: '',
+    slide2Badge: '',
+    slide2Title: '',
+    slide2Desc: '',
+    slide2BtnText: '',
+    slide2BtnLink: '',
+    slide3Url: '',
+    slide3Badge: '',
+    slide3Title: '',
+    slide3Desc: '',
+    slide3BtnText: '',
+    slide3BtnLink: ''
+  }
   const defaultSideBanner = { imageUrl: '' }
   const defaultVideoSection = { enabled: false, videoUrl: '', title: 'Contenido Destacado', subtitle: '', backgroundColor: 'slate-800' }
 

@@ -34,7 +34,7 @@
               <img 
                 v-if="adsConfig?.carousel?.[`slide${index + 1}Url`]"
                 :src="adsConfig.carousel[`slide${index + 1}Url`]"
-                class="absolute inset-0 w-full h-full object-cover z-0 opacity-40 mix-blend-overlay"
+                class="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
                 :loading="index === 0 ? 'eager' : 'lazy'"
                 :fetchpriority="index === 0 ? 'high' : 'low'"
               />
@@ -61,7 +61,10 @@
               </div>
               
               <!-- Slide Decorative Icon -->
-              <div class="absolute right-[-10%] top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-30 pointer-events-none mix-blend-overlay">
+              <div 
+                v-if="!adsConfig?.carousel?.['slide' + (index + 1) + 'Url']"
+                class="absolute right-[-10%] top-0 h-full w-2/5 hidden md:flex items-center justify-center opacity-30 pointer-events-none mix-blend-overlay"
+              >
                 <span class="material-symbols-outlined text-[30rem] text-white">{{ slide.icon }}</span>
               </div>
             </div>
@@ -408,7 +411,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { WooPaginatedResult, WooProduct } from '~/server/services/woocomerce'
 
 
@@ -425,35 +428,38 @@ const activeSlide = ref(0)
 const showBrandsModal = ref(false)
 let slideInterval: any
 
-const slides = [
-  {
-    badge: 'Herramientas Profesionales',
-    title: 'Poder y Precisión Industrial.',
-    desc: 'Equipamiento de alto rendimiento para construcciones y mantenimiento riguroso.',
-    btn1Text: 'Catálogo 2026',
-    btn1Link: '/tienda',
-    icon: 'construction',
-    bgClass: 'bg-gradient-to-br from-[#0f172a] to-[#334155]'
-  },
-  {
-    badge: 'Proyectos Eléctricos',
-    title: 'Infraestructura Energética Segura.',
-    desc: 'Cableado, tableros e iluminación avalados bajo certificaciones NOM y estándares internacionales.',
-    btn1Text: 'Cotizar Proyecto',
-    btn1Link: '/cotizar',
-    icon: 'electric_bolt',
-    bgClass: 'bg-gradient-to-tr from-[#003B80] to-[#0057B8]'
-  },
-  {
-    badge: 'Oferta Exclusiva',
-    title: 'Precios Especiales a Mayoristas.',
-    desc: 'Mejoramos presupuesto a constructores. Regístrate como cliente frecuente.',
-    btn1Text: 'Contactar Asesor',
-    btn1Link: '/contacto',
-    icon: 'handshake',
-    bgClass: 'bg-gradient-to-r from-slate-900 to-primary'
-  }
-]
+const slides = computed(() => {
+  const c = adsConfig.value?.carousel
+  return [
+    {
+      badge: c?.slide1Badge || 'Herramientas Profesionales',
+      title: c?.slide1Title || 'Poder y Precisión Industrial.',
+      desc: c?.slide1Desc || 'Equipamiento de alto rendimiento para construcciones y mantenimiento riguroso.',
+      btn1Text: c?.slide1BtnText || 'Catálogo 2026',
+      btn1Link: c?.slide1BtnLink || '/tienda',
+      icon: 'construction',
+      bgClass: 'bg-gradient-to-br from-[#0f172a] to-[#334155]'
+    },
+    {
+      badge: c?.slide2Badge || 'Proyectos Eléctricos',
+      title: c?.slide2Title || 'Infraestructura Energética Segura.',
+      desc: c?.slide2Desc || 'Cableado, tableros e iluminación avalados bajo certificaciones NOM y estándares internacionales.',
+      btn1Text: c?.slide2BtnText || 'Cotizar Proyecto',
+      btn1Link: c?.slide2BtnLink || '/cotizar',
+      icon: 'electric_bolt',
+      bgClass: 'bg-gradient-to-tr from-[#003B80] to-[#0057B8]'
+    },
+    {
+      badge: c?.slide3Badge || 'Oferta Exclusiva',
+      title: c?.slide3Title || 'Precios Especiales a Mayoristas.',
+      desc: c?.slide3Desc || 'Mejoramos presupuesto a constructores. Regístrate como cliente frecuente.',
+      btn1Text: c?.slide3BtnText || 'Contactar Asesor',
+      btn1Link: c?.slide3BtnLink || '/contacto',
+      icon: 'handshake',
+      bgClass: 'bg-gradient-to-r from-slate-900 to-primary'
+    }
+  ]
+})
 
 const startTimer = () => {
   clearInterval(slideInterval)
@@ -461,11 +467,11 @@ const startTimer = () => {
 }
 
 const nextSlide = () => {
-  activeSlide.value = (activeSlide.value + 1) % slides.length
+  activeSlide.value = (activeSlide.value + 1) % slides.value.length
 }
 
 const prevSlide = () => {
-  activeSlide.value = (activeSlide.value - 1 + slides.length) % slides.length
+  activeSlide.value = (activeSlide.value - 1 + slides.value.length) % slides.value.length
 }
 
 onMounted(() => { startTimer() })

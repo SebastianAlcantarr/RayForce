@@ -634,32 +634,112 @@
           </div>
         </section>
 
-        <!-- Carousel Background Images -->
+        <!-- Carousel Background Images & Texts -->
         <section class="border border-outline-variant/20 bg-surface-container-low rounded-xl p-6">
           <div class="mb-6">
-            <h3 class="text-lg font-bold text-on-surface">Imágenes de Fondo del Carrusel</h3>
-            <p class="text-sm text-outline">Añade imágenes de fondo personalizadas para cada una de las 3 diapositivas del carrusel principal.</p>
+            <h3 class="text-lg font-bold text-on-surface">Configuración del Carrusel de Inicio</h3>
+            <p class="text-sm text-outline">Modifica los textos, imágenes de fondo y botones de las 3 diapositivas del carrusel principal.</p>
           </div>
-          <div class="grid grid-cols-1 gap-4">
-            <div class="form-field form-field--full">
-              <label class="f-label">Slide 1 (Imagen URL)</label>
-              <div class="flex gap-2">
-                <input type="text" v-model="adsConfig.carousel.slide1Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide1.jpg" />
-                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide1Url')">Subir</button>
+          <div class="space-y-8">
+            <!-- Slide 1 -->
+            <div class="border-b border-outline-variant/10 pb-6">
+              <h4 class="text-sm font-bold text-primary mb-3">Diapositiva 1</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-field form-field--full">
+                  <label class="f-label">Imagen de Fondo (URL)</label>
+                  <div class="flex gap-2">
+                    <input type="text" v-model="adsConfig.carousel.slide1Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide1.jpg" />
+                    <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide1Url')">Subir</button>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Etiqueta Superior (Badge)</label>
+                  <input type="text" v-model="adsConfig.carousel.slide1Badge" class="f-input" placeholder="Herramientas Profesionales" />
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Título</label>
+                  <input type="text" v-model="adsConfig.carousel.slide1Title" class="f-input" placeholder="Poder y Precisión Industrial." />
+                </div>
+                <div class="form-field form-field--full">
+                  <label class="f-label">Descripción</label>
+                  <textarea v-model="adsConfig.carousel.slide1Desc" class="f-input f-textarea" rows="2" placeholder="Equipamiento de alto rendimiento para construcciones y mantenimiento riguroso."></textarea>
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Texto del Botón</label>
+                  <input type="text" v-model="adsConfig.carousel.slide1BtnText" class="f-input" placeholder="Catálogo 2026" />
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Enlace del Botón</label>
+                  <input type="text" v-model="adsConfig.carousel.slide1BtnLink" class="f-input" placeholder="/tienda" />
+                </div>
               </div>
             </div>
-            <div class="form-field form-field--full">
-              <label class="f-label">Slide 2 (Imagen URL)</label>
-              <div class="flex gap-2">
-                <input type="text" v-model="adsConfig.carousel.slide2Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide2.jpg" />
-                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide2Url')">Subir</button>
+
+            <!-- Slide 2 -->
+            <div class="border-b border-outline-variant/10 pb-6">
+              <h4 class="text-sm font-bold text-primary mb-3">Diapositiva 2</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-field form-field--full">
+                  <label class="f-label">Imagen de Fondo (URL)</label>
+                  <div class="flex gap-2">
+                    <input type="text" v-model="adsConfig.carousel.slide2Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide2.jpg" />
+                    <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide2Url')">Subir</button>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Etiqueta Superior (Badge)</label>
+                  <input type="text" v-model="adsConfig.carousel.slide2Badge" class="f-input" placeholder="Proyectos Eléctricos" />
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Título</label>
+                  <input type="text" v-model="adsConfig.carousel.slide2Title" class="f-input" placeholder="Infraestructura Energética Segura." />
+                </div>
+                <div class="form-field form-field--full">
+                  <label class="f-label">Descripción</label>
+                  <textarea v-model="adsConfig.carousel.slide2Desc" class="f-input f-textarea" rows="2" placeholder="Cableado, tableros e iluminación avalados bajo certificaciones NOM y estándares internacionales."></textarea>
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Texto del Botón</label>
+                  <input type="text" v-model="adsConfig.carousel.slide2BtnText" class="f-input" placeholder="Cotizar Proyecto" />
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Enlace del Botón</label>
+                  <input type="text" v-model="adsConfig.carousel.slide2BtnLink" class="f-input" placeholder="/cotizar" />
+                </div>
               </div>
             </div>
-            <div class="form-field form-field--full">
-              <label class="f-label">Slide 3 (Imagen URL)</label>
-              <div class="flex gap-2">
-                <input type="text" v-model="adsConfig.carousel.slide3Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide3.jpg" />
-                <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide3Url')">Subir</button>
+
+            <!-- Slide 3 -->
+            <div class="pb-2">
+              <h4 class="text-sm font-bold text-primary mb-3">Diapositiva 3</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-field form-field--full">
+                  <label class="f-label">Imagen de Fondo (URL)</label>
+                  <div class="flex gap-2">
+                    <input type="text" v-model="adsConfig.carousel.slide3Url" class="f-input flex-1" placeholder="https://ejemplo.com/slide3.jpg" />
+                    <button class="btn-ghost" @click="triggerMediaUpload(adsConfig.carousel, 'slide3Url')">Subir</button>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Etiqueta Superior (Badge)</label>
+                  <input type="text" v-model="adsConfig.carousel.slide3Badge" class="f-input" placeholder="Oferta Exclusiva" />
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Título</label>
+                  <input type="text" v-model="adsConfig.carousel.slide3Title" class="f-input" placeholder="Precios Especiales a Mayoristas." />
+                </div>
+                <div class="form-field form-field--full">
+                  <label class="f-label">Descripción</label>
+                  <textarea v-model="adsConfig.carousel.slide3Desc" class="f-input f-textarea" rows="2" placeholder="Mejoramos presupuesto a constructores. Regístrate como cliente frecuente."></textarea>
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Texto del Botón</label>
+                  <input type="text" v-model="adsConfig.carousel.slide3BtnText" class="f-input" placeholder="Contactar Asesor" />
+                </div>
+                <div class="form-field">
+                  <label class="f-label">Enlace del Botón</label>
+                  <input type="text" v-model="adsConfig.carousel.slide3BtnLink" class="f-input" placeholder="/contacto" />
+                </div>
               </div>
             </div>
           </div>
