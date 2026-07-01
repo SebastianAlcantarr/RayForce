@@ -233,13 +233,60 @@ export async function getProductsPaginated(
   }
 }
 
-export async function getProductBySlug(slug: string) {
-  const products = await getProducts({
-    slug,
-    per_page: 1,
-  })
+export async function getProductBySlug(slug: string): Promise<WooProduct | null> {
+  const cleanSlug = String(slug || '').trim()
+  if (!cleanSlug) return null
 
-  return products[0] || null
+  // 1. Coincidencia exacta por slug
+  try {
+    const products = await getProducts({
+      slug: cleanSlug,
+      per_page: 1,
+    })
+    if (products && products[0]) {
+      return products[0]
+    }
+  } catch (e) {
+    console.error(`Error buscando por slug exacto (${cleanSlug}):`, e)
+  }
+
+  // 2. Si tiene codificación URI o caracteres especiales, probar decodificado
+  try {
+    const decodedSlug = decodeURIComponent(cleanSlug)
+    if (decodedSlug !== cleanSlug) {
+      const productsDecoded = await getProducts({
+        slug: decodedSlug,
+        per_page: 1,
+      })
+      if (productsDecoded && productsDecoded[0]) {
+        return productsDecoded[0]
+      }
+    }
+  } catch {}
+
+  // 3. Si no tiene espacios, probar por SKU exacto (p. ej. cuando acceden o enlazan por SKU como LUMI0012)
+  if (!cleanSlug.includes(' ')) {
+    try {
+      const productsBySku = await getProducts({ sku: cleanSlug })
+      if (productsBySku && productsBySku[0]) {
+        return productsBySku[0]
+      }
+    } catch (e) {
+      console.error(`Error buscando por SKU (${cleanSlug}):`, e)
+    }
+  }
+
+  // 4. Si es numérico puro, intentar buscar por ID exacto (p. ej. /tienda/32262)
+  if (/^\d+$/.test(cleanSlug)) {
+    try {
+      const productById = await wooFetch<WooProduct>(`/products/${cleanSlug}`)
+      if (productById && productById.id) {
+        return normalizeProduct(productById)
+      }
+    } catch {}
+  }
+
+  return null
 }
 
 export async function getProductVariations(productId: number) {

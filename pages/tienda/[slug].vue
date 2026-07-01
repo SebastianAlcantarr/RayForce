@@ -9,7 +9,90 @@
     </nav>
 
     <div v-if="pending">Cargando producto...</div>
-    <div v-else-if="error" class="text-red-600">No se pudo cargar este producto.</div>
+        <div v-else-if="error" class="space-y-16 py-8">
+      <!-- Tarjeta Informativa de Producto No Disponible / Descontinuado -->
+      <div class="bg-surface-container-low border border-outline-variant/30 rounded-2xl p-8 md:p-12 text-center max-w-3xl mx-auto shadow-sm">
+        <div class="w-16 h-16 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <span class="material-symbols-outlined text-3xl">info_i</span>
+        </div>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight mb-3">
+          Este modelo ya no se encuentra disponible
+        </h1>
+        <p class="text-slate-600 text-sm md:text-base max-w-xl mx-auto mb-8 leading-relaxed">
+          Es posible que el producto haya sido actualizado por un nuevo modelo o descontinuado de nuestro catálogo industrial. Puedes buscar alternativas en stock a continuación:
+        </p>
+
+        <!-- Buscador prellenado para retención de usuario -->
+        <form @submit.prevent="handleFallbackSearch" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <input
+              v-model="fallbackSearchQuery"
+              type="text"
+              placeholder="Buscar productos similares..."
+              class="w-full pl-11 pr-4 py-3 bg-white border border-outline-variant/40 rounded-xl text-sm text-slate-800 font-medium focus:outline-none focus:border-primary transition-colors shadow-sm"
+            />
+          </div>
+          <button
+            type="submit"
+            class="px-6 py-3 bg-primary hover:bg-[#004f9f] text-white font-bold text-sm rounded-xl transition-all shadow-sm active:scale-95 flex items-center justify-center gap-2 shrink-0"
+          >
+            <span>Buscar</span>
+            <span class="material-symbols-outlined text-base">arrow_forward</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Sección de Recomendaciones para Salvar la Venta -->
+      <section v-if="fallbackProducts && fallbackProducts.items && fallbackProducts.items.length > 0" class="pt-8 border-t border-outline-variant/20">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+          <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 text-[#0b1f3f]">Productos Recomendados en Stock</h2>
+            <div class="h-1 w-12 bg-primary" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <NuxtLink
+            v-for="item in fallbackProducts.items.slice(0, 4)"
+            :key="item.id"
+            :to="`/tienda/${item.slug}`"
+            class="group bg-white rounded-2xl p-5 border border-outline-variant/30 hover:border-primary shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col relative"
+          >
+            <span v-if="item.sale_price" class="absolute top-4 left-4 bg-red-600 text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1 rounded z-10">OFERTA</span>
+            <div class="aspect-square bg-slate-50 flex items-center justify-center p-6 rounded-xl relative overflow-hidden mb-5">
+              <NuxtImg
+                :src="item.images?.[0]?.src || '/placeholder.jpg'"
+                :alt="item.name"
+                class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                format="webp"
+                loading="lazy"
+                width="260"
+                height="260"
+              />
+            </div>
+            <div class="flex-1 flex flex-col">
+              <span class="font-inter text-[9px] uppercase tracking-widest text-outline-variant mb-1 line-clamp-1 block">
+                {{ item.sku || 'SIN SKU' }} · {{ item.categories?.[0]?.name || 'Equipos' }}
+              </span>
+              <h3 class="font-bold text-base text-slate-800 leading-tight mb-4 group-hover:text-primary transition-colors line-clamp-2">
+                {{ item.name }}
+              </h3>
+              <div class="mt-auto flex items-end justify-between">
+                <div>
+                  <span v-if="item.sale_price" class="text-[10px] text-slate-400 line-through block mb-0.5">${{ formatPriceWithTax(item.regular_price) }}</span>
+                  <span v-if="item.type === 'variable'" class="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-2 py-1 rounded-full">Opciones</span>
+                  <p v-else class="text-primary font-black text-xl">${{ formatPriceWithTax(item.price) }}</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-surface-container-high text-slate-600 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                  <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                </div>
+              </div>
+            </div>
+          </NuxtLink>
+        </div>
+      </section>
+    </div>
 
     <div v-else-if="product" class="space-y-16">
        <section class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -306,6 +389,31 @@ const { data: relatedProducts, pending: relatedPending } = await useFetch<any>(
   () => product.value ? `/api/products/related?id=${product.value.id}` : null,
   { getCachedData: () => null }
 )
+
+const { data: fallbackProducts } = await useFetch<any>(
+  () => error.value ? `/api/products?perPage=8` : null,
+  { getCachedData: () => null }
+)
+
+const fallbackSearchQuery = ref('')
+watchEffect(() => {
+  if (error.value && !fallbackSearchQuery.value && slug.value) {
+    fallbackSearchQuery.value = slug.value
+      .replace(/[-_]/g, ' ')
+      .replace(/\b(de|en|para|con|por|sin|y|o|la|el|los|las|un|una)\b/gi, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  }
+})
+
+const handleFallbackSearch = () => {
+  if (fallbackSearchQuery.value.trim()) {
+    router.push(`/tienda?buscar=${encodeURIComponent(fallbackSearchQuery.value.trim())}`)
+  } else {
+    router.push('/tienda')
+  }
+}
+
 
 // === Hermanos (siblings): otras variantes del mismo producto ===
 const siblingsUrl = computed(() =>
