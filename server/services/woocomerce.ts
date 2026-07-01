@@ -286,6 +286,44 @@ export async function getProductBySlug(slug: string): Promise<WooProduct | null>
     } catch {}
   }
 
+  // 5. Búsqueda inteligente por tokens (recuperación ante cambios ligeros en slug o errores ortográficos como "cabole" -> "cable")
+  try {
+    const tokens = cleanSlug.toLowerCase().split(/[-_]+/).filter(t => t.length > 2 && !['de', 'en', 'para', 'con', 'por', 'sin', 'la', 'el', 'los', 'las', 'una', 'del'].includes(t))
+    if (tokens.length > 0) {
+      const queriesToTry = new Set<string>()
+      queriesToTry.add(tokens[tokens.length - 1])
+      if (tokens.length > 1) {
+        queriesToTry.add(`${tokens[0]} ${tokens[tokens.length - 1]}`)
+      }
+
+      let bestMatch: WooProduct | null = null
+      let maxScore = 0
+
+      for (const q of queriesToTry) {
+        const candidates = await getProducts({ search: q, per_page: 5 })
+        for (const p of candidates) {
+          const pTokens = new Set((p.slug + ' ' + p.name).toLowerCase().split(/[\s-_]+/))
+          let matchCount = 0
+          for (const t of tokens) {
+            if (pTokens.has(t)) matchCount++
+          }
+          const score = matchCount / tokens.length
+          if (score > maxScore && score >= 0.4) {
+            maxScore = score
+            bestMatch = p
+          }
+        }
+        if (bestMatch && maxScore >= 0.6) break
+      }
+
+      if (bestMatch) {
+        return bestMatch
+      }
+    }
+  } catch (e) {
+    console.error(`Error en búsqueda por tokens (${cleanSlug}):`, e)
+  }
+
   return null
 }
 

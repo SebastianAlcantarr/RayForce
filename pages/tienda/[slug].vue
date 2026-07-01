@@ -408,7 +408,7 @@ watchEffect(() => {
 
 const handleFallbackSearch = () => {
   if (fallbackSearchQuery.value.trim()) {
-    router.push(`/tienda?buscar=${encodeURIComponent(fallbackSearchQuery.value.trim())}`)
+    router.push({ path: '/tienda', query: { q: fallbackSearchQuery.value.trim() } })
   } else {
     router.push('/tienda')
   }
