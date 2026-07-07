@@ -302,6 +302,12 @@ export async function getProductBySlug(slug: string): Promise<WooProduct | null>
       for (const q of queriesToTry) {
         const candidates = await getProducts({ search: q, per_page: 5 })
         for (const p of candidates) {
+          // Evitar coincidencias de productos con dimensiones/números distintos
+          const queryNums = cleanSlug.match(/\d+/g) || []
+          const candidateNums = (p.slug + ' ' + p.name).match(/\d+/g) || []
+          const hasAllNums = queryNums.every(num => candidateNums.includes(num))
+          if (!hasAllNums) continue
+
           const pTokens = new Set((p.slug + ' ' + p.name).toLowerCase().split(/[\s-_]+/))
           let matchCount = 0
           for (const t of tokens) {

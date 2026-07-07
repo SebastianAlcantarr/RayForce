@@ -385,6 +385,19 @@ const { data: product, pending, error } = await useFetch<WooProduct>(
   { getCachedData: () => null }
 )
 
+watchEffect(() => {
+  if (product.value && product.value.slug) {
+    const currentSlug = slug.value.toLowerCase()
+    const canonicalSlug = product.value.slug.toLowerCase()
+    const sku = (product.value.sku || '').toLowerCase()
+    
+    // Redirigir si no coincide con el slug canónico ni con el SKU directo
+    if (currentSlug !== canonicalSlug && currentSlug !== sku) {
+      router.replace(`/tienda/${product.value.slug}`)
+    }
+  }
+})
+
 const { data: relatedProducts, pending: relatedPending } = await useFetch<any>(
   () => product.value ? `/api/products/related?id=${product.value.id}` : null,
   { getCachedData: () => null }
