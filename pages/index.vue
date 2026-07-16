@@ -34,7 +34,7 @@
               <img 
                 v-if="adsConfig?.carousel?.[`slide${index + 1}Url`]"
                 :src="adsConfig.carousel[`slide${index + 1}Url`]"
-                class="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
+                class="absolute inset-0 w-full h-full object-cover z-0 opacity-75"
                 :loading="index === 0 ? 'eager' : 'lazy'"
                 :fetchpriority="index === 0 ? 'high' : 'low'"
               />
