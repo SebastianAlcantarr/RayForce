@@ -1,17 +1,17 @@
 {
   "topBanner": {
-    "enabled": false,
+    "enabled": true,
     "text": "Envios Gratis",
     "link": "",
     "color": "green-600"
   },
   "midBanner": {
-    "enabled": false,
+    "enabled": true,
     "title": "",
     "subtitle": "",
     "buttonText": "",
     "link": "",
-    "imageUrl": ""
+    "imageUrl": "https://wp.rayforce.com.mx/wp-content/uploads/2026/07/gate2.png"
   },
   "carousel": {
     "slide1Url": "https://wp.rayforce.com.mx/wp-content/uploads/2026/07/images.jpg",
@@ -19,7 +19,7 @@
     "slide3Url": ""
   },
   "sideBanner": {
-    "imageUrl": ""
+    "imageUrl": "https://wp.rayforce.com.mx/wp-content/uploads/2026/07/gate2-1.png"
   },
   "videoSection": {
     "enabled": false,

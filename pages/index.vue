@@ -88,17 +88,18 @@
         </div>
 
         <!-- Banner Lateral Fijo (Promocional Constante) -->
-        <NuxtLink to="/nosotros" class="hidden lg:flex flex-col rounded-3xl overflow-hidden shadow-xl bg-gradient-to-b from-[#1e293b] to-[#0f172a] text-white p-10 relative group justify-end">
+        <NuxtLink to="/nosotros" class="hidden lg:flex flex-col rounded-3xl overflow-hidden shadow-xl bg-slate-900 text-white p-10 relative group justify-end">
           <img 
             v-if="adsConfig?.sideBanner?.imageUrl"
             :src="adsConfig.sideBanner.imageUrl"
-            class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60 group-hover:scale-105 transition-transform duration-700"
+            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
-          <div class="absolute -right-10 -top-10 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/40 transition-colors duration-700"></div>
-          <span class="material-symbols-outlined text-6xl text-primary mb-4 relative z-10 group-hover:scale-110 transition-transform">verified_user</span>
-          <h3 class="text-2xl font-bold mb-2 relative z-10 leading-tight">Garantía Directa en Proyectos</h3>
-          <p class="text-slate-400 font-light text-sm relative z-10 mb-6">Expertos en proveeduría industrial. Distribuidores oficiales.</p>
-          <div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest relative z-10">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/50 to-transparent z-10 pointer-events-none"></div>
+          <div class="absolute -right-10 -top-10 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/40 transition-colors duration-700 z-10"></div>
+          <span class="material-symbols-outlined text-6xl text-primary mb-4 relative z-20 group-hover:scale-110 transition-transform">verified_user</span>
+          <h3 class="text-2xl font-bold mb-2 relative z-20 leading-tight">Garantía Directa en Proyectos</h3>
+          <p class="text-slate-200 font-light text-sm relative z-20 mb-6">Expertos en proveeduría industrial. Distribuidores oficiales.</p>
+          <div class="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest relative z-20">
             Conoce más <span class="material-symbols-outlined text-base">arrow_forward</span>
           </div>
         </NuxtLink>
@@ -124,15 +125,16 @@
 
     <!-- Mid Promotional Banner (Admin Editable) -->
     <section v-if="adsConfig?.midBanner?.enabled" class="max-w-[1440px] mx-auto px-4 md:px-8 mb-16">
-      <div class="relative rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-slate-900 to-slate-800 h-[300px] md:h-[400px] flex items-center group">
+      <div class="relative rounded-3xl overflow-hidden shadow-xl bg-slate-900 h-[300px] md:h-[400px] flex items-center group">
         <img 
           :src="adsConfig.midBanner.imageUrl" 
           alt="Promoción" 
-          class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000"
+          class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-1000"
           v-if="adsConfig.midBanner.imageUrl"
           loading="lazy"
           fetchpriority="low"
         />
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/60 to-transparent z-10 pointer-events-none"></div>
         <div class="relative z-20 px-6 md:px-20 text-white max-w-3xl">
           <span class="inline-block px-3 py-1 bg-red-600 text-white rounded font-bold uppercase tracking-widest text-[10px] mb-4 shadow-lg shadow-red-600/30">Promoción Especial</span>
           <h2 class="text-3xl md:text-5xl font-extrabold leading-tight mb-4">{{ adsConfig.midBanner.title || 'Promoción Especial a Mayoristas' }}</h2>
