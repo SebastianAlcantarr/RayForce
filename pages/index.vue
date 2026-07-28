@@ -34,7 +34,7 @@
               <img 
                 v-if="adsConfig?.carousel?.[`slide${index + 1}Url`]"
                 :src="adsConfig.carousel[`slide${index + 1}Url`]"
-                class="absolute inset-0 w-full h-full object-cover z-0 opacity-75"
+                class="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
                 :loading="index === 0 ? 'eager' : 'lazy'"
                 :fetchpriority="index === 0 ? 'high' : 'low'"
               />
@@ -128,7 +128,7 @@
         <img 
           :src="adsConfig.midBanner.imageUrl" 
           alt="Promoción" 
-          class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000"
+          class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-80 group-hover:scale-105 group-hover:opacity-40 transition-all duration-1000"
           v-if="adsConfig.midBanner.imageUrl"
           loading="lazy"
           fetchpriority="low"
